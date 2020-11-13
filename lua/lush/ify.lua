@@ -30,7 +30,7 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
         fg = fg.lightness(100)
       end
 
-      api.nvim_command("highlight " .. group_name .. " guibg=" .. bg .. " guifg=" .. fg)
+      api.nvim_command("highlight! " .. group_name .. " guibg=" .. bg .. " guifg=" .. fg)
     end
 
     local hs, he = string.find(line, all, 1, true)

@@ -2,7 +2,7 @@
 -- TODO: args such as default, etc
 -- TODO: include !?
 local function make_link(from, to)
-  return "highlight link " .. from .. " " .. to
+  return "highlight! link " .. from .. " " .. to
 end
 
 local function make_group(name, opts)
