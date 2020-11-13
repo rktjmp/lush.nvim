@@ -1,11 +1,9 @@
 local hsl = require('lush.hsl')
 local parser = require('lush.parser')
 local compiler = require('lush.compiler')
-local ify = require('lush.ify')
 
 local M = {}
 
-M.ify = ify
 M.hsl = hsl
 
 M.define = function(fn)
