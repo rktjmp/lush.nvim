@@ -54,15 +54,11 @@ M.attach_to_buffer = function(buf)
     set_highlight_hsl_on_line(buf, line, i - 1)
   end
 
-  -- TODO remove attachment if we reload source? technicalyl you could just
-  -- not reattach, and if the code is ok, you don't need to? groups should
-  -- update independently.
-
   M.current_attach_id = M.current_attach_id + 1
   M.seen_colors = {}
   local closure = function()
     local attach_id = M.current_attach_id
-    local attach = api.nvim_buf_attach(bufn, true, {
+     api.nvim_buf_attach(buf, true, {
       on_lines = function(_, buf, _changed_tick, first_line, _, last_line)
         -- check between first and last line for a group defintion
         local lines = api.nvim_buf_get_lines(buf, first_line, last_line, true)
@@ -83,7 +79,6 @@ M.attach_to_buffer = function(buf)
         -- buffer you called it for. This will generally be acceptable anyway.
 
         -- return true to detach
-        print(M.current_attach_id, attach_id)
         return M.current_attach_id ~= attach_id
       end
     })
