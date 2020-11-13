@@ -70,3 +70,13 @@ describe "parser", ->
       F { bg: E.bg, fg: B.fg } -- bg -> E -> C -> A.bg, fg -> B.fg
     }
     assert.is_not_equal(s.A, s.B, s.C, s.D, s.E, s.F)
+  
+  it "warns when linking to an invalid style", ->
+    fn = ->
+      parse -> {
+        A { bg: "a_bg" }
+        X { Z }
+      }
+    error = assert.has_error(fn)
+    assert.matches("X", error)
+    assert.matches("Z", error)
