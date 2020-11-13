@@ -68,8 +68,15 @@ describe "hsl creation", ->
     mod_color = color.rotate(10).lighten(20).desaturate(20).rotate(20)
     assert.is_not_equal(color, mod_color)
 
+  it "can concat with strings", ->
+    color = hsl(0,0,0)
+    str_start = "my color is: "
+    assert.is_equal(str_start .. "#000000", str_start .. color)
+
   it "can convert to hex", ->
     color = hsl(0, 0, 0)
+    assert.is_equal("#000000", tostring(color))
+
     assert.is.equal(hsl(0,0,0).as_hex, "#000000")
     assert.is.equal(hsl(120, 0, 0).as_hex, "#000000")
     assert.is.equal(hsl(0,0,100).as_hex, "#FFFFFF")

@@ -97,13 +97,12 @@ local function wrap_color(color)
       error('Member setting disabled')
     end,
 
-    __concat = function(op1, op2)
-      -- Kind of brittle check (?) but its ... ok, our usecase is small
-      if type(op1) == "table" then
-        return convert.hsl_to_hex(op1) .. op2
-      else
-        return  op1 .. convert.hsl_to_hex(op2)
-      end
+    __tostring = function(hsl)
+      return convert.hsl_to_hex(hsl)
+    end,
+
+    __concat = function(lhs, rhs)
+      return tostring(lhs) .. tostring(rhs)
     end,
 
     -- if we call, return the raw value
