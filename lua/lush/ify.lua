@@ -14,7 +14,8 @@ local function set_highlight_groups_on_line(buf, line, line_num)
   end
 end
 
-local seen_colors = {}
+local M = {}
+
 local function set_highlight_hsl_on_line(buf, line, line_num)
   local all, h, s, l = string.match(line, "(hsl%(%s-(%d+),%s-(%d+)%s-,%s-(%d+)%s-%))")
   if all and h and s and l then
@@ -22,7 +23,8 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
     local color = hsl(tonumber(h), tonumber(s), tonumber(l))
     -- substring color from #000000 to 000000
     local group_name = "lushify_" .. string.sub(tostring(color), 2)
-    if not seen_colors[group_name] then 
+    -- WARN: M.seen_colors is a hack
+    if not M.seen_colors[group_name] then
       local bg, fg = color, color
       if bg.l > 50 then
         fg = fg.lightness(0)
@@ -39,7 +41,9 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
   end
 end
 
-local M = {}
+
+M.current_attach_id = 0
+M.seen_colors = {}
 
 M.attach_to_buffer = function(buf)
   buf = buf or 0
@@ -53,18 +57,38 @@ M.attach_to_buffer = function(buf)
   -- TODO remove attachment if we reload source? technicalyl you could just
   -- not reattach, and if the code is ok, you don't need to? groups should
   -- update independently.
-  api.nvim_buf_attach(bufn, true, {
-    on_lines = function(_, buf, _changed_tick, first_line, _, last_line)
-      -- check between first and last line for a group defintion
-      local lines = api.nvim_buf_get_lines(buf, first_line, last_line, true)
-      for i, line in ipairs(lines) do
-        set_highlight_groups_on_line(buf, line, first_line + i - 1)
-        set_highlight_hsl_on_line(buf, line, first_line + i - 1)
-      end
 
-      return false
-    end
-  })
+  M.current_attach_id = M.current_attach_id + 1
+  M.seen_colors = {}
+  local closure = function()
+    local attach_id = M.current_attach_id
+    local attach = api.nvim_buf_attach(bufn, true, {
+      on_lines = function(_, buf, _changed_tick, first_line, _, last_line)
+        -- check between first and last line for a group defintion
+        local lines = api.nvim_buf_get_lines(buf, first_line, last_line, true)
+        for i, line in ipairs(lines) do
+          set_highlight_groups_on_line(buf, line, first_line + i - 1)
+          set_highlight_hsl_on_line(buf, line, first_line + i - 1)
+        end
+
+        -- if we call attach_to_buffer() again, we want to detach any existing
+        -- attachments. There isn't a super clean way to "get attachments for
+        -- buffer" or similar right now, and tracking attached(bufn) in an list
+        -- is also problematic because re-sourcing your theme tends to clear
+        -- any highlighting, so previously seen colors get lost, etc, etc.
+        -- Also if we do in-code modification parsing of hsl changes, we need to
+        -- track those per buffer.
+        --
+        -- SO, for now, we say lushify can only attach to one buffer, the last
+        -- buffer you called it for. This will generally be acceptable anyway.
+
+        -- return true to detach
+        print(M.current_attach_id, attach_id)
+        return M.current_attach_id ~= attach_id
+      end
+    })
+  end
+  closure()
 end
 
 return setmetatable(M, {
