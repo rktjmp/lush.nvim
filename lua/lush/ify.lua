@@ -4,7 +4,7 @@ local hsl = require('lush.hsl')
 local vt_namespace = api.nvim_create_namespace("lushify")
 
 local function set_highlight_groups_on_line(buf, line, line_num)
-  local group = string.match(line, "%s-(%a[%a%d]-)%s-{.*}%s-$")
+  local group = string.match(line, "%s-(%a[%a%d]-)%s-{.*},*")
   if group then
     -- technically, find matches the first occurance in line, but this will
     -- always be our group name, so it's ok
