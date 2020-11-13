@@ -1,10 +1,13 @@
 local hsl = require('lush.hsl')
 local parser = require('lush.parser')
 local compiler = require('lush.compiler')
+local ify = require('lush.ify')
 
 local M = {}
 
+M.ify = ify
 M.hsl = hsl
+
 M.define = function(fn)
   local compiled = compiler(parser(fn))
   return compiled
@@ -25,5 +28,3 @@ return setmetatable(M, {
     m.apply(M.define(fn))
   end
 })
-
--- TODO: find content of compiler function and hot-highlight it with the groups defined
