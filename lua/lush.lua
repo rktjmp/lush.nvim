@@ -6,8 +6,22 @@ local M = {}
 
 M.hsl = hsl
 
-M.define = function(fn)
+M.create = function(fn, options)
   local compiled = compiler(parser(fn))
+  if options and options.force_clean then
+    local clean = {
+      "hi clear",
+      "syntax reset",
+      "set t_Co=256",
+    }
+    if vim.g.colors_name then
+      -- hi clear will clear g:colors_name, so restore if it existed
+      table.insert(clean, "let g:colors_name='" .. vim.g.colors_name.."'")
+    end
+    for i, c in ipairs(clean) do
+      table.insert(compiled, i, c)
+    end
+  end
   return compiled
 end
 
@@ -23,6 +37,6 @@ end
 
 return setmetatable(M, {
   __call = function(m, fn)
-    m.apply(M.define(fn))
+    m.apply(M.create(fn, {force_clean = true}))
   end
 })
