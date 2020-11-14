@@ -6,6 +6,12 @@ local M = {}
 
 M.hsl = hsl
 
+M.ify = function()
+  -- localise this require so test's don't complain about
+  -- missing vim globals, etc
+  require('lush.ify')()
+end
+
 M.create = function(fn, options)
   local compiled = compiler(parser(fn))
   if options and options.force_clean then
