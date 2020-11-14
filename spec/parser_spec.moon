@@ -1,6 +1,16 @@
 describe "parser", ->
   parse = require('lush.parser')
 
+  it "warns when re-defining a group", ->
+    fn = ->
+      parse -> {
+        A { bg: "a_bg" },
+        A { bg: "DUPLICATE" },
+        B { bg: "B_BG"},
+      }
+    error = assert.has_error(fn)
+    assert.matches("redefined", error)
+
   it "should define a style", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt" }
@@ -80,3 +90,13 @@ describe "parser", ->
     error = assert.has_error(fn)
     assert.matches("X", error)
     assert.matches("Z", error)
+  
+  it "protects __name", ->
+    fn = ->
+      parse -> {
+        A { bg: "a_bg", fg: "a_fg", __name: "failure" },
+      }
+    error = assert.has_error(fn)
+    assert.matches("__name", error)
+    assert.matches("reserved_keyword", error)
+ 
