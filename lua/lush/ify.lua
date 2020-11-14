@@ -5,7 +5,10 @@ local vt_group_ns = api.nvim_create_namespace("lushify_group")
 local vt_hsl_ns = api.nvim_create_namespace("lushify_hsl")
 
 local function set_highlight_groups_on_line(buf, line, line_num)
-  local group = string.match(line, "%s-(%a[%a%d]-)%s-{.*},*")
+  -- more conservative, all on one line matcher
+  -- local group = string.match(line, "%s-(%a[%a%d_]-)%s-{.*},*")
+  -- more generous, must match something like 'Group {'
+  local group = string.match(line, "%s-(%a[%a%d_]-)%s-{")
   if group then
     -- technically, find matches the first occurance in line, but this will
     -- always be our group name, so it's ok
@@ -88,7 +91,19 @@ M.attach_to_buffer = function(buf)
 end
 
 return setmetatable(M, {
-  __call = function(m)
+  __call = function()
     M.attach_to_buffer(0)
+    -- we reattach on save, because when we source the lush-spec, it will
+    -- run "hi clear" which will remove any hsl() definitions, so reattach
+    -- to redefine them. The cost is small.
+    -- TODO: Worth improving ify reattachment autocommand?
+    local autocmds = [[
+      augroup LushIfyReloadGroup
+      autocmd!
+      autocmd BufWritePost <buffer> :luafile <afile>
+      autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
+      augroup END
+    ]]
+    vim.api.nvim_exec(autocmds, false)
   end
 })
