@@ -1,7 +1,8 @@
 local api = vim.api
 local hsl = require('lush.hsl')
 
-local vt_namespace = api.nvim_create_namespace("lushify")
+local vt_group_ns = api.nvim_create_namespace("lushify_group")
+local vt_hsl_ns = api.nvim_create_namespace("lushify_hsl")
 
 local function set_highlight_groups_on_line(buf, line, line_num)
   local group = string.match(line, "%s-(%a[%a%d]-)%s-{.*},*")
@@ -9,8 +10,8 @@ local function set_highlight_groups_on_line(buf, line, line_num)
     -- technically, find matches the first occurance in line, but this will
     -- always be our group name, so it's ok
     local hs, he = string.find(line, group)
-    api.nvim_buf_clear_namespace(buf, vt_namespace, line_num, line_num + 1)
-    api.nvim_buf_add_highlight(buf, vt_namespace, group, line_num, hs - 1, he)
+    api.nvim_buf_clear_namespace(buf, vt_group_ns, line_num, line_num + 1)
+    api.nvim_buf_add_highlight(buf, vt_group_ns, group, line_num, hs - 1, he)
   end
 end
 
@@ -36,8 +37,8 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
     end
 
     local hs, he = string.find(line, all, 1, true)
-    api.nvim_buf_clear_namespace(buf, vt_namespace, line_num, line_num + 1)
-    api.nvim_buf_add_highlight(buf, vt_namespace, group_name, line_num, hs - 1, he)
+    api.nvim_buf_clear_namespace(buf, vt_hsl_ns, line_num, line_num + 1)
+    api.nvim_buf_add_highlight(buf, vt_hsl_ns, group_name, line_num, hs - 1, he)
   end
 end
 
