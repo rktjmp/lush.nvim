@@ -21,7 +21,7 @@ M.create = function(fn, options)
       "set t_Co=256",
     }
     if vim.g.colors_name then
-      -- hi clear will clear g:colors_name, so restore if it existed
+      -- 'hi clear' will clear g:colors_name, so restore if it existed
       table.insert(clean, "let g:colors_name='" .. vim.g.colors_name.."'")
     end
     for i, c in ipairs(clean) do
@@ -42,7 +42,8 @@ M.stringify = function(scheme)
 end
 
 return setmetatable(M, {
-  __call = function(m, fn)
-    m.apply(M.create(fn, {force_clean = true}))
+  __call = function(m, ...)
+    local fn, opts = ...
+    m.apply(M.create(fn, opts))
   end
 })

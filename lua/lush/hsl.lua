@@ -26,47 +26,61 @@ end
 
 
 local function wrap_color(color)
-  local mod_fns = {
-    rotate = function(color)
-      return function(amount)
-        return wrap_color(hsl_rotate(color, amount))
-      end
-    end,
-    lighten = function(color)
-      return function(amount)
-        return wrap_color(hsl_lighten(color, amount))
-      end
-    end,
-    darken = function(color)
-      return function(amount)
-        return wrap_color(hsl_lighten(color, -amount))
-      end
-    end,
-    saturate = function(color)
-      return function(amount)
-        return wrap_color(hsl_saturate(color, amount))
-      end
-    end,
-    desaturate = function(color)
-      return function(amount)
-        return wrap_color(hsl_saturate(color, -amount))
-      end
-    end,
-    hue = function(color)
-      return function(hue)
-        return wrap_color({h = hue, s = color.s, l = color.l})
-      end
-    end,
-    saturation = function(color)
-      return function(saturation)
-        return wrap_color({h = color.h, s = saturation, l = color.l})
-      end
-    end,
-    lightness = function(color)
-      return function(lightness)
-        return wrap_color({h = color.h, s = color.s, l = lightness})
-      end
+  local rotate = function(color)
+    return function(amount)
+      return wrap_color(hsl_rotate(color, amount))
     end
+  end
+  local lighten = function(color)
+    return function(amount)
+      return wrap_color(hsl_lighten(color, amount))
+    end
+  end
+  local darken = function(color)
+    return function(amount)
+      return wrap_color(hsl_lighten(color, -amount))
+    end
+  end
+  local saturate = function(color)
+    return function(amount)
+      return wrap_color(hsl_saturate(color, amount))
+    end
+  end
+  local desaturate = function(color)
+    return function(amount)
+      return wrap_color(hsl_saturate(color, -amount))
+    end
+  end
+  local hue = function(color)
+    return function(hue)
+      return wrap_color({h = hue, s = color.s, l = color.l})
+    end
+  end
+  local saturation = function(color)
+    return function(saturation)
+      return wrap_color({h = color.h, s = saturation, l = color.l})
+    end
+  end
+  local lightness = function(color)
+    return function(lightness)
+      return wrap_color({h = color.h, s = color.s, l = lightness})
+    end
+  end
+
+  local mod_fns = {
+    rotate = rotate,
+    ro = rotate,
+    saturate = saturate,
+    sa = saturate,
+    desaturate = desaturate,
+    de = desaturate,
+    lighten = lighten,
+    li = lighten,
+    darken = darken,
+    da = darken,
+    hue = hue,
+    saturation = saturation,
+    lightness = lightness
   }
 
   return setmetatable({}, {
@@ -75,8 +89,7 @@ local function wrap_color(color)
       if key_name == "h" then return color.h end
       if key_name == "s" then return color.s end
       if key_name == "l" then return color.l end
-      if key_name == "as_hex" then return convert.hsl_to_hex(color) end
-      if key_name == "as_table" then return color end
+      if key_name == "hex" then return convert.hsl_to_hex(color) end
 
       if mod_fns[key_name] then
         return mod_fns[key_name](color)

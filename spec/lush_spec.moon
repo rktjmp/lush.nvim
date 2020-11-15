@@ -3,7 +3,7 @@ describe "lush", ->
     it "requires as table", ->
       lush = require('lush')
       assert.is_not_nil(lush.hsl)
-      assert.is_not_nil(lush.define)
+      assert.is_not_nil(lush.create)
 
     pending "can be unpacked", ->
       hsl, lush = require('lush')()
@@ -22,15 +22,18 @@ describe "lush", ->
         api: {
           nvim_command: nvim_command_spy
         }
+        g: {
+          colors_name: "a_theme"
+        }
       }
       red = hsl(0, 100, 50)
 
     it "can define colors", ->
       assert.not_nil(red)
-      assert.equal("#FF0000", red.as_hex)
+      assert.equal("#FF0000", red.hex)
 
     it "generates a scheme", ->
-      scheme = lush.define -> {
+      scheme = lush.create -> {
         Normal { bg: red, fg: blue },
         CursorLine { bg: green, fg: red, gui: "bold" }
         NormalFloat { Normal }
@@ -38,7 +41,7 @@ describe "lush", ->
       assert.not_nil(scheme)
 
     it "can output scheme as text", ->
-      scheme = lush.define -> {
+      scheme = lush.create -> {
         Normal { bg: red, fg: blue },
         CursorLine { bg: green, fg: red, gui: "bold" }
         NormalFloat { Normal }
@@ -48,7 +51,7 @@ describe "lush", ->
       assert.is_equal(3, select(2, string.gsub(text, '\n', '\n')))
 
     it "can apply the scheme", ->
-      scheme = lush.define -> {
+      scheme = lush.create -> {
         Normal { bg: red, fg: blue },
         CursorLine { bg: green, fg: red, gui: "bold" }
         NormalFloat { Normal }
@@ -60,10 +63,11 @@ describe "lush", ->
 
     it "is needleslly overloaded", ->
       lush = require('lush')
+      assert.is_equal(0, #vim.api.nvim_command.calls)
       lush(-> {
         Normal { bg: red, fg: blue },
         CursorLine { bg: green, fg: red, gui: "bold" }
         NormalFloat { Normal }
-      })
+      }, {force_clean: false})
       assert.is_equal(3, #vim.api.nvim_command.calls)
 
