@@ -37,31 +37,37 @@ local function wrap_color(color)
   -- make sure our color is valid
   color = hsl_clamp(color)
 
+  local roll_fn = function(color, key, negate)
+    -- negate -> darken -> -val
+    return function(val)
+      local new_color = {h = color.h, s = color.s, l = color.l}
+      new_color[key] = new_color[key] + (negate and -val or val)
+      return wrap_color(new_color)
+    end
+  end
+
   local rotate = function(color)
+    return roll_fn(color, "h")
+  end
     return function(amount)
       return wrap_color(hsl_rotate(color, amount))
     end
   end
+
   local lighten = function(color)
-    return function(amount)
-      return wrap_color(hsl_lighten(color, amount))
-    end
+    return roll_fn(color, "l")
   end
   local darken = function(color)
-    return function(amount)
-      return wrap_color(hsl_lighten(color, -amount))
-    end
+    return roll_fn(color, "l", true)
   end
+
   local saturate = function(color)
-    return function(amount)
-      return wrap_color(hsl_saturate(color, amount))
-    end
+    return roll_fn(color, "s")
   end
   local desaturate = function(color)
-    return function(amount)
-      return wrap_color(hsl_saturate(color, -amount))
-    end
+    return roll_fn(color, "s", true)
   end
+
   local hue = function(color)
     return function(hue)
       return wrap_color({h = hue, s = color.s, l = color.l})
