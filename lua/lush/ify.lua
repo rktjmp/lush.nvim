@@ -20,14 +20,39 @@ end
 
 local M = {}
 
+local function hsl_hsl_call_to_color(hsl_hsl_str)
+  local h, s, l = string.match(hsl_hsl_str,
+                               "hsl%(%s-(%d+),%s-(%d+)%s-,%s-(%d+)%s-%)")
+  return hsl(tonumber(h), tonumber(s), tonumber(l))
+end
+
+local function hsl_hex_call_to_color(hsl_hex_str)
+  local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
+  local hex = string.match(hsl_hex_str,
+                          "hsl%([\"'](#"..hex_pat..")[\"']%)")
+  return hsl(hex)
+end
+
 local function set_highlight_hsl_on_line(buf, line, line_num)
-  local all, h, s, l = string.match(line, "(hsl%(%s-(%d+),%s-(%d+)%s-,%s-(%d+)%s-%))")
-  if all and h and s and l then
-    -- line has hsl() on it, construct color and group name for color
-    local color = hsl(tonumber(h), tonumber(s), tonumber(l))
+  local hsl_hsl_match = string.match(line, "(hsl%(%s-%d+,%s-%d+%s-,%s-%d+%s-%))")
+  local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
+  -- error("(hsl%([\"']#"..hex_pat.."[\"']%))")
+  local hsl_hex_match = string.match(line,
+                                     "(hsl%([\"']#"..hex_pat.."[\"']%))")
+  local color
+  local highlight_pos_str
+  if hsl_hsl_match then
+    color = hsl_hsl_call_to_color(hsl_hsl_match)
+    highlight_pos_str = hsl_hsl_match
+  elseif hsl_hex_match then
+    color = hsl_hex_call_to_color(hsl_hex_match)
+    highlight_pos_str = hsl_hex_match
+  end
+  if color then
     -- substring color from #000000 to 000000
     local group_name = "lushify_" .. string.sub(tostring(color), 2)
-    -- WARN: M.seen_colors is a hack
+    -- FIXME: M.seen_colors is a hack
+    -- FIXME: also not much error protection going on
     if not M.seen_colors[group_name] then
       local bg, fg = color, color
       if bg.l > 50 then
@@ -39,12 +64,11 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
       api.nvim_command("highlight! " .. group_name .. " guibg=" .. bg .. " guifg=" .. fg)
     end
 
-    local hs, he = string.find(line, all, 1, true)
+    local hs, he = string.find(line, highlight_pos_str, 1, true)
     api.nvim_buf_clear_namespace(buf, vt_hsl_ns, line_num, line_num + 1)
     api.nvim_buf_add_highlight(buf, vt_hsl_ns, group_name, line_num, hs - 1, he)
   end
 end
-
 
 M.current_attach_id = 0
 M.seen_colors = {}

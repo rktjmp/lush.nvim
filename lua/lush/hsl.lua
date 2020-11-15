@@ -112,10 +112,25 @@ local function wrap_color(color)
   })
 end
 
-local function hsl(h,s,l)
+local function hsl_from_hsl(h,s,l)
   local color = wrap_color({h = 0, s = 0, l = 0})
   -- set via helpers to run bounds checking
   return color.rotate(h).saturate(s).lighten(l)
 end
 
-return hsl
+local function hsl_from_hex(str)
+  local color = wrap_color({h = 0, s = 0, l = 0})
+  local converted = convert.hex_to_hsl(str)
+  -- set via helpers to run bounds checking
+  return color.rotate(converted.h)
+              .saturate(converted.s)
+              .lighten(converted.l)
+end
+
+return function(h_or_hex, s, l)
+  if type(h_or_hex) == "string" then
+    return hsl_from_hex(h_or_hex)
+  else
+    return hsl_from_hsl(h_or_hex, s, l)
+  end
+end
