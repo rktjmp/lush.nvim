@@ -110,7 +110,28 @@ describe "hsl creation", ->
     assert.is_equal(hsl(0,0,0) .. " color", "#000000 color")
     assert.is_equal("color " .. hsl(0,0,0), "color #000000")
 
-  it "tests assignment", ->
+  it "disables assignment", ->
     color = hsl(0, 0, 0)
     assert.error(-> color.h = 100)
 
+  it "has shorthands", ->
+    color = hsl(90, 50, 50)
+    assert.is_equal(190, color.ro(100).h)
+    assert.is_equal(60, color.sa(10).s)
+    assert.is_equal(40, color.de(10).s)
+    assert.is_equal(60, color.li(10).l)
+    assert.is_equal(40, color.da(10).l)
+    assert.is_equal(75, color.sar(50).s)
+    assert.is_equal(25, color.der(50).s)
+    assert.is_equal(75, color.lir(50).l)
+    assert.is_equal(25, color.dar(50).l)
+
+  it "has relative adjustment", ->
+    color = hsl(90, 50, 50)
+    assert.is_equal(75, color.saturate_rel(50).s) -- 50% more
+    assert.is_equal(25, color.desaturate_rel(50).s) -- 50% less
+    assert.is_equal(75, color.lighten_rel(50).l)
+    assert.is_equal(25, color.darken_rel(50).l)
+    assert.is_equal(100, color.saturate_rel(100).s) -- 100% more aka 2x
+    assert.is_equal(100, color.saturate_rel(200).s) -- 200% more aka 3x, caps
+    assert.error(-> color.rotate_rel(100)) -- invalid

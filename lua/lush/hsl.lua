@@ -39,9 +39,20 @@ local function wrap_color(color)
 
   local roll_fn = function(color, key, negate)
     -- negate -> darken -> -val
+    negate = negate and -1 or 1
     return function(val)
       local new_color = {h = color.h, s = color.s, l = color.l}
-      new_color[key] = new_color[key] + (negate and -val or val)
+      new_color[key] = new_color[key] + (val * negate)
+      return wrap_color(new_color)
+    end
+  end
+
+  local roll_rel_fn = function(color, key, negate)
+    -- negate -> darken -> -val
+    negate = negate and -1 or 1
+    return function(val)
+      local new_color = {h = color.h, s = color.s, l = color.l}
+      new_color[key] = new_color[key] + (new_color[key] * (val/100) * negate)
       return wrap_color(new_color)
     end
   end
@@ -49,23 +60,40 @@ local function wrap_color(color)
   local rotate = function(color)
     return roll_fn(color, "h")
   end
-    return function(amount)
-      return wrap_color(hsl_rotate(color, amount))
-    end
+
+  local rotate_rel = function(color)
+    -- doesn't really make sense to relatively rotate a hue,
+    -- relatively rotate 0 (red) is always red, green swings more than blue
+    -- etc.
+    error("hsl.rotate_rel is an unsupported operation, use rotate()")
   end
 
   local lighten = function(color)
     return roll_fn(color, "l")
   end
+  local lighten_rel = function(color)
+    return roll_rel_fn(color, "l")
+  end
+
   local darken = function(color)
     return roll_fn(color, "l", true)
+  end
+  local darken_rel = function(color)
+    return roll_rel_fn(color, "l", true)
   end
 
   local saturate = function(color)
     return roll_fn(color, "s")
   end
+  local saturate_rel = function(color)
+    return roll_rel_fn(color, "s")
+  end
+
   local desaturate = function(color)
     return roll_fn(color, "s", true)
+  end
+  local desaturate_rel = function(color)
+    return roll_rel_fn(color, "s", true)
   end
 
   local hue = function(color)
@@ -86,15 +114,30 @@ local function wrap_color(color)
 
   local mod_fns = {
     rotate = rotate,
+    rotate_rel = rotate_rel,
     ro = rotate,
+    ror = rotate_rel,
+
     saturate = saturate,
+    saturate_rel = saturate_rel,
     sa = saturate,
+    sar = saturate_rel,
+
     desaturate = desaturate,
+    desaturate_rel = desaturate_rel,
     de = desaturate,
+    der = desaturate_rel,
+
     lighten = lighten,
+    lighten_rel = lighten_rel,
     li = lighten,
+    lir = lighten_rel,
+
     darken = darken,
+    darken_rel = darken_rel,
     da = darken,
+    dar = darken_rel,
+
     hue = hue,
     saturation = saturation,
     lightness = lightness
@@ -115,9 +158,9 @@ local function wrap_color(color)
         for op, _ in pairs(mod_fns) do
           ops = ops .. " " .. op
         end
-        error('Invalid HSL operation: '
+        error("Invalid HSL operation: '"
               .. key_name
-              .. ", valid operations:"
+              .. "', valid operations:"
               .. ops)
       end
     end,
