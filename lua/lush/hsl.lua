@@ -1,5 +1,13 @@
 local convert = require('lush.hsl.convert')
 
+local function hsl_clamp(color)
+  return {
+    h = (color.h % 360),
+    s = math.min(100, math.max(0, color.s)),
+    l = math.min(100, math.max(0, color.l)),
+  }
+end
+
 local function hsl_rotate(color, amount)
   return {
     h = (color.h + amount) % 360,
@@ -26,6 +34,9 @@ end
 
 
 local function wrap_color(color)
+  -- make sure our color is valid
+  color = hsl_clamp(color)
+
   local rotate = function(color)
     return function(amount)
       return wrap_color(hsl_rotate(color, amount))
@@ -126,18 +137,16 @@ local function wrap_color(color)
 end
 
 local function hsl_from_hsl(h,s,l)
-  local color = wrap_color({h = 0, s = 0, l = 0})
-  -- set via helpers to run bounds checking
-  return color.rotate(h).saturate(s).lighten(l)
+  return wrap_color({h = h, s = s, l = l})
 end
 
 local function hsl_from_hex(str)
-  local color = wrap_color({h = 0, s = 0, l = 0})
   local converted = convert.hex_to_hsl(str)
-  -- set via helpers to run bounds checking
-  return color.rotate(converted.h)
-              .saturate(converted.s)
-              .lighten(converted.l)
+  return wrap_color({
+    h = converted.h,
+    s = converted.s,
+    l = converted.l,
+  })
 end
 
 return function(h_or_hex, s, l)
