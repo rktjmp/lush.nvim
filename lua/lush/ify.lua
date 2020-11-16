@@ -22,7 +22,7 @@ local M = {}
 
 local function hsl_hsl_call_to_color(hsl_hsl_str)
   local h, s, l = string.match(hsl_hsl_str,
-                               "hsl%(%s-(%d+),%s-(%d+)%s-,%s-(%d+)%s-%)")
+                               "hsl%(%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)")
   return hsl(tonumber(h), tonumber(s), tonumber(l))
 end
 
@@ -34,9 +34,8 @@ local function hsl_hex_call_to_color(hsl_hex_str)
 end
 
 local function set_highlight_hsl_on_line(buf, line, line_num)
-  local hsl_hsl_match = string.match(line, "(hsl%(%s-%d+,%s-%d+%s-,%s-%d+%s-%))")
+  local hsl_hsl_match = string.match(line, "(hsl%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))")
   local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
-  -- error("(hsl%([\"']#"..hex_pat.."[\"']%))")
   local hsl_hex_match = string.match(line,
                                      "(hsl%([\"']#"..hex_pat.."[\"']%))")
   local color
@@ -114,20 +113,34 @@ M.attach_to_buffer = function(buf)
   closure()
 end
 
-return setmetatable(M, {
-  __call = function()
-    M.attach_to_buffer(0)
-    -- we reattach on save, because when we source the lush-spec, it will
-    -- run "hi clear" which will remove any hsl() definitions, so reattach
-    -- to redefine them. The cost is small.
-    -- TODO: Worth improving ify reattachment autocommand?
-    local autocmds = [[
-      augroup LushIfyReloadGroup
-      autocmd!
-      autocmd BufWritePost <buffer> :luafile <afile>
-      autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
-      augroup END
-    ]]
-    vim.api.nvim_exec(autocmds, false)
-  end
+M.hottake = function(buf)
+  buf = buf or 0
+  print("hottake")
+  local lines = api.nvim_buf_get_lines(buf, 0, -1, true)
+  print("call loadstring for " .. #lines .. " lines")
+  local a, b = pcall(loadstring(table.concat(lines, "\n"), "lush.ify.hot_take"))
+  print(a, b)
+end
+
+local call = function()
+  M.attach_to_buffer(0)
+  -- we reattach on save, because when we source the lush-spec, it will
+  -- run "hi clear" which will remove any hsl() definitions, so reattach
+  -- to redefine them. The cost is small.
+  -- TODO: Worth improving ify reattachment autocommand?
+  local autocmds = [[
+  augroup LushIfyReloadGroup
+  autocmd!
+  autocmd TextChanged,TextChangedI <buffer> :lua require('lush.ify').hottake(0)
+  autocmd BufWritePost <buffer> :luafile <afile>
+  autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
+  augroup END
+  ]]
+  vim.api.nvim_exec(autocmds, false)
+end
+
+setmetatable(M, {
+  __call = call
 })
+
+return M

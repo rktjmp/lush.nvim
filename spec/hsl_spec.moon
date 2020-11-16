@@ -1,7 +1,7 @@
 describe "hsl creation", ->
   hsl = require('lush.hsl')
 
-  it "creates colors", ->
+  it "creates h,s,l colors", ->
     assert.is.not.nil(hsl)
     color = hsl(120, 10, 10)
     assert.not.nil(color)
@@ -10,6 +10,17 @@ describe "hsl creation", ->
     assert.is.equal(color.s, 100)
     assert.is.equal(color.l, 100)
 
+    -- these are invalid
+    check_e = (fn) ->
+      e = assert.error(fn)
+      assert.matches("hsl%(%) expects", e)
+    check_e(-> hsl())
+    check_e(-> hsl(1))
+    check_e(-> hsl(1,2))
+    check_e(-> hsl(2, 3, "3"))
+    check_e(-> hsl(23, 3))
+
+    -- these values should just be clamped
     color = hsl(-365, -111, -102)
     assert.is.equal(color.h, 355)
     assert.is.equal(color.s, 0)

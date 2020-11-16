@@ -8,31 +8,6 @@ local function hsl_clamp(color)
   }
 end
 
-local function hsl_rotate(color, amount)
-  return {
-    h = (color.h + amount) % 360,
-    s = color.s,
-    l = color.l,
-  }
-end
-
-local function hsl_lighten(color, amount)
-  return {
-    h = color.h,
-    s = color.s,
-    l = math.min(100, math.max(0, color.l + amount)),
-  }
-end
-
-local function hsl_saturate(color, amount)
-  return {
-    h = color.h,
-    s = math.min(100, math.max(0, color.s + amount)),
-    l = color.l,
-  }
-end
-
-
 local function wrap_color(color)
   -- make sure our color is valid
   color = hsl_clamp(color)
@@ -158,7 +133,7 @@ local function wrap_color(color)
         for op, _ in pairs(mod_fns) do
           ops = ops .. " " .. op
         end
-        error("Invalid HSL operation: '"
+        error("Invalid hsl operation: '"
               .. key_name
               .. "', valid operations:"
               .. ops)
@@ -199,9 +174,16 @@ local function hsl_from_hex(str)
 end
 
 return function(h_or_hex, s, l)
-  if type(h_or_hex) == "string" then
-    return hsl_from_hex(h_or_hex)
+  assert(h_or_hex, "hsl() expects (number, number, number) or (string)")
+  local h, hex = h_or_hex, h_or_hex
+
+  if type(hex) == "string" then
+    return hsl_from_hex(hex)
   else
-    return hsl_from_hsl(h_or_hex, s, l)
+    assert(type(h) == "number" and
+           type(s) == "number" and
+           type(l) == "number",
+           "hsl() expects (number, number, number) or (string)")
+    return hsl_from_hsl(h, s, l)
   end
 end
