@@ -40,7 +40,7 @@ local function wrap_color(color)
     -- doesn't really make sense to relatively rotate a hue,
     -- relatively rotate 0 (red) is always red, green swings more than blue
     -- etc.
-    error("hsl.rotate_rel is an unsupported operation, use rotate()")
+    error("hsl.rotate_rel is an unsupported operation, use rotate()", 2)
   end
 
   local lighten = function(color)
@@ -136,13 +136,13 @@ local function wrap_color(color)
         error("Invalid hsl operation: '"
               .. key_name
               .. "', valid operations:"
-              .. ops)
+              .. ops, 2)
       end
     end,
 
     -- possibly this won't be useless, but for now disable
     __newindex = function(table, key, value)
-      error('Member setting disabled')
+      error('Member setting disabled', 2)
     end,
 
     __tostring = function(hsl)
@@ -180,10 +180,11 @@ return function(h_or_hex, s, l)
   if type(hex) == "string" then
     return hsl_from_hex(hex)
   else
-    assert(type(h) == "number" and
-           type(s) == "number" and
-           type(l) == "number",
-           "hsl() expects (number, number, number) or (string)")
+    if type(h) ~= "number" or
+        type(s) ~= "number" or
+        type(l) ~= "number" then
+      error( "hsl() expects (number, number, number) or (string)", 2)
+    end
     return hsl_from_hsl(h, s, l)
   end
 end

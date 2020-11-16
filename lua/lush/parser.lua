@@ -128,7 +128,7 @@ local parse = function(fn)
   for _, group in ipairs(fn()) do
     local ast, e = group()
     if e then
-      error("lush.parser.parse error: " .. error_to_string(e))
+      error("lush.parser.parse error: " .. error_to_string(e), 4)
     end
     parsed[group.__name] = ast
   end
