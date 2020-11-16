@@ -113,13 +113,46 @@ M.attach_to_buffer = function(buf)
   closure()
 end
 
-M.hottake = function(buf)
+M.as_you_type = function(buf)
   buf = buf or 0
-  print("hottake")
+  local buf_name = api.nvim_buf_get_name(buf)
+
   local lines = api.nvim_buf_get_lines(buf, 0, -1, true)
-  print("call loadstring for " .. #lines .. " lines")
-  local a, b = pcall(loadstring(table.concat(lines, "\n"), "lush.ify.hot_take"))
-  print(a, b)
+  lines = table.concat(lines, "\n")
+
+  -- pcall: catch error and return status, either:
+  --        true, return_val or
+  --        false, error_caught
+  -- loadstring:
+  --            function or
+  --            nil, error
+  -- Loadstring can still "fail" on malformed lua, it will only
+  -- return errors that occur in the *code when executed*, which
+  -- is why we wrap it in a pcall (else the error propagates up to vim)
+  local success, error = pcall(function()
+    local fn, load_error = loadstring(lines, "lush.ify.hot_take")
+    -- bubble error up
+    if load_error then error(load_error, 2) end
+    fn()
+  end)
+
+  if not success then
+    if error then
+      -- format error to be relative to the hot reloaded file
+      error = string.gsub(error, "^%[string .+%]", buf_name)
+      local msg = "Lushify hot reload did not apply: " .. error
+      print(msg)
+      -- if a error message wraps in the command output window, the
+      -- user is prompted to "press enter or type to continue", which is
+      -- pretty annoying for a real time update, so we'll just print
+      -- instead, which doesn't get the pretty colouring but it's less
+      -- frustrating to actually use.
+      -- local cmd = "echohl WarningMsg | echo \"" ..
+      --             msg ..
+      --             "\" | echohl None"
+      -- vim.api.nvim_command(cmd)
+    end
+  end
 end
 
 local call = function()
@@ -131,7 +164,7 @@ local call = function()
   local autocmds = [[
   augroup LushIfyReloadGroup
   autocmd!
-  autocmd TextChanged,TextChangedI <buffer> :lua require('lush.ify').hottake(0)
+  autocmd TextChanged,TextChangedI <buffer> :lua require('lush.ify').as_you_type(0)
   autocmd BufWritePost <buffer> :luafile <afile>
   autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
   augroup END
