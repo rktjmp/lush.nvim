@@ -14,6 +14,14 @@ end
 
 M.create = function(fn, options)
   local compiled = compiler(parser(fn))
+
+  -- default to clean
+  if not options then
+    options = {
+      force_clean = true
+    }
+  end
+
   if options and options.force_clean then
     local clean = {
       "hi clear",
@@ -28,6 +36,7 @@ M.create = function(fn, options)
       table.insert(compiled, i, c)
     end
   end
+
   return compiled
 end
 
