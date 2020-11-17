@@ -1,6 +1,7 @@
 describe "parser", ->
   parse = require('lush.parser')
 
+
   it "warns on bad input", ->
     assert.error(-> parse(nil))
     assert.error(-> parse(""))
@@ -105,4 +106,9 @@ describe "parser", ->
     error = assert.has_error(fn)
     assert.matches("__name", error)
     assert.matches("reserved_keyword", error)
- 
+
+  it "defines __type meta key", ->
+    s = parse -> {
+      A { bg: "a_bg", fg: "a_fg", opt: "a_opt" }
+    }
+    assert.equal('parsed_lush_spec', s.__type)

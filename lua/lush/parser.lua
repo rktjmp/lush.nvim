@@ -138,9 +138,19 @@ local parse = function(fn)
   })
 
   -- turn AST [sic] into logical map
-  local parsed = {}
+  local parsed = setmetatable({}, {
+    -- for error protection, we need to be able to infer the correct
+    -- type of the table, but we don't want the key to be iterable.
+    __index = function(t, key)
+      if key == "__type" then
+        return 'parsed_lush_spec'
+      else
+        return t[key]
+      end
+    end
+  })
   local spec = fn()
-  if not spec then error("malformed lush-spec", 5) end
+  if not spec then error("malformed lush-spec", 6) end
   for _, group in ipairs(spec) do
 --    if parsed[group.__name] then
 --      error("lush redef")

@@ -85,23 +85,50 @@ M.export_to_buffer = function(parsed_spec)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
+-- given a spec function, generate a parsed spec
 -- (spec, table) -> table
-local easy = function(spec, options)
+local easy_spec = function(spec, options)
   options = merge_default_options(options)
-
   local parsed = M.parse(spec, options)
-  local compiled = M.compile(parsed, options)
-  -- run automatically
-  M.apply(compiled)
-
   -- return parsed spec for use with externals
   return parsed
 end
 
+-- given a parsed spec, apply the spec
+local easy_parsed = function(parsed_spec, options)
+  options = merge_default_options(options)
+
+  local compiled = M.compile(parsed_spec, options)
+  -- run automatically
+  M.apply(compiled)
+
+  -- return parsed spec for use with externals
+  -- TODO: Should easy_parsed return parsed_spec or a different identifier?
+  return parsed_spec
+end
+
+-- We can call lush in two styles,
+-- lush(function() ... end) - > defining a lush spec, returns a parsed spec
+-- lush({...})              - > applying a parsed spec, automatically clears
+-- Err... ignore the validity of this signature...
+-- (spec or parsed_spec, table) -> parsed_spec or apply_spec
+local function detect_easy(spec_or_parsed, options)
+  -- specs are functions
+  if type(spec_or_parsed) == "function" then
+    local spec = spec_or_parsed
+    return easy_spec(spec, options)
+  -- parsed specs are tables
+  elseif type(spec_or_parsed) == "table" then
+    local parsed = spec_or_parsed
+    return easy_parsed(parsed, options)
+  else
+    error("lush() supplied incorrect arguments")
+  end
+end
 
 return setmetatable(M, {
   __call = function(m, ...)
     local fn, opts = ...
-    return easy(fn, opts)
+    return detect_easy(fn, opts)
   end
 })

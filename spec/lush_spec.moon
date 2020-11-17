@@ -37,25 +37,41 @@ describe "lush", ->
     assert.is_function(lush.ify)
 
   describe "() mode", ->
-    it "applies scheme when called", ->
-      lush(lush_spec)
+    it "creates scheme when called with spec", ->
+      parsed = lush(lush_spec)
+      assert.spy(vim.api.nvim_command).was_not_called()
+      assert.not_nil(parsed)
+
+    it "applies scheme when called with parsed spec", ->
+      parsed = lush(lush_spec)
+      assert.spy(vim.api.nvim_command).was_not_called()
+      lush(parsed)
       assert.spy(vim.api.nvim_command).was_called()
       norm = "highlight Normal guifg=#0000FF guibg=#FF0000 guisp=NONE gui=NONE"
       assert.spy(vim.api.nvim_command).was_called_with(norm)
 
-    it "returns a parsed lush_spec when called", ->
-      parsed = lush(lush_spec)
-      assert.not_nil(parsed)
-
     it "applies scheme with default options", ->
-      lush(lush_spec)
-      assert.spy(vim.api.nvim_command).was_called()
+      parsed = lush(lush_spec)
+      lush(parsed)
       assert.spy(vim.api.nvim_command).was_called_with("hi clear")
 
     it "applies scheme with provided options", ->
-      lush(lush_spec, {force_clean: false})
+      parsed = lush(lush_spec)
+      lush(parsed,{force_clean: false})
       assert.spy(vim.api.nvim_command).was_called()
       assert.spy(vim.api.nvim_command).was_not_called_with("hi clear")
+
+    it "detects poor arguments", ->
+      -- obviously wrong
+      assert.error(-> lush())
+      assert.error(-> lush(10))
+      assert.error(-> lush("string"))
+
+      -- less obviously wrong
+      e = assert.error(-> lush(->))
+      assert.equal(e, "malformed lush-spec")
+      e = assert.error(-> lush({}))
+      assert.equal(e, "can't compile, incorrect argument type")
 
   it "can output scheme as text", ->
     -- no options
