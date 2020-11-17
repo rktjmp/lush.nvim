@@ -167,6 +167,7 @@ local function eval_buffer(buf)
   end)
 
   -- highlight any hsl(...) calls
+  M.named_hex_highlight_groups = {}
   for i, line in ipairs(all_buf_lines) do
     set_highlight_groups_on_line(buf, line, i - 1)
     set_highlight_hsl_on_line(buf, line, i - 1)
