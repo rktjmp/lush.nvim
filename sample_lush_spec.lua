@@ -81,7 +81,7 @@ local sea_gull = hsl("#c6c6c6") -- as as string, preceeded with a #
 --
 
 -- Lets find some harmonious colours from our original set.
--- (Unfortunately, deep inspection lushify highlighting is currently WIP.)
+-- (Unfortunately, deep inspection of lushify modifiers is currently WIP.)
 
 -- rotate 120 deg arond the colour wheel
 local sea_foam_triadic = sea_foam.rotate(120)
@@ -283,4 +283,4 @@ end)
 -- TODO pull lightline demo
 -- TODO demo how to return parsed colours for use in other files (return parsed)
 
--- vi:nowrap:cursorline
+-- vi:nowrap:cursorline:number

@@ -43,7 +43,7 @@ local wrap_group = function(name, options)
       end
       return setmetatable(options, {
         __call = function()
-          -- TODO: pretty terrible way to detect this error
+          -- TODO: pretty terrible group redefinition detection
           return nil, {type =  "may_have_redefined_group", on = name}
         end
       })
@@ -80,6 +80,8 @@ local wrap = function(name, args)
 end
 
 local parse = function(fn)
+  assert(type(fn) == "function", "Must supply function to parser")
+
   setfenv(fn, setmetatable({}, {
     -- remember, when someting gets 'indexed' in our lush spec,
     -- we define the function for that group, then insert it into
@@ -125,7 +127,12 @@ local parse = function(fn)
 
   -- turn AST [sic] into logical map
   local parsed = {}
-  for _, group in ipairs(fn()) do
+  local spec = fn()
+  if not spec then error("malformed lush-spec", 5) end
+  for _, group in ipairs(spec) do
+--    if parsed[group.__name] then
+--      error("lush redef")
+--    end
     local ast, e = group()
     if e then
       error("lush.parser.parse error: " .. error_to_string(e), 4)

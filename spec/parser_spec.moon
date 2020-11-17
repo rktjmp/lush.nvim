@@ -1,6 +1,12 @@
 describe "parser", ->
   parse = require('lush.parser')
 
+  it "warns on bad input", ->
+    assert.error(-> parse(nil))
+    assert.error(-> parse(""))
+    assert.error(-> parse(1,2,3,4))
+    assert.error(-> parse({}))
+
   it "warns when re-defining a group", ->
     fn = ->
       parse -> {

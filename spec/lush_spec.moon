@@ -1,73 +1,91 @@
 describe "lush", ->
-  describe "requiring", ->
-    it "requires as table", ->
-      lush = require('lush')
-      assert.is_not_nil(lush.hsl)
-      assert.is_not_nil(lush.create)
+  lush = require('lush')
+  nvim_command_spy, red, green, blue = nil
+  lush_spec = nil
 
-    pending "can be unpacked", ->
-      hsl, lush = require('lush')()
-      assert.is_not_nil(module, "module")
-      assert.is_not_nil(hsl, "hsl")
-      assert.is_not_nil(lush, "lush")
-
-  describe "usage", ->
-    lush = require('lush')
-    hsl = lush.hsl
-    nvim_command_spy, red, green, blue = nil
-
-    before_each ->
-      nvim_command_spy = spy.new(->)
-      _G.vim = {
-        api: {
-          nvim_command: nvim_command_spy
-        }
-        g: {
-          colors_name: "a_theme"
-        }
+  before_each ->
+    vim = {
+      api: {
+        nvim_command: ->
+        nvim_create_buf: ->
+        nvim_buf_set_lines: ->
+        nvim_win_get_height: -> 30
+        nvim_win_get_width: -> 30
+        nvim_open_win: ->
+      },
+      g: {
+        colors_name: "a_theme"
       }
-      red = hsl(0, 100, 50)
+    }
+    _G.vim = mock(vim)
+    red = lush.hsl(0, 100, 50)
+    green = lush.hsl(120, 100, 50)
+    blue = lush.hsl(240, 100, 50)
+    lush_spec = -> {
+      Normal { bg: red, fg: blue },
+      CursorLine { bg: green, fg: red, gui: "bold" }
+      NormalFloat { Normal }
+    }
 
-    it "can define colors", ->
-      assert.not_nil(red)
-      assert.equal("#FF0000", red.hex)
+  it "exports hsl", ->
+    assert.not_nil(lush.hsl)
+    red = lush.hsl(0, 100, 50)
+    assert.not_nil(red)
+    assert.equal("#FF0000", red.hex)
 
-    it "generates a scheme", ->
-      scheme = lush.create -> {
-        Normal { bg: red, fg: blue },
-        CursorLine { bg: green, fg: red, gui: "bold" }
-        NormalFloat { Normal }
-      }
-      assert.not_nil(scheme)
+  it "exports ify", ->
+    assert.is_function(lush.ify)
 
-    it "can output scheme as text", ->
-      scheme = lush.create -> {
-        Normal { bg: red, fg: blue },
-        CursorLine { bg: green, fg: red, gui: "bold" }
-        NormalFloat { Normal }
-      }
-      text = lush.stringify(scheme)
-      assert.is_string(text)
-      assert.is_equal(3, select(2, string.gsub(text, '\n', '\n')))
+  describe "() mode", ->
+    it "applies scheme when called", ->
+      lush(lush_spec)
+      assert.spy(vim.api.nvim_command).was_called()
+      norm = "highlight Normal guifg=#0000FF guibg=#FF0000 guisp=NONE gui=NONE"
+      assert.spy(vim.api.nvim_command).was_called_with(norm)
 
-    it "can apply the scheme", ->
-      scheme = lush.create -> {
-        Normal { bg: red, fg: blue },
-        CursorLine { bg: green, fg: red, gui: "bold" }
-        NormalFloat { Normal }
-      }
-      lush.apply(scheme)
-      for _, rule in ipairs(scheme) do
-        assert.spy(vim.api.nvim_command).was_called_with(rule)
-      assert.is_equal(3, #vim.api.nvim_command.calls)
+    it "returns a parsed lush_spec when called", ->
+      parsed = lush(lush_spec)
+      assert.not_nil(parsed)
 
-    it "is needleslly overloaded", ->
-      lush = require('lush')
-      assert.is_equal(0, #vim.api.nvim_command.calls)
-      lush(-> {
-        Normal { bg: red, fg: blue },
-        CursorLine { bg: green, fg: red, gui: "bold" }
-        NormalFloat { Normal }
-      }, {force_clean: false})
-      assert.is_equal(3, #vim.api.nvim_command.calls)
+    it "applies scheme with default options", ->
+      lush(lush_spec)
+      assert.spy(vim.api.nvim_command).was_called()
+      assert.spy(vim.api.nvim_command).was_called_with("hi clear")
 
+    it "applies scheme with provided options", ->
+      lush(lush_spec, {force_clean: false})
+      assert.spy(vim.api.nvim_command).was_called()
+      assert.spy(vim.api.nvim_command).was_not_called_with("hi clear")
+
+  it "can output scheme as text", ->
+    -- no options
+    parsed = lush(lush_spec)
+    text = lush.stringify(parsed)
+    assert.is_string(text)
+    assert.is_equal(6, select(2, string.gsub(text, '\n', '\n')))
+    -- options
+    parsed = lush(lush_spec)
+    text = lush.stringify(parsed, {force_clean: false})
+    assert.is_string(text)
+    assert.is_equal(2, select(2, string.gsub(text, '\n', '\n')))
+
+  it "exposes a manual toolchain", ->
+    parsed = lush.parse(lush_spec)
+    assert.not_nil(parsed)
+    assert.same(parsed, lush(lush_spec))
+    compiled = lush.compile(parsed)
+    assert.not_nil(compiled)
+    assert.same(table.concat(compiled, '\n'), lush.stringify(parsed, {force_clean: false}))
+
+  it "exposes a useful parsed object", ->
+    parsed = lush.parse(lush_spec)
+    assert.not_nil(parsed.Normal)
+    assert.not_nil(parsed.Normal.bg)
+    assert.equal(0, parsed.Normal.bg.h)
+    assert.equal("#FF0000", tostring(parsed.Normal.bg))
+
+  it "exports to buffer", ->
+    parsed = lush.parse(lush_spec)
+    lush.export_to_buffer(parsed)
+    assert.spy(vim.api.nvim_create_buf).was_called()
+    assert.spy(vim.api.nvim_buf_set_lines).was_called()

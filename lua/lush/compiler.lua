@@ -18,6 +18,8 @@ local function make_group(name, opts)
 end
 
 local function compile(ast)
+  assert(type(ast) == "table", "invalid compile, ast must be table")
+
   local commands = {}
   for group_name, group_def in pairs(ast) do
     if group_def.link then
