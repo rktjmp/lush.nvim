@@ -4,13 +4,19 @@ local hsl = require('lush.hsl')
 local vt_group_ns = api.nvim_create_namespace("lushify_group")
 local vt_hsl_ns = api.nvim_create_namespace("lushify_hsl")
 
+-- must define up here since named_hex_highlight_groups is used in a
+-- non mod function TODO adjust named_hex_highlight_groups
+local M = {}
+M.named_hex_highlight_groups = {}
+
+-- Given a line, find any highlight group definitions and color them
+-- looks for "   Normal {..."
+-- Has potential for false positives, but the negative effect is pretty low
 local function set_highlight_groups_on_line(buf, line, line_num)
-  -- more conservative, all on one line matcher
-  -- local group = string.match(line, "%s-(%a[%a%d_]-)%s-{.*},*")
   -- more generous, must match something like 'Group {'
   local group = string.match(line, "%s-(%a[%a%d_]-)%s-{")
   if group then
-    -- technically, find matches the first occurance in line, but this will
+    -- technically, find matches the first occurance in line, but this should
     -- always be our group name, so it's ok
     local hs, he = string.find(line, group)
     api.nvim_buf_clear_namespace(buf, vt_group_ns, line_num, line_num + 1)
@@ -18,14 +24,16 @@ local function set_highlight_groups_on_line(buf, line, line_num)
   end
 end
 
-local M = {}
-
+-- converts a "hsl(n, n, n)" string to a color
+-- (n, n, n) -> hsl
 local function hsl_hsl_call_to_color(hsl_hsl_str)
   local h, s, l = string.match(hsl_hsl_str,
                                "hsl%(%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)")
   return hsl(tonumber(h), tonumber(s), tonumber(l))
 end
 
+-- converts a "hsl(hex_str)" string to a color
+-- string -> hls
 local function hsl_hex_call_to_color(hsl_hex_str)
   local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
   local hex = string.match(hsl_hex_str,
@@ -33,18 +41,25 @@ local function hsl_hex_call_to_color(hsl_hex_str)
   return hsl(hex)
 end
 
+-- hsl -> string
 local function create_highlght_group_name_for_color(color)
   -- substring color from #000000 to 000000
   return "lushify_" .. string.sub(tostring(color), 2)
 end
 
+-- given a color, greates a vim highlight group that has that color
+-- as the background, and an appropriately readable forground
+-- color -> nil
 local function create_highlight_group_for_color(color)
   local group_name = create_highlght_group_name_for_color(color)
-  -- FIXME: M.seen_colors is a hack
+  -- FIXME: M.named_hex_highlight_groups is a hack
   -- FIXME: also not much error protection going on
-  if not M.seen_colors[group_name] then
+  if not M.named_hex_highlight_groups[group_name] then
+    M.named_hex_highlight_groups[group_name] = color
     local bg, fg = color, color
+    -- make it readable
     fg = bg.l > 50 and fg.lightness(0) or fg.lightness(100)
+    -- define the highlight group
     api.nvim_command("highlight! " ..
                       group_name ..
                       " guibg=" .. bg ..
@@ -53,6 +68,7 @@ local function create_highlight_group_for_color(color)
 end
 
 -- reduce function, matches contains all matches found in str
+-- (string, number, table) -> table
 local function find_all_hsl_in_str(str, read_head, matches)
   -- setup
   local hsl_pat = "(hsl%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
@@ -99,7 +115,8 @@ local function find_all_hsl_in_str(str, read_head, matches)
   return matches
 end
 
-
+-- finds all hsl() calls on a line and applies suitable highlighting
+-- (number, string, number) -> nil
 local function set_highlight_hsl_on_line(buf, line, line_num)
   local colors = find_all_hsl_in_str(line, 0, {})
 
@@ -123,52 +140,11 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
   end
 end
 
-M.current_attach_id = 0
-M.seen_colors = {}
-
-M.attach_to_buffer = function(buf)
-  buf = buf or 0
-
-  local lines = api.nvim_buf_get_lines(buf, 0, -1, true)
-  for i, line in ipairs(lines) do
-    set_highlight_groups_on_line(buf, line, i - 1)
-    set_highlight_hsl_on_line(buf, line, i - 1)
-  end
-
-  M.current_attach_id = M.current_attach_id + 1
-  M.seen_colors = {}
-  local closure = function()
-    local attach_id = M.current_attach_id
-     api.nvim_buf_attach(buf, true, {
-      on_lines = function(_, buf, _changed_tick, first_line, _, last_line)
-        -- check between first and last line for a group defintion
-        local lines = api.nvim_buf_get_lines(buf, first_line, last_line, true)
-        for i, line in ipairs(lines) do
-          set_highlight_groups_on_line(buf, line, first_line + i - 1)
-          set_highlight_hsl_on_line(buf, line, first_line + i - 1)
-        end
-
-        -- if we call attach_to_buffer() again, we want to detach any existing
-        -- attachments. There isn't a super clean way to "get attachments for
-        -- buffer" or similar right now, and tracking attached(bufn) in an list
-        -- is also problematic because re-sourcing your theme tends to clear
-        -- any highlighting, so previously seen colors get lost, etc, etc.
-        -- Also if we do in-code modification parsing of hsl changes, we need to
-        -- track those per buffer.
-        --
-        -- SO, for now, we say lushify can only attach to one buffer, the last
-        -- buffer you called it for. This will generally be acceptable anyway.
-
-        -- return true to detach
-        return M.current_attach_id ~= attach_id
-      end
-    })
-  end
-  closure()
-end
-
-M.as_you_type = function(buf)
-  buf = buf or 0
+-- passes entire contents of buffer to lua interpreter
+-- may print error if one occurs
+-- (number) -> nil
+local function eval_buffer(buf)
+  -- name used for error reporting
   local buf_name = api.nvim_buf_get_name(buf)
 
   local all_buf_lines = api.nvim_buf_get_lines(buf, 0, -1, true)
@@ -182,7 +158,7 @@ M.as_you_type = function(buf)
   -- Loadstring can still "fail" on malformed lua, it will only
   -- return errors that occur in the *code when executed*, which
   -- is why we wrap it in a pcall (else the error propagates up to vim)
-  local success, error = pcall(function()
+  local eval_success, error = pcall(function()
     local code = table.concat(all_buf_lines, "\n")
     local fn, load_error = loadstring(code, "lush.ify.hot_take")
     -- bubble error up
@@ -196,74 +172,64 @@ M.as_you_type = function(buf)
     set_highlight_hsl_on_line(buf, line, i - 1)
   end
 
-  if not success then
-    if error then
-      -- format error to be relative to the hot reloaded file
-      error = string.gsub(error, "^%[string .+%]", buf_name)
-      local msg = "Lushify hot reload did not apply: " .. error
-      print(msg)
-      -- if a error message wraps in the command output window, the
-      -- user is prompted to "press enter or type to continue", which is
-      -- pretty annoying for a real time update, so we'll just print
-      -- instead, which doesn't get the pretty colouring but it's less
-      -- frustrating to actually use.
-      -- local cmd = "echohl WarningMsg | echo \"" ..
-      --             msg ..
-      --             "\" | echohl None"
-      -- vim.api.nvim_command(cmd)
-    end
+  if not eval_success and error then
+    -- format error to be relative to the hot reloaded file
+    error = string.gsub(error, "^%[string .+%]", buf_name)
+    local msg = "Lushify hot reload did not apply: " .. error
+    print(msg)
+    -- if a error message wraps in the command output window, the
+    -- user is prompted to "press enter or type to continue", which is
+    -- pretty annoying for a real time update, so we'll just print
+    -- instead, which doesn't get the pretty colouring but it's less
+    -- frustrating to actually use.
+    -- local cmd = "echohl WarningMsg | echo \"" ..
+    --             msg ..
+    --             "\" | echohl None"
+    -- vim.api.nvim_command(cmd)
   end
 end
 
-local call = function()
-  -- OUTDATED, (Posterity?):
-  --
-  -- we reattach on save, because when we source the lush-spec, it will
-  -- run "hi clear" which will remove any hsl() definitions, so reattach
-  -- to redefine them. The cost is small.
-  --
-  -- NEW:
-  --
-  -- as_you_type evaluates the entire buffer, and lush.apply() will clear
-  -- any highlighting, which means any previous hsl() call groups are removed.
-  -- So for now (?) we *must* re-apply those hsl() colours again in as_you_type.
-  -- So the previous buffer attachment -> inspect only changed isn't useful.
-  --
-  -- (One fix might be to pass an env to loadstring (possible?) that disables
-  -- clearing?)
-  --
-  -- So far the performance cost seems near to zero (?!), so perhaps this is fine.
-  --
-  -- Ideally, as_you_type wouldn't just re-eval the whole file, but would be
-  -- spec-aware and have a running "current spec" in memory that it patches
-  -- and applies. Not sure how resilliant this would be though, through user
-  -- pastes, etc. If the spec was in it's own file, it would be more possible
-  -- since we'd know that any line is a 1:1 match for a spec line, right now a
-  -- change would have to be fake-parsed and we'd have to be watching for
-  -- changes only inside the spec line range which while possible, just feels
-  -- like a hack.
-  --
-  -- And all that seems like premature opitmisation anyway, since the
-  -- performance cost is so low.
-
-  -- M.attach_to_buffer(0)
-  -- autocmd BufWritePost <buffer> :luafile <afile>
-  -- autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
-
-  -- bang on first load then rely on events
-  M.as_you_type(0)
-  local autocmds = [[
-    augroup LushIfyReloadGroup
-    autocmd!
-    autocmd TextChanged,TextChangedI <buffer> :lua require('lush.ify').as_you_type(0)
-    augroup END
-  ]]
-
-  vim.api.nvim_exec(autocmds, false)
+M.as_you_type = function(buf)
+  buf = buf or 0
+  -- bang the buffer on first call
+  eval_buffer(0)
+  -- then setup a re-eval on any changes
+  api.nvim_buf_attach(buf, true, {
+    on_lines = function()
+      -- we actually don't care about which lines changed, or anything
+      -- just re-eval the whole buffer wholesale.
+      eval_buffer(buf)
+    end
+  })
 end
 
 setmetatable(M, {
-  __call = call
+  __call = function()
+    -- as_you_type evaluates the entire buffer, and lush.apply() will clear
+    -- any highlighting, which means any previous hsl() call groups are removed.
+    --
+    -- So for now (?) we *must* re-apply those hsl() colours again in as_you_type.
+    -- So the previous buffer attachment -> inspect only changed isn't useful.
+    --
+    -- (One fix might be to pass an env to loadstring (possible?) that disables
+    -- clearing?)
+    --
+    -- So far the performance cost seems near to zero (?!),
+    -- so perhaps this is fine.
+    --
+    -- Ideally, as_you_type wouldn't just re-eval the whole file, but would be
+    -- spec-aware and have a running "current spec" in memory that it patches
+    -- and applies. Not sure how resilliant this would be though, through user
+    -- pastes, etc. If the spec was in it's own file, it would be more possible
+    -- since we'd know that any line is a 1:1 match for a spec line, right now a
+    -- change would have to be fake-parsed and we'd have to be watching for
+    -- changes only inside the spec line range which while possible, just feels
+    -- like a hack.
+    --
+    -- And all that seems like premature opitmisation anyway, since the
+    -- performance cost is so low.
+    M.as_you_type(0)
+  end
 })
 
 return M
