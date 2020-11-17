@@ -1,5 +1,6 @@
 local api = vim.api
 local hsl = require('lush.hsl')
+local lush = require('lush')
 
 local vt_group_ns = api.nvim_create_namespace("lushify_group")
 local vt_hsl_ns = api.nvim_create_namespace("lushify_hsl")
@@ -158,12 +159,13 @@ local function eval_buffer(buf)
   -- Loadstring can still "fail" on malformed lua, it will only
   -- return errors that occur in the *code when executed*, which
   -- is why we wrap it in a pcall (else the error propagates up to vim)
+  local parsed
   local eval_success, error = pcall(function()
     local code = table.concat(all_buf_lines, "\n")
     local fn, load_error = loadstring(code, "lush.ify.hot_take")
     -- bubble error up
     if load_error then error(load_error, 2) end
-    fn()
+    parsed = fn()
   end)
 
   -- highlight any hsl(...) calls
@@ -171,6 +173,10 @@ local function eval_buffer(buf)
   for i, line in ipairs(all_buf_lines) do
     set_highlight_groups_on_line(buf, line, i - 1)
     set_highlight_hsl_on_line(buf, line, i - 1)
+  end
+
+  if parsed then
+    lush.apply(lush.compile(parsed, {force_clean = true}))
   end
 
   if not eval_success and error then
