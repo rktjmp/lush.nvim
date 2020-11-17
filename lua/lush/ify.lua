@@ -33,39 +33,93 @@ local function hsl_hex_call_to_color(hsl_hex_str)
   return hsl(hex)
 end
 
-local function set_highlight_hsl_on_line(buf, line, line_num)
-  local hsl_hsl_match = string.match(line, "(hsl%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))")
-  local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
-  local hsl_hex_match = string.match(line,
-                                     "(hsl%([\"']#"..hex_pat.."[\"']%))")
-  local color
-  local highlight_pos_str
-  if hsl_hsl_match then
-    color = hsl_hsl_call_to_color(hsl_hsl_match)
-    highlight_pos_str = hsl_hsl_match
-  elseif hsl_hex_match then
-    color = hsl_hex_call_to_color(hsl_hex_match)
-    highlight_pos_str = hsl_hex_match
+local function create_highlght_group_name_for_color(color)
+  -- substring color from #000000 to 000000
+  return "lushify_" .. string.sub(tostring(color), 2)
+end
+
+local function create_highlight_group_for_color(color)
+  local group_name = create_highlght_group_name_for_color(color)
+  -- FIXME: M.seen_colors is a hack
+  -- FIXME: also not much error protection going on
+  if not M.seen_colors[group_name] then
+    local bg, fg = color, color
+    fg = bg.l > 50 and fg.lightness(0) or fg.lightness(100)
+    api.nvim_command("highlight! " ..
+                      group_name ..
+                      " guibg=" .. bg ..
+                      " guifg=" .. fg)
   end
-  if color then
-    -- substring color from #000000 to 000000
-    local group_name = "lushify_" .. string.sub(tostring(color), 2)
-    -- FIXME: M.seen_colors is a hack
-    -- FIXME: also not much error protection going on
-    if not M.seen_colors[group_name] then
-      local bg, fg = color, color
-      if bg.l > 50 then
-        fg = fg.lightness(0)
-      else
-        fg = fg.lightness(100)
-      end
+end
 
-      api.nvim_command("highlight! " .. group_name .. " guibg=" .. bg .. " guifg=" .. fg)
+-- reduce function, matches contains all matches found in str
+local function find_all_hsl_in_str(str, read_head, matches)
+  -- setup
+  local hsl_pat = "(hsl%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
+  local hex_chs = string.rep("[0-9abcdefABCDEF]", 6)
+  local hex_pat = "(hsl%([\"']#"..hex_chs.."[\"']%))"
+
+  -- check line for match with either colour type
+  local hsl_fs, hsl_fe = string.find(str, hsl_pat)
+  local hex_fs, hex_fe = string.find(str, hex_pat)
+  local fs, fe, type
+
+  -- set fs depending on match success (future ops are type independent)
+  if hsl_fs then
+    fs, fe = hsl_fs, hsl_fe
+    type = "hsl"
+  elseif hex_fs then
+    fs, fe = hex_fs, hex_fe
+    type = "hex"
+  end
+
+  -- match'd either colour type, save the call and where it is in the line
+  if fs then
+    -- make color
+    local hsl_call = string.sub(str, fs, fe)
+    local color = type == "hsl" and
+                  hsl_hsl_call_to_color(hsl_call) or
+                  hsl_hex_call_to_color(hsl_call)
+
+    -- save color
+    local match = {
+      color = color,
+      from = read_head + fs,
+      to = read_head + fe,
+    }
+    table.insert(matches, match)
+
+    -- inspect rest of string
+    read_head = read_head + fe - 1
+    str = string.sub(str, fe)
+    find_all_hsl_in_str(str, read_head, matches)
+  end
+
+  -- no match ahead, return all matches, stop looking
+  return matches
+end
+
+
+local function set_highlight_hsl_on_line(buf, line, line_num)
+  local colors = find_all_hsl_in_str(line, 0, {})
+
+  -- always clear current highlights for line
+  api.nvim_buf_clear_namespace(buf, vt_hsl_ns, line_num, line_num + 1)
+
+  -- apply any colors we found
+  if #colors > 0 then
+    for _, match in ipairs(colors) do
+      local color = match.color
+
+      create_highlight_group_for_color(color)
+
+      local group_name = create_highlght_group_name_for_color(color)
+      local hi_s, hi_e = match.from, match.to
+
+      api.nvim_buf_add_highlight(buf, vt_hsl_ns,
+                                 group_name, line_num,
+                                 hi_s - 1, hi_e) -- -1 for api-indexing
     end
-
-    local hs, he = string.find(line, highlight_pos_str, 1, true)
-    api.nvim_buf_clear_namespace(buf, vt_hsl_ns, line_num, line_num + 1)
-    api.nvim_buf_add_highlight(buf, vt_hsl_ns, group_name, line_num, hs - 1, he)
   end
 end
 
@@ -117,24 +171,30 @@ M.as_you_type = function(buf)
   buf = buf or 0
   local buf_name = api.nvim_buf_get_name(buf)
 
-  local lines = api.nvim_buf_get_lines(buf, 0, -1, true)
-  lines = table.concat(lines, "\n")
+  local all_buf_lines = api.nvim_buf_get_lines(buf, 0, -1, true)
 
-  -- pcall: catch error and return status, either:
-  --        true, return_val or
-  --        false, error_caught
-  -- loadstring:
-  --            function or
-  --            nil, error
+  -- pcall:      true, return_val or
+  --             false, error_caught
+  --
+  -- loadstring: function or
+  --             nil, error
+  --
   -- Loadstring can still "fail" on malformed lua, it will only
   -- return errors that occur in the *code when executed*, which
   -- is why we wrap it in a pcall (else the error propagates up to vim)
   local success, error = pcall(function()
-    local fn, load_error = loadstring(lines, "lush.ify.hot_take")
+    local code = table.concat(all_buf_lines, "\n")
+    local fn, load_error = loadstring(code, "lush.ify.hot_take")
     -- bubble error up
     if load_error then error(load_error, 2) end
     fn()
   end)
+
+  -- highlight any hsl(...) calls
+  for i, line in ipairs(all_buf_lines) do
+    set_highlight_groups_on_line(buf, line, i - 1)
+    set_highlight_hsl_on_line(buf, line, i - 1)
+  end
 
   if not success then
     if error then
@@ -156,19 +216,49 @@ M.as_you_type = function(buf)
 end
 
 local call = function()
-  M.attach_to_buffer(0)
+  -- OUTDATED, (Posterity?):
+  --
   -- we reattach on save, because when we source the lush-spec, it will
   -- run "hi clear" which will remove any hsl() definitions, so reattach
   -- to redefine them. The cost is small.
-  -- TODO: Worth improving ify reattachment autocommand?
+  --
+  -- NEW:
+  --
+  -- as_you_type evaluates the entire buffer, and lush.apply() will clear
+  -- any highlighting, which means any previous hsl() call groups are removed.
+  -- So for now (?) we *must* re-apply those hsl() colours again in as_you_type.
+  -- So the previous buffer attachment -> inspect only changed isn't useful.
+  --
+  -- (One fix might be to pass an env to loadstring (possible?) that disables
+  -- clearing?)
+  --
+  -- So far the performance cost seems near to zero (?!), so perhaps this is fine.
+  --
+  -- Ideally, as_you_type wouldn't just re-eval the whole file, but would be
+  -- spec-aware and have a running "current spec" in memory that it patches
+  -- and applies. Not sure how resilliant this would be though, through user
+  -- pastes, etc. If the spec was in it's own file, it would be more possible
+  -- since we'd know that any line is a 1:1 match for a spec line, right now a
+  -- change would have to be fake-parsed and we'd have to be watching for
+  -- changes only inside the spec line range which while possible, just feels
+  -- like a hack.
+  --
+  -- And all that seems like premature opitmisation anyway, since the
+  -- performance cost is so low.
+
+  -- M.attach_to_buffer(0)
+  -- autocmd BufWritePost <buffer> :luafile <afile>
+  -- autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
+
+  -- bang on first load then rely on events
+  M.as_you_type(0)
   local autocmds = [[
-  augroup LushIfyReloadGroup
-  autocmd!
-  autocmd TextChanged,TextChangedI <buffer> :lua require('lush.ify').as_you_type(0)
-  autocmd BufWritePost <buffer> :luafile <afile>
-  autocmd BufWritePost <buffer> :lua require('lush.ify').attach_to_buffer(0)
-  augroup END
+    augroup LushIfyReloadGroup
+    autocmd!
+    autocmd TextChanged,TextChangedI <buffer> :lua require('lush.ify').as_you_type(0)
+    augroup END
   ]]
+
   vim.api.nvim_exec(autocmds, false)
 end
 
