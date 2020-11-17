@@ -11,19 +11,26 @@
 --  "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
 --
 -- This is an starter lush-spec colour scheme and tutorial.
--- Copy it to your own <theme>/lua/<theme>.lua and edit,
+-- Copy it to your own <theme>/lua/<theme_name>.lua and edit,
 -- or open it and follow the instructions to explore Lush.
+--
+-- Note: Because this is lua file, vim will append your file to the runtime,
+--       which means you can require(...) it in other lua code (this is useful),
+--       but you should also take care not to conflict with other libraries.
+--
+--       (This is a lua quirk, as it has somewhat poor support for namespacing.)
+--
+--       Basically, name your file "super_theme/lua/super_theme_dark.lua",
+--       not "super_theme/lua/dark.lua".
+--
+--       With that caveat out of the way...
+--
 
 -- First, enable lush.ify on this file, run:
 --
 --  `:lua require('lush').ify()`
 --
 -- (try putting your cursor inside the ` and typing yi`:@"<CR>)
---
--- Optionally, you can temporarily clear your existing theme, for the
--- full Lush experience.
---
---   `:highlight clear`
 --
 -- Calls to hsl() are now highlighted with the correct background colour
 -- Highlight names groups will have the highlight style applied to them.
@@ -102,7 +109,8 @@ local sea_foam_compliment = sea_foam.rotate(180).darken(10).saturate(10)
 -- without Lush, see TODO lush.create() lush.apply() stringify()
 
 -- Call lush with our lush-spec.
-lush(function()
+-- ignore the "theme" variable for now
+local theme = lush(function()
   return {
     -- It's recommended to disable wrapping with `setlocal nowrap`.
     -- You may also receive (mostly ignorable) linter/lsp warnings,
@@ -163,9 +171,11 @@ lush(function()
     -- Search       { search_base },
     -- IncSearch    { bg = search_base.bg.rotate(-20), fg = search_base.fg.darken(90) },
 
-    -- And that's the basics of using Lush. If you want to know more about
-    -- exporting themes for use without lush (for distribution) or integration
-    -- with other plugins (such as lightline), see the bottom of this file.
+    -- And that's the basics of using Lush!
+    --
+    -- If you want to know more about exporting themes for use without lush
+    -- (for distribution) or integration with other plugins (such as
+    -- lightline), see the bottom of this file `/export-external`
 
     -- The following are all the Neovim default highlight groups from
     -- docs as of 0.5.0-812, to aid your theme creation. Your themes should
@@ -280,7 +290,72 @@ lush(function()
   }
 end)
 
--- TODO pull lightline demo
--- TODO demo how to return parsed colours for use in other files (return parsed)
+-- export-external
+--
+-- Integrating Lush with other tools:
+--
+-- By default, lush() actually returns your theme in parsed form. You can
+-- interact with it in much the same way as you can inside a lush-spec.
+--
+-- It's recommended that your lush theme file (i.e. this file), returns the
+-- theme variable at its end. This allows for other themes to extend your
+-- theme, be that to inhert a light style from a dark style, or to allow users
+-- to make adjustments by preference.  (e.g. to fix comment colours if they are
+-- colourblind, etc)
+--
+-- This looks something like:
+--
+--   local theme = lush(function()
+--     return {
+--       Normal { fg = hsl(0, 100, 50) },
+--       CursorLine { Normal },
+--     }
+--   end)
+--
+--   theme.Normal.fg()                     -- returns table {h = h, s = s, l = l}
+--   tostring(theme.Normal.fg)             -- returns "#hexstring"
+--   tostring(theme.Normal.fg.lighten(10)) -- you can still modify colours, etc
+--
+-- Note:
+--
+-- "Linked" groups do not expose their colours, you can find the key
+-- of their linked group via the 'link' key (may require chaining)
+--
+--   theme.CursorLine.fg() -- This is bad!
+--   theme.CursorLine.link   -- = "Normal"
+--
+-- Also Note:
+--
+-- Most plugins expose their own Highlight groups, which *should be the primary
+-- method for setting theme colours*, there are however some plugins that
+-- require adjustments to a global or configuration variable.
+--
+-- To set a global variable, use neovims lua bridge,
+--
+--   vim.g.my_plugin.color_for_widget = tostring(theme.Normal.fg)
+--
+-- Exporting a lush theme for use without Lush
+--
+-- To easily export a lush theme, you may pass your theme to export_to_buffer()
+-- which will open a blank buffer, filled with your compiled theme for
+-- editing or distribution.
+--
+-- The easiest way to do this is by inserting the export_to_buffer() call at
+-- the end of your theme, temporarily, then reloading your theme.
+--
+-- Caution: If you're theme file is currently lush.ify'd you may
+--          spawn multiple buffers
+--
+--   theme = lush(...)
+--
+--   lush.export_to_buffer(theme)
+--
+-- Finally you can manually apply all stages, if you wish to inject something.
+-- local parsed = lush.parse(lush_spec, options) -- table of spec
+-- local compiled = lush.compile(parsed, options) -- table of cmd strings
+-- lush.apply(compiled) -- runs cmds
+
+-- return our parsed theme for extension or use else where.
+return theme
 
 -- vi:nowrap:cursorline:number
