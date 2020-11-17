@@ -27,7 +27,11 @@ View the demo, or read on.
 Installation
 ------------
 
-Lush is **neovim only**.
+Lush is:
+
+  - **neovim only**
+  - requires **0.5.0** or greater.
+  - true color only
 
 Install via any package mangement system, for example, vim-plug:
 
@@ -122,6 +126,8 @@ rotate(240)) or it's complement (rotate(180)), or split complement
 Bugs or Limitations
 ---
 
+- Sometimes real time highlighting be applied awkwardly when the Pmenu is open.
+
 - you cant name groups NONE ALL contains contained ALLBUT (reserved by vim)
 
 - Maybe you want to link to an existing group not in spec? See signify-colors
@@ -149,6 +155,7 @@ will fail, because Todo, though it's a standard group name, doesn't exist in lus
 will work.
 
 - If you're using a lua LSP, you may see warnings (ignorable), and it may style some groups (underline or color) depending on how agressive it's behaviour is.
+
 
 
 

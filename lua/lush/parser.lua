@@ -52,7 +52,7 @@ local wrap_group = function(name, options)
 end
 
 -- wrap link in object that proxies indexes to linked group options
--- or when called, returns proxied group
+-- or when called, link descriptor
 local wrap_link = function(name, link_to)
   return setmetatable({ }, {
     __index = function(_, key)
@@ -124,6 +124,18 @@ local parse = function(fn)
       end
     end
   }))
+
+  local parsed = setmetatable({}, {
+    -- for error protection, we need to be able to infer the correct
+    -- type of the table, but we don't want the key to be iterable.
+    __index = function(t, key)
+      if key == "__type" then
+        return 'parsed_lush_spec'
+      else
+        return rawget(t, key)
+      end
+    end
+  })
 
   -- turn AST [sic] into logical map
   local parsed = {}
