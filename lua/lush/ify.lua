@@ -20,7 +20,6 @@ local function set_highlight_groups_on_line(buf, line, line_num)
     -- technically, find matches the first occurance in line, but this should
     -- always be our group name, so it's ok
     local hs, he = string.find(line, group)
-    api.nvim_buf_clear_namespace(buf, vt_group_ns, line_num, line_num + 1)
     api.nvim_buf_add_highlight(buf, vt_group_ns, group, line_num, hs - 1, he)
   end
 end
@@ -121,9 +120,6 @@ end
 local function set_highlight_hsl_on_line(buf, line, line_num)
   local colors = find_all_hsl_in_str(line, 0, {})
 
-  -- always clear current highlights for line
-  api.nvim_buf_clear_namespace(buf, vt_hsl_ns, line_num, line_num + 1)
-
   -- apply any colors we found
   if #colors > 0 then
     for _, match in ipairs(colors) do
@@ -145,6 +141,9 @@ end
 -- may print error if one occurs
 -- (number) -> nil
 local function eval_buffer(buf)
+  buf = buf or 0
+  print("") -- TODO clear any messages (not great, may clobber other tools)
+
   -- name used for error reporting
   local buf_name = api.nvim_buf_get_name(buf)
 
@@ -159,30 +158,29 @@ local function eval_buffer(buf)
   -- Loadstring can still "fail" on malformed lua, it will only
   -- return errors that occur in the *code when executed*, which
   -- is why we wrap it in a pcall (else the error propagates up to vim)
-  local parsed
-  local eval_success, error = pcall(function()
+  local eval_success, eval_value = pcall(function()
     local code = table.concat(all_buf_lines, "\n")
-    local fn, load_error = loadstring(code, "lush.ify.hot_take")
+    local fn, load_error = loadstring(code, "lush.ify.eval_buffer")
     -- bubble error up
     if load_error then error(load_error, 2) end
-    parsed = fn()
+    return fn()
   end)
 
-  -- highlight any hsl(...) calls
-  M.named_hex_highlight_groups = {}
-  for i, line in ipairs(all_buf_lines) do
-    set_highlight_groups_on_line(buf, line, i - 1)
-    set_highlight_hsl_on_line(buf, line, i - 1)
+  if eval_success then
+    -- if we eval'd ok, we have a theme to apply, we can actually still
+    -- error here, if the actual spec is invalid once executed
+    -- (right now we just know it's vaguely valid lua)
+    eval_success, eval_value = pcall(function()
+      return lush.apply(lush.compile(eval_value, {force_clean = true}))
+    end)
   end
 
-  if parsed then
-    lush.apply(lush.compile(parsed, {force_clean = true}))
-  end
-
-  if not eval_success and error then
+  -- this may catch either pcall's errors
+  if not eval_success then
+    -- eval failed, so try to output a descriptive reason
     -- format error to be relative to the hot reloaded file
-    error = string.gsub(error, "^%[string .+%]", buf_name)
-    local msg = "Lushify hot reload did not apply: " .. error
+    eval_value = string.gsub(eval_value, "^%[string .+%]", buf_name)
+    local msg = "Lushify hot reload did not apply: " .. eval_value
     print(msg)
     -- if a error message wraps in the command output window, the
     -- user is prompted to "press enter or type to continue", which is
@@ -194,9 +192,18 @@ local function eval_buffer(buf)
     --             "\" | echohl None"
     -- vim.api.nvim_command(cmd)
   end
+
+  -- even if the eval failed, we can still apply hsl() calls
+  -- and GroupName highlighting to lines in the file.
+  M.named_hex_highlight_groups = {}
+  for i, line in ipairs(all_buf_lines) do
+    api.nvim_buf_clear_namespace(buf, vt_group_ns, i, i + 1)
+    set_highlight_groups_on_line(buf, line, i - 1)
+    set_highlight_hsl_on_line(buf, line, i - 1)
+  end
 end
 
-M.as_you_type = function(buf)
+M.real_time_eval = function(buf)
   buf = buf or 0
   -- bang the buffer on first call
   eval_buffer(0)
@@ -206,16 +213,18 @@ M.as_you_type = function(buf)
       -- we actually don't care about which lines changed, or anything
       -- just re-eval the whole buffer wholesale.
       eval_buffer(buf)
+      -- remain attached
+      return false
     end
   })
 end
 
 setmetatable(M, {
   __call = function()
-    -- as_you_type evaluates the entire buffer, and lush.apply() will clear
+    -- real_time_eval evaluates the entire buffer, and lush.apply() will clear
     -- any highlighting, which means any previous hsl() call groups are removed.
     --
-    -- So for now (?) we *must* re-apply those hsl() colours again in as_you_type.
+    -- So for now (?) we *must* re-apply those hsl() colours again in real_time_eval.
     -- So the previous buffer attachment -> inspect only changed isn't useful.
     --
     -- (One fix might be to pass an env to loadstring (possible?) that disables
@@ -224,7 +233,7 @@ setmetatable(M, {
     -- So far the performance cost seems near to zero (?!),
     -- so perhaps this is fine.
     --
-    -- Ideally, as_you_type wouldn't just re-eval the whole file, but would be
+    -- Ideally, real_time_eval wouldn't just re-eval the whole file, but would be
     -- spec-aware and have a running "current spec" in memory that it patches
     -- and applies. Not sure how resilliant this would be though, through user
     -- pastes, etc. If the spec was in it's own file, it would be more possible
@@ -235,7 +244,7 @@ setmetatable(M, {
     --
     -- And all that seems like premature opitmisation anyway, since the
     -- performance cost is so low.
-    M.as_you_type(0)
+    M.real_time_eval(0)
   end
 })
 
