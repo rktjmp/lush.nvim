@@ -207,9 +207,12 @@ return lush(function()
     -- Define what vims Normal highlight group should look like
     Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
     -- And make our comments slightly darker than normal, in italics
+    -- Note you must define Normal before you try to use it.
     Comment { fg = Normal.darken(40), gui = "italic" },
     -- And make Whitespace look the same
     Whitespace { Comment },
+    -- and clear all highlighting for CursorLine
+    CursorLine { },
   }
 end)
 ```
@@ -288,12 +291,28 @@ theme was defined. In the above short-example, you would run
 :lua require('lush').export_to_buffer(require('lush_theme.cool_name'))
 ```
 
+#### Manual Toolchain
+
+If desired, you can manually parse -> compile -> apply your lush-spec.
+
+```lua
+local lush = require('lush')
+local parsed = lush.parse(function() return { ... } end)
+local compiled = lush.compile(parsed, {force_clean = true })
+lush.apply(compiled)
+```
+
+`compile` accepts a secondary `options` table with the following options:
+
+- `force_clean`: `true` or `false`, prepends commands to clear and reset
+  highlighting.
+
 Lush.ify
 -------
 
-Lush.ify will provide automatic, realtime highlighting of any hsl(...) calls,
+Lush.ify will provide automatic, realtime highlighting of any `hsl(...)` calls,
 as well as highlighting any groups in your lush-spec with their appropriate
-colors.
+colors and decorations.
 
 To use lushify, open your theme lua file and run
 
@@ -301,13 +320,16 @@ To use lushify, open your theme lua file and run
 :lua require('lush').ify()
 ```
 
+Now changes you make to a colorscheme are reflected in real time. See the two
+starter files for more information and a demostration.
+
 ### Incompatibilities
 
 #### Easy Motion
 
 Activating the easy motion plugin *in a lush.ify'd buffer* will cause a lot of
 syntax errors. This is because easy-motion directly modifies the buffer to
-display its "jump keys". 
+display its "jump keys", which we try to parse.
 
 It is not recommened you activate easy motion in a lush.ify'd buffer. 
 
@@ -318,55 +340,21 @@ caveats and performance may be less than optimal due to vimscripts
 performance.
 
 See `examples/lightline-one-file` and `examples/lightline-two-files` for
-guiadance.
+guidance. Generally, if real time performance with lightline is problemantic,
+I would recommend developing your theme first, then disabiling lush.ify with
+`:e!` in the buffer and applying your changes via `:luafile %`.
 
-Notes
----
-
-bg, fg, gui = "bold, italic", sp = "NONE"
-
-HSL can be coerced into hex by tostring() or concat, so you can use those
-colors in raw commands if you need to.
-
-Common usage might be to get a color and find its triad(s) (rotate(120),
-rotate(240)) or it's complement (rotate(180)), or split complement
-(rotate(180).rotate(between -30 and 30))
+The two examples go into some more detail regarding this method.
 
 Bugs or Limitations
----
+-------------------
 
-- you may find some elements don't update in real time (LSP sign column for example). This is a side effect of colours are applied to those elements, only as they are created. The group name in your lush-spec should update to let you see how it will look when your theme is loaded.
+- You may find some elements don't update in real time (LSP sign column for
+  example). This is a side effect of colours are applied to those elements,
+  only as they are created (I believe).
+  The group name in your lush-spec should update to let you see how it will
+  look when your theme is loaded.
 
-- Sometimes real time highlighting be applied awkwardly when the Pmenu is open.
-
-- you cant name groups NONE ALL contains contained ALLBUT (reserved by vim)
-
-- Maybe you want to link to an existing group not in spec? See signify-colors
-  linking to DiffText.
-- maybe you want to define a color type mid stream? Can do this with a 'fake'
-  that doesn't actually have a match group,but you can then reference as a var
-
-- HSL() and Group colors may be invisible if your cursor line settings are strong
-- HSL highlights multiple times on one line
-
-u
-(set a bg or fg).
-
-- lush.ify() real time updates are limited to one buffer at a time.
-
-- You must define all elements you want to reference, i.e.
-
-  Task { Todo }
-
-will fail, because Todo, though it's a standard group name, doesn't exist in lush.
-
-  Todo { bg = ... }
-  Task { Todo }
-
-will work.
-
-- If you're using a lua LSP, you may see warnings (ignorable), and it may style some groups (underline or color) depending on how agressive it's behaviour is.
-
-
-
-
+- Lush.ify'd `hsl()` and group name highlight may sometimes be obscured by
+  CursorLine highlighting. If this is a problem, you can set CursorLine to an
+  empty definition or disable the cursor line with `set nocursorline`.
