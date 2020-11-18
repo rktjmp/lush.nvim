@@ -272,6 +272,31 @@ Other keys are not compiled into the final highlight command, but *are*
 retained in the parsed lush-spec for access in other modules. `__name` is a
 reserved key and may not be used.
 
+#### Dependency Injection
+
+Because lush-specs are run in a clean state, they do not have access to the
+regular Lua library or other modules.
+
+If you do wish to access an external module, you can inject them via a second
+parameter to `parse` or `lush`.
+
+Just be careful that injected modules don't share function names with your
+group, though thats unlikely to happen.
+
+```lua
+local weather = require('local_weather')
+
+lush(function()
+  return {
+    -- set fg color depending on rain or snow
+    Normal  { fg = hsl(weather.hex_color_for_current_weather) },
+    -- set comment color from normal fg, but set to a random
+    -- analogous-ish color
+    Comment { fg = Normal.fg.ro(math.random(-60, 60)) },
+  }
+end, {weather = weather, math = math})
+```
+
 #### Exporting From Lush
 
 If you wish to move your theme away from lush, or export it for use in Vim,
