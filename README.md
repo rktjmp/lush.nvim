@@ -13,60 +13,152 @@
 Lush
 ====
 
-Lush is a neovim colorscheme creation plugin.
+Lush is a colorscheme creation plugin written in Lua, for Neovim.
 
-Lush lets you define your scheme as a mini-dsl), as well as providing some
-helpers for HSL color manipulation and live updating as you work
-on your theme (well, semi-live, post-write updating).
+Lush lets you define your scheme as a *mini-dsl*, provides HSL space *colour
+manipulation* aids, and gives you *real time* feedback of your changes.
 
-Demo
------
+Lush themes can be exported to plain vimscript for distribution (or escape),
+and they can also be *imported* to other lua/vimscript files to access color
+data.
 
-View the demo, or read on.
-
-Installation
-------------
+Installation and Getting Started
+--------------------------------
 
 Lush is:
 
-  - **neovim only**
+  - **Neovim only**
   - requires **0.5.0** or greater.
-  - true color only
+  - "true color" only
 
 Install via any package mangement system, for example, vim-plug:
 
     Plug 'rktjmp/lush.nvim'
 
-A sample lush-spec theme is provided at ..., copy this to your theme's lua folder
-to get started.
+There are two interactive tutorials provided,
 
-Components
-----------
+- `lush_quick_start.lua`, which will give you a 2 minute overview of Lush's
+  features
 
-Lush broadly has 3 components, a HSL color manipulator, the lush-spec parser
-and compiler; and lushify, a buffer highlighting and hotreload tool.
+- `lush_tutorial.lua`, a more in-depth guide through various ways to apply
+  lush.
+
+There are also examples of various topics (lightline, import, export) in the
+`examples` folder.
+
+Component Guide
+---------------
+
+Lush broadly has 3 components,
+
+- A HSL color manipulator,
+- The lush-spec parser and compiler, and
+- Lushify, a buffer highlighting and hot-reload tool.
 
 For a usage example, 
 
 **HSL colors**
 
-The HSL color manipulator can be accessed via `require('lush').hsl`. It may be
-included in other modules via `require('lush.hsl')`.
+The [HSL color](https://www.w3.org/wiki/CSS3/Color/HSL) manipulator can be
+accessed via `require('lush').hsl`.  It may also be included in other modules
+via `require('lush.hsl')`.
 
-It provides multiple methods for manipulating a color. All functions are pure
-and return new colors.
+You can create HSL colors by providing hue, saturation and lightness values,
+or providing a hexidecimal string.
+
+    color = hsl(0, 100, 50) -- equivilent to rgb(255,0,0) elsewhere
+    hex_color = hsl("#FF0000") -- hex_color == color
+
+It provides multiple methods for manipulating a color. All functions are pure,
+always returning new colors and leaving the originals unmodified. Functions
+can be chained.
+
+There are 3 main operations you may want to perform:
+
+- Rotate a hue.
+- Saturate (or desaturate) a color.
+- Lighten (or darken) a color.
 
 Hue/rotate values are wrapped around 0-360 degrees, lightness and saturations
 are between 0-100.
+
+HSL provides the following functions to achieve these operations:
+
+- `color.rotate(n)`: rotate `n` degrees around the color wheel.
+  - `color.rotate(180)` gives you `color`'s complementary tone.
+  - `color.rotate(40)` gives you an analogous color.
+  - `color.rotate(-40)`, as above but in the opposite direction.
+  - `color.rotate(120)` one part of the triad.
+  - `color.rotate(-120)`, the other part of the triad.
+
+- `color.saturate(n)`: increase a colors saturation by `n` percent.
+  - `saturate` has a mirrored function, `desaturate`.
+    - `saturate(-n) == desaturate(n)`
+
+- `color.lighten(n)`: increase a colors lightness by `n` percent.
+  - `lighten` has a mirrored function, `darken`.
+    - `lighten(-n) == darken(n)`
+
+Note that these functions are *relative* to the color space, not simply
+additive. That is:
+
+    color = hsl(0, 50, 50)
+    color.saturate(10) -- adds 10% saturation to 50
+
+If you wish to add an absolute amount to a color, you can use the `abs_`
+prefixed functions (most of the time you should use relative ajustments):
+
+- `color.abs_saturate(n)` (and `abs_desaturate`)
+- `color.abs_lighten(n)` (and `abs_darken`)
+
+Behaves as:
+
+    color = hsl(0, 50, 50)
+    color.abs_saturate(10) -- adds 10 to 50
+
+Rotate does not have an `abs_` prefixed function, *it always operates
+absolutely*.
+
+All operations have shortcut aliases:
+
+- `ro`: `rotate`
+- `sa`: `saturate`
+- `de`: `desaturate`
+- `li`: `lighten`
+- `da`: `darken`
+- `abs_sa`: `abs_saturate`
+- `abs_de`: `abs_desaturate`
+- `abs_li`: `abs_lighten`
+- `abs_da`: `abs_darken`
+
+You may also directly set a HSL value via:
+
+- `hue(n)`
+- `saturation(n)`
+- `lightness(n)`
+
+And access members with,
+
+- `color.h`: Hue.
+- `color.s`: Saturation.
+- `color.l`: Lightness.
+
+Finally, HSL colors can be coerced into a hex string, either by:
+
+- concatenation: `color .. "" == "#......"`
+- `.hex` member: `color.hex == "#......"`
+- `tostring(c)`: `tostring(color) == "#......"`
+
+The following is an example of of all these concepts:
 
     local hsl = require('lush').hsl                 -- include the module
     local red = hsl(0, 100, 50)                     -- define a color
     local light_red = red.lighten(20)               -- modify
     local orange = red.hue(20)                      -- set
-    local sum_reds = red.h + light_red.h + orange.h -- access
-    local chained_compliment = red.rotate(180)      -- chain
-                                  .darken(30)
-                                  .saturate(10)
+    local sum_hues = red.h + light_red.h + orange.h -- access
+    local chained_compliment = red.ro(180)          -- chain via aliases
+                                  .da(30)
+                                  .sa(10)
     print(red)                                      -- as string (#hex)
 
 **Lush Spec**
@@ -125,6 +217,8 @@ rotate(240)) or it's complement (rotate(180)), or split complement
 
 Bugs or Limitations
 ---
+
+- you may find some elements don't update in real time (LSP sign column for example). This is a side effect of colours are applied to those elements, only as they are created. The group name in your lush-spec should update to let you see how it will look when your theme is loaded.
 
 - Sometimes real time highlighting be applied awkwardly when the Pmenu is open.
 
