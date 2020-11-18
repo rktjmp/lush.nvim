@@ -46,11 +46,10 @@ local sea_gull  = hsl("#c6c6c6")    -- Or use hex form, preceeded with a #.
 
 -- Lush.hsl provides a number of conveniece functions for:
 --
---   Relative adjustment (roatate(), saturate(), desaturate(), lighten(), darken())
+--   Relative adjustment (rotate(), saturate(), desaturate(), lighten(), darken())
 --   Overrides           (hue(), saturation(), lightness())
 --   Access              (.h, .s, .l)
 --   Coercion            (tostring(), "Concatenation: " .. color)
---   TODO: relative vs absolute adjustment, short codes
 --
 
 -- Now that you know the basics of using hsl(), we can define our colour
@@ -78,7 +77,7 @@ local theme = lush(function()
     -- Lets define our "Normal" highlight group, using our sea colours.
 
     -- Set a highlight group from hsl variables
-    -- Remove comment infront of "Normal"
+    -- Uncomment "Normal"
     -- Normal       { bg = sea_deep, fg = sea_foam }, -- normal text
 
     -- You should be on the water now, Lush.ify has automatically
@@ -107,9 +106,10 @@ local theme = lush(function()
     -- Comment      { fg = Normal.bg.desaturate(25).lighten(25), gui="italic" }, -- (preferred) any comment
 
     -- Here's how we might set our line numbers to be relational to Normal,
-    -- with some TODO NOTE short hands
+    -- note that we're also using some function aliases, see the readme for more
+    -- information.
     -- (`set number`)
-    -- LineNr       { bg = Normal.bg.dar(30), fg = Normal.fg.dar(70) }, -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
+    -- LineNr       { bg = Normal.bg.da(30), fg = Normal.fg.da(70) }, -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
     -- CursorLineNr { bg = CursorLine.bg, fg = Normal.fg.ro(180) }, -- Like LineNr when 'cursorline' or 'relativenumber' is set for the cursor line.
 
     -- You can also use highlight groups to define "base" colors, if you dont
@@ -120,7 +120,7 @@ local theme = lush(function()
     -- CamelCase is by tradition but you don't have to use it.
     -- search_base  { bg = hsl(52, 52, 52), fg = hsl(52, 10, 10) },
     -- Search       { search_base },
-    -- IncSearch    { bg = search_base.bg.rotate(-20), fg = search_base.fg.darken(90) },
+    -- IncSearch    { bg = search_base.bg.ro(-20), fg = search_base.fg.da(90) },
 
     -- And that's the basics of using Lush!
     --

@@ -80,11 +80,14 @@ local sea_gull = hsl("#c6c6c6") -- as as string, preceeded with a #
 
 -- Lush.hsl provides a number of conveniece functions for:
 --
---   Relative adjustment (roatate(), saturate(), desaturate(), lighten(), darken())
+--   Relative adjustment (rotate(), saturate(), desaturate(), lighten(), darken())
+--   Absolute adjustment (prefix above with abs_)
 --   Overrides           (hue(), saturation(), lightness())
 --   Access              (.h, .s, .l)
 --   Coercion            (tostring(), "Concatination: " .. color)
---   TODO: relative vs absolute adjustment, short codes
+--
+--   Adjustment functions have shortcut aliases, ro, sa, de, li, da
+--                                               abs_sa, abs_de, abs_li, abs_da
 --
 
 -- Lets find some harmonious colours from our original set.
@@ -100,13 +103,14 @@ local sea_foam_compliment = sea_foam.rotate(180).darken(10).saturate(10)
 -- scheme. Do do this, we will write what is called a lush-spec.
 
 -- We must pass a function to Lush, which returns a table containing
--- our spec. This may seem a little confusing at first, it's a lua quirk.
+-- our spec. This may seem a little confusing at first, it's a lua quirk,
+-- just follow the template.
+
+-- When called in this manner, Lush will process our lush-spec, and return
+-- a table, which we can use later to compile into vimscript and apply.
 --
--- When called in this manner, Lush will process our lush-spec,
--- clear any existing syntax and highlight groups, then apply our scheme.
---
--- If you want more control over the application or to explort for use
--- without Lush, see TODO lush.create() lush.apply() stringify()
+-- If you want more control over the compliation process or to explort for use
+-- without Lush, see the README or the bottom of this file.
 
 -- Call lush with our lush-spec.
 -- ignore the "theme" variable for now
@@ -127,7 +131,7 @@ local theme = lush(function()
     -- Lets define our "Normal" highlight group, using our sea colours.
 
     -- Set a highlight group from hsl variables
-    -- Remove comment infront of "Normal"
+    -- Uncomment "Normal"
     -- Normal       { bg = sea_deep, fg = sea_foam }, -- normal text
 
     -- You should be on the water now, Lush.ify has automatically
@@ -156,9 +160,9 @@ local theme = lush(function()
     -- Comment      { fg = Normal.bg.desaturate(25).lighten(25), gui="italic" }, -- (preferred) any comment
 
     -- Here's how we might set our line numbers to be relational to Normal,
-    -- with some TODO NOTE short hands
+    -- note we'er also using some shorter aliases here.
     -- (`set number`)
-    -- LineNr       { bg = Normal.bg.dar(30), fg = Normal.fg.dar(70) }, -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
+    -- LineNr       { bg = Normal.bg.da(30), fg = Normal.fg.da(70) }, -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
     -- CursorLineNr { bg = CursorLine.bg, fg = Normal.fg.ro(180) }, -- Like LineNr when 'cursorline' or 'relativenumber' is set for the cursor line.
 
     -- You can also use highlight groups to define "base" colors, if you dont
@@ -369,12 +373,6 @@ end)
 -- By default, lush() actually returns your theme in parsed form. You can
 -- interact with it in much the same way as you can inside a lush-spec.
 --
--- It's recommended that your lush theme file (i.e. this file), returns the
--- theme variable at its end. This allows for other themes to extend your
--- theme, be that to inhert a light style from a dark style, or to allow users
--- to make adjustments by preference.  (e.g. to fix comment colours if they are
--- colourblind, etc)
---
 -- This looks something like:
 --
 --   local theme = lush(function()
@@ -404,29 +402,8 @@ end)
 --
 -- To set a global variable, use neovims lua bridge,
 --
---   vim.g.my_plugin.color_for_widget = tostring(theme.Normal.fg)
+--   vim.g.my_plugin.color_for_widget = theme.Normal.fg.hex
 --
--- Exporting a lush theme for use without Lush
---
--- To easily export a lush theme, you may pass your theme to export_to_buffer()
--- which will open a blank buffer, filled with your compiled theme for
--- editing or distribution.
---
--- The easiest way to do this is by inserting the export_to_buffer() call at
--- the end of your theme, temporarily, then reloading your theme.
---
--- Caution: If you're theme file is currently lush.ify'd you may
---          spawn multiple buffers
---
---   theme = lush(...)
---
---   lush.export_to_buffer(theme)
---
--- Finally you can manually apply all stages, if you wish to inject something.
--- local parsed = lush.parse(lush_spec, options) -- table of spec
--- local compiled = lush.compile(parsed, options) -- table of cmd strings
--- lush.apply(compiled) -- runs cmds
-
 -- return our parsed theme for extension or use else where.
 return theme
 
