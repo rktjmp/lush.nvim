@@ -1,14 +1,15 @@
-
-           ,gggg,
-          d8" "8I                         ,dPYb,
-          88  ,dP                         IP'`Yb
-       8888888P"                          I8  8I
-          88                              I8  8'
-          88        gg      gg    ,g,     I8 dPgg,
-     ,aa,_88        I8      8I   ,8'8,    I8dP" "8I
-    dP" "88P        I8,    ,8I  ,8'  Yb   I8P    I8
-    Yb,_,d88b,,_   ,d8b,  ,d8b,,8'_   8) ,d8     I8,
-     "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
+```
+       ,gggg,
+      d8" "8I                         ,dPYb,
+      88  ,dP                         IP'`Yb
+   8888888P"                          I8  8I
+      88                              I8  8'
+      88        gg      gg    ,g,     I8 dPgg,
+ ,aa,_88        I8      8I   ,8'8,    I8dP" "8I
+dP" "88P        I8,    ,8I  ,8'  Yb   I8P    I8
+Yb,_,d88b,,_   ,d8b,  ,d8b,,8'_   8) ,d8     I8,
+ "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
+```
 
 Lush
 ====
@@ -33,7 +34,9 @@ Lush is:
 
 Install via any package mangement system, for example, vim-plug:
 
-    Plug 'rktjmp/lush.nvim'
+```vim
+Plug 'rktjmp/lush.nvim'
+```
 
 There are two interactive tutorials provided,
 
@@ -57,7 +60,8 @@ Lush broadly has 3 components,
 
 For a usage example, 
 
-### HSL colors
+HSL Colors
+----------
 
 The [HSL color](https://www.w3.org/wiki/CSS3/Color/HSL) manipulator can be
 accessed via `require('lush').hsl`.  It may also be included in other modules
@@ -66,8 +70,10 @@ via `require('lush.hsl')`.
 You can create HSL colors by providing hue, saturation and lightness values,
 or providing a hexidecimal string.
 
-    color = hsl(0, 100, 50) -- equivilent to rgb(255,0,0) elsewhere
-    hex_color = hsl("#FF0000") -- hex_color == color
+```lua
+color = hsl(0, 100, 50) -- equivilent to rgb(255,0,0) elsewhere
+hex_color = hsl("#FF0000") -- hex_color == color
+```
 
 It provides multiple methods for manipulating a color. All functions are pure,
 always returning new colors and leaving the originals unmodified. Functions
@@ -102,8 +108,10 @@ HSL provides the following functions to achieve these operations:
 Note that these functions are *relative* to the color space, not simply
 additive. That is:
 
-    color = hsl(0, 50, 50)
-    color.saturate(10) -- adds 10% saturation to 50
+```lua
+color = hsl(0, 50, 50)
+color.saturate(10) -- adds 10% saturation to 50
+```
 
 If you wish to add an absolute amount to a color, you can use the `abs_`
 prefixed functions (most of the time you should use relative ajustments):
@@ -113,8 +121,10 @@ prefixed functions (most of the time you should use relative ajustments):
 
 Behaves as:
 
-    color = hsl(0, 50, 50)
-    color.abs_saturate(10) -- adds 10 to 50
+```lua
+color = hsl(0, 50, 50)
+color.abs_saturate(10) -- adds 10 to 50
+```
 
 Rotate does not have an `abs_` prefixed function, *it always operates
 absolutely*.
@@ -151,17 +161,20 @@ Finally, HSL colors can be coerced into a hex string, either by:
 
 The following is an example of of all these concepts:
 
-    local hsl = require('lush').hsl                 -- include the module
-    local red = hsl(0, 100, 50)                     -- define a color
-    local light_red = red.lighten(20)               -- modify
-    local orange = red.hue(20)                      -- set
-    local sum_hues = red.h + light_red.h + orange.h -- access
-    local chained_compliment = red.ro(180)          -- chain via aliases
-                                  .da(30)
-                                  .sa(10)
-    print(red)                                      -- as string "#FF0000"
+```lua
+local hsl = require('lush').hsl                 -- include the module
+local red = hsl(0, 100, 50)                     -- define a color
+local light_red = red.lighten(20)               -- modify
+local orange = red.hue(20)                      -- set
+local sum_hues = red.h + light_red.h + orange.h -- access
+local chained_compliment = red.ro(180)          -- chain via aliases
+                              .da(30)
+                              .sa(10)
+print(red)                                      -- as string "#FF0000"
+```
 
-### Lush Spec
+Lush Spec
+---------
 
 You define your color scheme by writing a lush-spec, which can leverage the
 HSL module and be exported to other parts of Neovim.
@@ -180,31 +193,35 @@ If that sounded confusing, it's much simpler in practice.
 
 Here's a very simple lush-spec:
 
-    -- cool_name/lua/lush_theme/cool_name.lua
-    -- require lush
-    local lush = require('lush')
+```lua
+-- cool_name/lua/lush_theme/cool_name.lua
+-- require lush
+local lush = require('lush')
 
-    -- lush(), when given a spec, will parse it and return a table 
-    -- containing your color information.
-    -- We should return it for use in other files.
-    return lush(function()
-      return {
-        -- Define what vims Normal highlight group should look like
-        Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
-        -- And make our comments slightly darker than normal, in italics
-        Comment { fg = Normal.darken(40), gui = "italic" },
-        -- And make Whitespace look the same
-        Whitespace { Comment },
-      }
-    end)
+-- lush(), when given a spec, will parse it and return a table 
+-- containing your color information.
+-- We should return it for use in other files.
+return lush(function()
+  return {
+    -- Define what vims Normal highlight group should look like
+    Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
+    -- And make our comments slightly darker than normal, in italics
+    Comment { fg = Normal.darken(40), gui = "italic" },
+    -- And make Whitespace look the same
+    Whitespace { Comment },
+  }
+end)
+```
 
-    " cool_name/colors/cool_name.vim
-    " yes, unfortunately you still have to write some vimscript
-    set background=dark
-    let g:colors_name="cool_name"
-    " you could detect background == dark || light here and require
-    " different files
-    lua require('lush')(require('lush_theme.cool_name'))
+```vim
+" cool_name/colors/cool_name.vim
+" yes, unfortunately you still have to write some vimscript
+set background=dark
+let g:colors_name="cool_name"
+" you could detect background == dark || light here and require
+" different files
+lua require('lush')(require('lush_theme.cool_name'))
+```
 
 That's essentially all you need to know to write a lush-spec. The starter
 files provide a deeper example and some tips and tricks.
@@ -232,16 +249,22 @@ theme.
 You may not name any groups `ALL`, `NONE`, `ALLBUT`, `contained` or `contains`,
 this is a vim constraint.
 
-###Lushify
+Lush.ify
+-------
 
-Lushify will provide automatic, realtime highlighting of any hsl(...) calls, as
-well as highlighting any groups in your lush-spec with their appropriate colors.
+Lush.ify will provide automatic, realtime highlighting of any hsl(...) calls,
+as well as highlighting any groups in your lush-spec with their appropriate
+colors.
 
 To use lushify, open your theme lua file and run
 
-    :lua require('lush').ify()
+```vim
+:lua require('lush').ify()
+```
 
-Lushify's convenience method is limited to one buffer at a time (the last it was attached to), but you may call `attach_to_buffer(buffer_number)` manually if you desire.
+#TODO Lushify's convenience method is limited to one buffer at a time (the last it
+was attached to), but you may call `attach_to_buffer(buffer_number)` manually
+if you desire.
 
 Notes
 ---
