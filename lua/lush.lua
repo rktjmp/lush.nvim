@@ -71,7 +71,7 @@ end
 M.export_to_buffer = function(parsed_spec)
   local lines = M.compile(parsed_spec)
 
-  table.insert(lines, 1, "\" Lush.nvim theme exported at " .. os.date())
+  table.insert(lines, 1, "\"Theme built with Lush.nvim, exported at " .. os.date())
 
   local buf = vim.api.nvim_create_buf(false, true)
   local win = vim.api.nvim_open_win(buf, true, {
