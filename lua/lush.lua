@@ -41,8 +41,8 @@ M.ify = function()
 end
 
 -- spec -> table
-M.parse = function(spec, options)
-  return parser(spec)
+M.parse = function(spec, injections)
+  return parser(spec, injections)
 end
 
 -- table -> table
@@ -87,9 +87,8 @@ end
 
 -- given a spec function, generate a parsed spec
 -- (spec, table) -> table
-local easy_spec = function(spec, options)
-  options = merge_default_options(options)
-  local parsed = M.parse(spec, options)
+local easy_spec = function(spec, injections)
+  local parsed = M.parse(spec, injections)
   -- return parsed spec for use with externals
   return parsed
 end
@@ -118,6 +117,7 @@ local function detect_easy(spec_or_parsed, options)
     local spec = spec_or_parsed
     return easy_spec(spec, options)
   -- parsed specs are tables
+  -- TODO can check real tpye here
   elseif type(spec_or_parsed) == "table" then
     local parsed = spec_or_parsed
     return easy_parsed(parsed, options)

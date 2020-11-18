@@ -1,7 +1,6 @@
 describe "parser", ->
   parse = require('lush.parser')
 
-
   it "warns on bad input", ->
     assert.error(-> parse(nil))
     assert.error(-> parse(""))
@@ -112,3 +111,14 @@ describe "parser", ->
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt" }
     }
     assert.equal('parsed_lush_spec', s.__type)
+
+  it "can inject other functions", ->
+    spec =-> {
+      A { bg: math.random(0, 10) },
+    }
+    parsed = parse(spec,{math: math})
+    assert.not_nil(parsed)
+    assert.not_nil(parsed.A.bg)
+    assert.is_number(parsed.A.bg)
+    assert.is_true(parsed.A.bg > 0 and parsed.A.bg < 10)
+

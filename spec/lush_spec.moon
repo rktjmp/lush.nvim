@@ -84,6 +84,13 @@ describe "lush", ->
     text = lush.stringify(parsed, {force_clean: false})
     assert.is_string(text)
     assert.is_equal(2, select(2, string.gsub(text, '\n', '\n')))
+  
+  it "can pass injections down to parser", ->
+    lush_spec = -> {
+      A { bg: math.random(10) }
+    }
+    parsed = lush(lush_spec, {math: math})
+    assert.is_number(parsed.A.bg)
 
   it "exposes a manual toolchain", ->
     parsed = lush.parse(lush_spec)
