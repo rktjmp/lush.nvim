@@ -14,9 +14,9 @@ Yb,_,d88b,,_   ,d8b,  ,d8b,,8'_   8) ,d8     I8,
 Lush
 ====
 
-Lush is a colorscheme creation plugin written in Lua, for Neovim.
+Lush is a colorscheme creation aid, written in Lua, for Neovim.
 
-Lush lets you define your scheme as a *mini-dsl*, provides HSL space *colour
+Lush lets you define your scheme as a *mini-dsl*, provides HSL *colour
 manipulation* aids, and gives you *real time* feedback of your changes.
 
 Lush themes can be exported to plain vimscript for distribution (or escape),
@@ -40,11 +40,11 @@ Plug 'rktjmp/lush.nvim'
 
 There are two interactive tutorials provided,
 
-- `lush_quick_start.lua`, which will give you a 2 minute overview of Lush's
-  features
+- `lush_quick_start.lua`, which will give you a few-minute overview of Lush's
+  features.
 
 - `lush_tutorial.lua`, a more in-depth guide through various ways to apply
-  lush.
+  Lush.
 
 There are also examples of various topics (lightline, import, export) in the
 `examples` folder.
@@ -177,7 +177,8 @@ Lush Spec
 ---------
 
 You define your color scheme by writing a lush-spec, which can leverage the
-HSL module and be exported to other parts of Neovim.
+HSL module and be exported to other parts of Neovim. Lush will expose your
+lush-spec as a Lua module.
 
 The starter files, `lush_quick_start.lua` and `lush_tutorial.lua` provide an
 interactive tutorial on how to create a lush-spec.
@@ -237,6 +238,16 @@ colour data.
 In the vim file, we can call `lush(parsed-lush-spec)` to clear any existing
 highlighting and apply our parsed lush-spec.
 
+#### Why `lua/lush_theme/`?
+
+Lua doesn't have any strict namespacing. Because anything in a plugins `lua/`
+directory becomes avaliable as a module in vim, it's advised to nest your
+theme inside a `lush_theme` folder, essentialy providing a namespace for all
+lush themes to exist in. This is to avoid any collisions between themes and
+other modules.
+
+This isn't a strict rule enforced in anyway by Lush, simply a recommendation.
+
 #### Linters
 
 You will likely get warnings from linters while writing a lush-spec,
@@ -244,10 +255,38 @@ specifally around "undefined globals". Most of these warnings can be safely
 ignored, you may wish to disable LSP/Linters temporarily when working on a
 theme.
 
-#### Reserved names
+#### Reserved Names
 
 You may not name any groups `ALL`, `NONE`, `ALLBUT`, `contained` or `contains`,
 this is a vim constraint.
+
+#### Other Attributes
+
+Normal Vim highlight attributes such as `gui` and `guisp` can be set via the
+`gui` and `sp` keys respectively.
+
+Other keys are not compiled into the final highlight command, but *are*
+retained in the parsed lush-spec for access in other modules. `__name` is a
+reserved key and may not be used.
+
+#### Exporting From Lush
+
+If you wish to move your theme away from lush, or export it for use in Vim,
+you can run the following lua code:
+
+```vim
+:lua require('lush').export_to_buffer(require('lua-module-theme-name'))
+```
+
+Your Lush theme will be exported to a new floating window, as a collection of
+Vim higlight commands.
+
+Note that the name you specify is the name of the lua module in which your
+theme was defined. In the above short-example, you would run
+
+```vim
+:lua require('lush').export_to_buffer(require('lush_theme.cool_name'))
+```
 
 Lush.ify
 -------
@@ -262,17 +301,27 @@ To use lushify, open your theme lua file and run
 :lua require('lush').ify()
 ```
 
-#TODO Lushify's convenience method is limited to one buffer at a time (the last it
-was attached to), but you may call `attach_to_buffer(buffer_number)` manually
-if you desire.
+### Incompatibilities
+
+#### Easy Motion
+
+Activating the easy motion plugin *in a lush.ify'd buffer* will cause a lot of
+syntax errors. This is because easy-motion directly modifies the buffer to
+display its "jump keys". 
+
+It is not recommened you activate easy motion in a lush.ify'd buffer. 
+
+#### Lightline
+
+While Lightline can be styled through Lush, realtime updating has some
+caveats and performance may be less than optimal due to vimscripts
+performance.
+
+See `examples/lightline-one-file` and `examples/lightline-two-files` for
+guiadance.
 
 Notes
 ---
-
-You can use HSL anywhere, (require('lush').hsl, access h,s,l values via h,s or
-l and convert to hex via tostring() or concat. Similarly lush.ify() will work
-in any buffer you attach it to (hsl(...) should be compatible, groups may
-highlight odd things depending on the file).
 
 bg, fg, gui = "bold, italic", sp = "NONE"
 
