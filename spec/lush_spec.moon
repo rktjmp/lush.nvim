@@ -71,7 +71,7 @@ describe "lush", ->
       e = assert.error(-> lush(->))
       assert.equal(e, "malformed lush-spec")
       e = assert.error(-> lush({}))
-      assert.equal(e, "can't compile, incorrect argument type")
+      assert.equal("lush() supplied incorrect arguments", e)
 
   it "can output scheme as text", ->
     -- no options
