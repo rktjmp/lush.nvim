@@ -1,75 +1,87 @@
 local convert = require('lush.hsl.convert')
 
 local function hsl_clamp(color)
-  return {
-    h = (color.h % 360),
-    s = math.min(100, math.max(0, color.s)),
-    l = math.min(100, math.max(0, color.l)),
-  }
+  local clamp = function(val, min, max)
+    return math.min(max, math.max(min, val))
+  end
+  local round = function(val)
+    return math.floor(val + 0.5)
+  end
+  local h, s, l
+  h = color.h % 360
+  s = round(clamp(color.s, 0, 100))
+  l = round(clamp(color.l, 0, 100))
+  return { h = h, s = s, l = l }
 end
 
 local function wrap_color(color)
   -- make sure our color is valid
   color = hsl_clamp(color)
 
-  local roll_fn = function(color, key, negate)
-    -- negate -> darken -> -val
-    negate = negate and -1 or 1
-    return function(val)
+  local roll_abs_fn = function(color, key)
+    return function(abs_value)
       local new_color = {h = color.h, s = color.s, l = color.l}
-      new_color[key] = new_color[key] + (val * negate)
+      new_color[key] = new_color[key] + abs_value
       return wrap_color(new_color)
     end
   end
 
-  local roll_rel_fn = function(color, key, negate)
-    -- negate -> darken -> -val
-    negate = negate and -1 or 1
-    return function(val)
+  local roll_lerp_fn = function(color, key)
+    return function(percent)
+      -- we never modifiy the caller
       local new_color = {h = color.h, s = color.s, l = color.l}
-      new_color[key] = new_color[key] + (new_color[key] * (val/100) * negate)
+      -- we can safely bounds all relative adjustments to 0, 100
+      -- because you can't 'relatively rotate' hue
+      local min, max = 0, 100
+      -- we want to lerp between the current value, and the potential largest
+      -- change for -percent this is [0, current], +percent, [0, max - current]
+      local lerp_space = percent < 0 and new_color[key] or (max - new_color[key])
+      -- perform the lerp
+      new_color[key] = new_color[key] + (lerp_space * (percent / 100))
       return wrap_color(new_color)
     end
   end
 
   local rotate = function(color)
-    return roll_fn(color, "h")
-  end
-
-  local rotate_rel = function(color)
-    -- doesn't really make sense to relatively rotate a hue,
-    -- relatively rotate 0 (red) is always red, green swings more than blue
-    -- etc.
-    error("hsl.rotate_rel is an unsupported operation, use rotate()", 2)
-  end
-
-  local lighten = function(color)
-    return roll_fn(color, "l")
-  end
-  local lighten_rel = function(color)
-    return roll_rel_fn(color, "l")
-  end
-
-  local darken = function(color)
-    return roll_fn(color, "l", true)
-  end
-  local darken_rel = function(color)
-    return roll_rel_fn(color, "l", true)
+    return roll_abs_fn(color, "h")
   end
 
   local saturate = function(color)
-    return roll_fn(color, "s")
+    return roll_lerp_fn(color, "s")
   end
-  local saturate_rel = function(color)
-    return roll_rel_fn(color, "s")
+  local abs_saturate = function(color)
+    return roll_abs_fn(color, "s")
   end
 
   local desaturate = function(color)
-    return roll_fn(color, "s", true)
+    return function(percent)
+      return roll_lerp_fn(color, "s")(-percent)
+    end
   end
-  local desaturate_rel = function(color)
-    return roll_rel_fn(color, "s", true)
+  local abs_desaturate = function(color)
+    return function(abs_value)
+      return roll_abs_fn(color, "s")(-abs_value)
+    end
   end
+
+  local lighten = function(color)
+    return roll_lerp_fn(color, "l")
+  end
+  local abs_lighten = function(color)
+    return roll_abs_fn(color, "l")
+  end
+
+  local darken = function(color)
+    return function(percent)
+      return roll_lerp_fn(color, "l")(-percent)
+    end
+  end
+  local abs_darken = function(color)
+    return function(abs_value)
+      return roll_abs_fn(color, "l")(-abs_value)
+    end
+  end
+
 
   local hue = function(color)
     return function(hue)
@@ -89,29 +101,27 @@ local function wrap_color(color)
 
   local mod_fns = {
     rotate = rotate,
-    rotate_rel = rotate_rel,
     ro = rotate,
-    ror = rotate_rel,
 
     saturate = saturate,
-    saturate_rel = saturate_rel,
     sa = saturate,
-    sar = saturate_rel,
+    abs_saturate = abs_saturate,
+    abs_sa = abs_saturate,
 
     desaturate = desaturate,
-    desaturate_rel = desaturate_rel,
     de = desaturate,
-    der = desaturate_rel,
+    abs_desaturate = abs_desaturate,
+    abs_de = abs_desaturate,
 
     lighten = lighten,
-    lighten_rel = lighten_rel,
     li = lighten,
-    lir = lighten_rel,
+    abs_lighten = abs_lighten,
+    abs_li = abs_lighten,
 
     darken = darken,
-    darken_rel = darken_rel,
     da = darken,
-    dar = darken_rel,
+    abs_darken = abs_darken,
+    abs_da = abs_darken,
 
     hue = hue,
     saturation = saturation,
