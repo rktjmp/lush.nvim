@@ -241,4 +241,4 @@ end)
 -- return our parsed theme for extension or use else where.
 return theme
 
--- vi:nowrap:cursorline:number
+-- vi:nowrap
