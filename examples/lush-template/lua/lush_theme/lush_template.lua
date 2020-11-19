@@ -1,5 +1,6 @@
 --
--- Built wiht,
+-- Built with,
+--
 --        ,gggg,
 --       d8" "8I                         ,dPYb,
 --       88  ,dP                         IP'`Yb
@@ -51,7 +52,6 @@ local theme = lush(function()
     -- probably style all of these at a bare minimum.
     --
     -- Referenced/linked groups must come before being referenced/lined,
-    -- (i.e. above we create Normal before trying to set CursorLine)
     -- so the order shown ((mostly) alphabetical) is likely
     -- not the order you will end up with.
     --

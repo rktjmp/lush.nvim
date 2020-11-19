@@ -10,20 +10,10 @@
 -- Yb,_,d88b,,_   ,d8b,  ,d8b,,8'_   8) ,d8     I8,
 --  "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
 --
--- This is an starter lush-spec colour scheme and tutorial.
--- Copy it to your own <theme>/lua/<theme_name>.lua and edit,
--- or open it and follow the instructions to explore Lush.
+-- This is the Lush tutorial. It demostrates the functionality of Lush and how
+-- to write a basic lush-spec. For more information, see the README.
 --
--- Note: Because this is lua file, vim will append your file to the runtime,
---       which means you can require(...) it in other lua code (this is useful),
---       but you should also take care not to conflict with other libraries.
---
---       (This is a lua quirk, as it has somewhat poor support for namespacing.)
---
---       Basically, name your file "super_theme/lua/super_theme_dark.lua",
---       not "super_theme/lua/dark.lua".
---
---       With that caveat out of the way...
+-- A Lush theme starter template can be found in the examples folder.
 --
 
 -- First, enable lush.ify on this file, run:
@@ -62,21 +52,21 @@ local sea_foam  = hsl(208, 80, 80)  -- Try presing C-a and C-x
 local sea_crest = hsl(208, 90, 30)  -- to increment or decrement
 local sea_deep  = hsl(208, 90, 10)  -- the integers used here.
 
+-- Note: Some CursorLine highlighting can obscure any other
+--       highlighing on the current line until you move your cursor.
+--
+--       You can disable the cursor line temporarily with:
+--
+--       `setlocal nocursorline`
+
 -- You can see we have 3 blues, all with the same hue and adjusted levels
 -- of saturation and brightness. They naturally sit well together.
 --
 -- Try editing these values to see the colours update in real time.
 --
--- Remember hue (0-360), saturation (0-100), lightness (0-100)
+-- Remember hue: [0-360], saturation and lightness: [0-100].
 -- (HSL will fix any invalid values internally.)
 --
--- Note: Some CursorLine highlighting will obscure any other
---       highlighing on the current line until you move your cursor.
---
---       You can disable the CursorLine group temporarily with:
---
---       `:hi! CursorLine NONE`
-
 -- Many online palette helpers provide hex values by default, so you can
 -- also import those into hsl.
 
@@ -92,7 +82,6 @@ local sea_gull = hsl("#c6c6c6") -- as as string, preceeded with a #
 --
 --   Adjustment functions have shortcut aliases, ro, sa, de, li, da
 --                                               abs_sa, abs_de, abs_li, abs_da
---
 
 -- Lets find some harmonious colours from our original set.
 -- (Unfortunately, deep inspection of lushify modifiers is currently WIP.)
@@ -101,7 +90,7 @@ local sea_gull = hsl("#c6c6c6") -- as as string, preceeded with a #
 local sea_foam_triadic = sea_foam.rotate(120)
 
 -- rotate 180 degrees, darken and saturate the colour.
-local sea_foam_compliment = sea_foam.rotate(180).darken(10).saturate(10)
+local sea_foam_complement = sea_foam.rotate(180).darken(10).saturate(10)
 
 -- Now that you know the basics of using hsl(), we can define our colour
 -- scheme. Do do this, we will write what is called a lush-spec.
@@ -111,16 +100,20 @@ local sea_foam_compliment = sea_foam.rotate(180).darken(10).saturate(10)
 -- just follow the template.
 
 -- When called in this manner, Lush will process our lush-spec, and return
--- a table, which we can use later to compile into vimscript and apply.
+-- a table, which we can use later to compile into vimscript and apply, or
+-- we can access in other lua modules to use our themes color data.
 --
--- If you want more control over the compliation process or to explort for use
+-- If you want more control over the compliation process or to export for use
 -- without Lush, see the README or the bottom of this file.
 
 -- Call lush with our lush-spec.
 -- ignore the "theme" variable for now
 local theme = lush(function()
   return {
-    -- It's recommended to disable wrapping with `setlocal nowrap`.
+    -- It's recommended to disable wrapping with `setlocal nowrap`, each
+    -- group in this tutorial is appended by it's description for ease of use,
+    -- but the wrapping may be distracting.
+    --
     -- You may also receive (mostly ignorable) linter/lsp warnings,
     -- because our lua is a bit more dynamic than they expect.
     -- You may also wish to disable those while editing your theme
@@ -130,7 +123,8 @@ local theme = lush(function()
     --
     --   <HighlightGroupName> { bg = <hsl>, fg = <hsl>, gui/sp= <string> },
     --
-    -- Any vim highlight group name is valid, and any key can be omitted.
+    -- Any vim highlight group name is valid, and any unrecognized key is
+    -- omitted.
     --
     -- Lets define our "Normal" highlight group, using our sea colours.
 
@@ -140,11 +134,14 @@ local theme = lush(function()
 
     -- You should be on the water now, Lush.ify has automatically
     -- recognized our Highlight definition and applied it in real time.
+    -- Note: This is applied *vim wide* so other buffers reflect your changes
+    --       too. Try opening up a project in a split to see your new theme in
+    --       a real setting.
 
     -- Lush is most useful when you use previously defined groups aid in
     -- picking colours for future groups.
     --
-    -- For example, lets set our cursorline (if enabled: `set cursorline`)
+    -- For example, lets set our cursorline (if enabled: `setlocal cursorline`)
     -- to be slightly lighter than our normal background.
     --
     -- Set a highlight group from another highlight group
@@ -156,7 +153,8 @@ local theme = lush(function()
 
     -- We can also link a group to another group. These will inherit all
     -- of the linked group options (See h: hi-link).
-    -- (`set cursorcolumn`)
+    -- (`setlocal cursorcolumn`)
+    -- (May have performance impact depending on terminal)
     -- CursorColumn { CursorLine }, -- Screen-column at the cursor, when 'cursorcolumn' is set.
 
     -- Here's how we can set comments to be slightly less visible and italic.
@@ -165,8 +163,8 @@ local theme = lush(function()
 
     -- Here's how we might set our line numbers to be relational to Normal,
     -- note we'er also using some shorter aliases here.
-    -- (`set number`)
-    -- LineNr       { bg = Normal.bg.da(30), fg = Normal.fg.da(70) }, -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
+    -- (`setlocal number`)
+    -- LineNr       { bg = Normal.bg.da(10), fg = Normal.bg.li(5) }, -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
     -- CursorLineNr { bg = CursorLine.bg, fg = Normal.fg.ro(180) }, -- Like LineNr when 'cursorline' or 'relativenumber' is set for the cursor line.
 
     -- You can also use highlight groups to define "base" colors, if you dont
@@ -183,11 +181,14 @@ local theme = lush(function()
     --
     -- If you want to know more about exporting themes for use without lush
     -- (for distribution) or integration with other plugins (such as
-    -- lightline), see the bottom of this file `/export-external`
+    -- lightline), see the bottom of this file `/export-external`, the README,
+    -- or the examples folder.
 
-    -- The following are all the Neovim default highlight groups from
-    -- docs as of 0.5.0-812, to aid your theme creation. Your themes should
-    -- probably style all of these at a bare minimum.
+    -- For experimentation, below is all the Neovim default highlight groups
+    -- from docs as of 0.5.0-812.
+    --
+    -- If you wish to create a theme, it's recommended you copy the template
+    -- folder from the examples folder.
     --
     -- Referenced/linked groups must come before being referenced/lined,
     -- (i.e. above we create Normal before trying to set CursorLine)
@@ -390,6 +391,9 @@ end)
 --   tostring(theme.Normal.fg)             -- returns "#hexstring"
 --   tostring(theme.Normal.fg.lighten(10)) -- you can still modify colours, etc
 --
+-- This means you can `require('my_lush_file')` in any lua code to access your
+-- themes's color information.
+--
 -- Note:
 --
 -- "Linked" groups do not expose their colours, you can find the key
@@ -408,6 +412,15 @@ end)
 --
 --   vim.g.my_plugin.color_for_widget = theme.Normal.fg.hex
 --
+-- An example of where you may use this, might be to configure Lightline. See
+-- the examples folder for two styles of this.
+--
+-- Exporting your theme beyond Lush:
+--
+-- If you wish to use your theme in Vim, or without loading lush, you may export
+-- your theme via `lush.export_to_buffer(parsed_lush_spec)`. The readme has
+-- further details on how to do this.
+
 -- return our parsed theme for extension or use else where.
 return theme
 
