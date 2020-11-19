@@ -12,6 +12,9 @@ Lush themes can be exported to plain vimscript for distribution (or escape),
 and they can also be *imported* to other lua/vimscript files to access color
 data.
 
+**Lush is relatively stable and usable, but it still needs improvement. Some
+aspects of the API may change.**
+
 Installation and Getting Started
 --------------------------------
 
