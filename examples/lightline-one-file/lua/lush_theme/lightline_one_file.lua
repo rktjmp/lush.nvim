@@ -15,7 +15,13 @@
 
 -- This file shows how to style Lightline with Lush, using one file.
 --
--- Run `:lua require('lush').ify()` if you want real time changes.
+-- Enable lush.ify on this file, run:
+--
+--  `:Lushify`
+--
+--  or
+--
+--  `:lua require('lush').ify()`
 --
 -- Be sure to examine the accompaning colors/ vim file.
 

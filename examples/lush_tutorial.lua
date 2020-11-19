@@ -28,6 +28,10 @@
 
 -- First, enable lush.ify on this file, run:
 --
+--  `:Lushify`
+--
+--  or
+--
 --  `:lua require('lush').ify()`
 --
 -- (try putting your cursor inside the ` and typing yi`:@"<CR>)

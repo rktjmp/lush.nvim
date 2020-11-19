@@ -35,8 +35,11 @@
 
 -- Enable lush.ify on this file, run:
 --
---  `:lua require('lush').ify()`
+--  `:Lushify`
 --
+--  or
+--
+--  `:lua require('lush').ify()`
 
 local lush = require('lush')
 local hsl = lush.hsl

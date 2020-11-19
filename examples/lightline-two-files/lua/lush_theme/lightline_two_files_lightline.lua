@@ -29,6 +29,14 @@
 -- This allows us to import a fully parsed spec for use in other
 -- lua code.
 --
+-- Enable lush.ify on this file, run:
+--
+--  `:Lushify`
+--
+--  or
+--
+--  `:lua require('lush').ify()`
+--
 -- Import our main theme definitions
 local theme = require('lush_theme.lightline_two_files')
 
@@ -87,7 +95,7 @@ vim.g['lightline#colorscheme#lightline_two_files#palette'] = lightline_theme_fil
 vim.schedule(function()
   -- lightline#colorscheme() has a side effect of not always
   -- applying updates until after leaving insert mode.
-  vim.fn['lightline#colorscheme']()
+  -- vim.fn['lightline#colorscheme']()
 
    -- this will apply more uniforming across all modes, but may have
    -- unacceptable performance impacts.

@@ -30,10 +30,10 @@ Plug 'rktjmp/lush.nvim'
 There are two interactive tutorials provided,
 
 - `lush_quick_start.lua`, which will give you a few-minute overview of Lush's
-  features.
+  features, accessible via `:LushRunQuickstart`.
 
 - `lush_tutorial.lua`, a more in-depth guide through various ways to apply
-  Lush.
+  Lus, accessible via `:LushRunTutorial`.
 
 There are also examples of various topics (lightline, import, export) in the
 `examples` folder.
