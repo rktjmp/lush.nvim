@@ -112,11 +112,12 @@ describe "parser", ->
     }
     assert.equal('parsed_lush_spec', s.__type)
 
-  it "can inject other functions", ->
+  it "is a closure", ->
+    math = math
     spec =-> {
       A { bg: math.random(0, 10) },
     }
-    parsed = parse(spec,{math: math})
+    parsed = parse(spec)
     assert.not_nil(parsed)
     assert.not_nil(parsed.A.bg)
     assert.is_number(parsed.A.bg)

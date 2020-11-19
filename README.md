@@ -262,19 +262,20 @@ Other keys are not compiled into the final highlight command, but *are*
 retained in the parsed lush-spec for access in other modules. `__name` is a
 reserved key and may not be used.
 
-#### Dependency Injection
+#### Dependency Injection (Why can't I access math.random?)
 
-Because lush-specs are run in a clean state, they do not have access to the
-regular Lua library or other modules.
+Lush-specs are executed a bare environment, so they don't have access to lua
+globals or other modules. However, they are also written as closures, so they
+do have access to any local level variables in the theme file.
 
-If you do wish to access an external module, you can inject them via a second
-parameter to `parse` or `lush`.
-
-Just be careful that injected modules don't share function names with your
-group, though thats unlikely to happen.
+This means if you want to access a global module, you simply have to bind it
+to a local scope variable.
 
 ```lua
+-- all these local variables can be accessed in the spec closure
 local weather = require('local_weather')
+local harbour = require('lush_theme.harbour')
+local math = math
 
 lush(function()
   return {
@@ -283,9 +284,11 @@ lush(function()
     -- set comment color from normal fg, but set to a random
     -- analogous-ish color
     Comment { fg = Normal.fg.ro(math.random(-60, 60)) },
+    -- we can even access other theme data
+    -- automatic theme inheritance and extension is WIP
+    CursorLine { fg =  harbour.CursorLine.fg, bg = harbour.CursorLine.bg },
   }
-end, {weather = weather, math = math})
-```
+end)
 
 #### Exporting From Lush
 

@@ -79,15 +79,10 @@ local wrap = function(name, args)
          wrap_link(name, args[1]) or wrap_group(name, args)
 end
 
-local parse = function(fn, injection)
+local parse = function(fn, options)
   assert(type(fn) == "function", "Must supply function to parser")
 
-  -- since the spec is run in isolation, it can't access any normal
-  -- functions, but you may want to say, use math.random()
-  -- or another library.
-  -- You may inject those modules.
-  injection = injection or {}
-  setfenv(fn, setmetatable(injection, {
+  setfenv(fn, setmetatable({}, {
     -- remember, when someting gets 'indexed' in our lush spec,
     -- we define the function for that group, then insert it into
     -- the function env. Next time the group is referenced, it isn't

@@ -12,31 +12,30 @@
 --  "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
 --
 
--- Lush-specs are executed in a clean environment, which means they do not
--- have access to regular or external Lua functions.
---
--- If you do need access, you can inject modules or functions by passing
--- a table to lush, after your spec.
---
--- lush(spec, {my_mod: require('my_mod'), random: math.random})
+-- Lush-specs are closures, executed in a clean environment. This means they
+-- cannot access regular Lua globals or modules unless you bind those modules
+-- to a local variable.
 --
 -- You could use this to for example, set your background color depending on
--- an external api such as weather, build status, etc.
+-- an external api such as weather, build status, etc or inject another theme
+-- to use it's colors in a new theme (maybe your light and dark pair)
 --
 -- Note that the values are set only once, on load, so in the build status
 -- example, you would have to set some additional autocmds to reload your
--- theme.
+-- theme on external events.
 --
-
 
 local lush = require('lush')
 local hsl = lush.hsl
+local dark =require('lush_theme.my_theme_dark')
+local math = math -- locally bind math global
 
 local theme = lush(function()
   return {
     Normal { fg = hsl(100, 50, math.random(30, 60)) },
+    CursorLine { fg = dark.CursorLine.bg.li(30) },
   }
-end, {math = math})
+end)
 
 -- return our parsed theme for extension or use else where.
 return theme

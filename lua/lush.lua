@@ -41,8 +41,8 @@ M.ify = function()
 end
 
 -- spec -> table
-M.parse = function(spec, injections)
-  return parser(spec, injections)
+M.parse = function(spec)
+  return parser(spec)
 end
 
 -- table -> table
@@ -87,8 +87,8 @@ end
 
 -- given a spec function, generate a parsed spec
 -- (spec, table) -> table
-local easy_spec = function(spec, injections)
-  local parsed = M.parse(spec, injections)
+local easy_spec = function(spec)
+  local parsed = M.parse(spec)
   -- return parsed spec for use with externals
   return parsed
 end
@@ -115,7 +115,7 @@ local function detect_easy(spec_or_parsed, options)
   -- specs are functions
   if type(spec_or_parsed) == "function" then
     local spec = spec_or_parsed
-    return easy_spec(spec, options)
+    return easy_spec(spec)
   -- parsed specs are tables
   elseif type(spec_or_parsed) == "table" and
         spec_or_parsed.__type == "parsed_lush_spec" then
