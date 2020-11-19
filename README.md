@@ -29,11 +29,11 @@ Plug 'rktjmp/lush.nvim'
 
 There are two interactive tutorials provided,
 
-- `lush_quick_start.lua`, which will give you a few-minute overview of Lush's
-  features, accessible via `:LushRunQuickstart`.
+- `:LushRunQuickstart` which will give you a few-minute overview of Lush's
+  features. (`lush_quick_start.lua` in the examples folder.)
 
-- `lush_tutorial.lua`, a more in-depth guide through various ways to apply
-  Lus, accessible via `:LushRunTutorial`.
+- `:LushRunTutorial`, a more in-depth guide through various ways to apply Lush.
+  (`lush_tutorial.lua` in the examples folder).
 
 A Lush theme template is avaliable in the examples folder, as well as other
 examples for various topics (Lightline, dependecy injection, etc).
@@ -43,9 +43,9 @@ Component Guide
 
 Lush broadly has 3 components,
 
-- A HSL color manipulator,
-- The lush-spec parser and compiler, and
-- Lushify, a buffer highlighting and hot-reload tool.
+- [A HSL color manipulator](#hsl-colors),
+- The [lush-spec parser and compiler](#lush-spec), and
+- [Lushify](#lushify), a buffer highlighting and hot-reload tool.
 
 For a usage example, 
 
