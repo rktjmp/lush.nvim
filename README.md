@@ -1,6 +1,6 @@
 ![Lush Demo](images/demo.gif)
 
-Lush
+Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 ====
 
 Lush is a colorscheme creation aid, written in Lua, for Neovim.
