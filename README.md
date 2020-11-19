@@ -74,8 +74,8 @@ There are 3 main operations you may want to perform:
 - Saturate (or desaturate) a color.
 - Lighten (or darken) a color.
 
-Hue/rotate values are wrapped around 0-360 degrees, lightness and saturations
-are between 0-100.
+Hue/rotate values are wrap around 0-360 degrees, lightness and saturations
+are clamped between 0-100.
 
 HSL provides the following functions to achieve these operations:
 
@@ -169,8 +169,9 @@ You define your color scheme by writing a lush-spec, which can leverage the
 HSL module and be exported to other parts of Neovim. Lush will expose your
 lush-spec as a Lua module.
 
-The starter files, `lush_quick_start.lua` and `lush_tutorial.lua` provide an
-interactive tutorial on how to create a lush-spec.
+The starter files, `examples/lush_quick_start.lua` and
+`examples/lush_tutorial.lua` provide an interactive tutorial on how to create a
+lush-spec.
 
 The basic definition of a lush-spec is, a lua table which defines your
 highlight groups, by name, and their associated color and decoration details.
