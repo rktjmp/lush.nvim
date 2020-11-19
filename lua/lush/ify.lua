@@ -198,6 +198,7 @@ local function eval_buffer(buf)
   M.named_hex_highlight_groups = {}
   for i, line in ipairs(all_buf_lines) do
     api.nvim_buf_clear_namespace(buf, vt_group_ns, i, i + 1)
+    api.nvim_buf_clear_namespace(buf, vt_hsl_ns, i, i + 1)
     set_highlight_groups_on_line(buf, line, i - 1)
     set_highlight_hsl_on_line(buf, line, i - 1)
   end
