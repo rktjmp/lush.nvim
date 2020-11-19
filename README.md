@@ -376,3 +376,15 @@ Bugs or Limitations
 - Lush.ify'd `hsl()` and group name highlight may sometimes be obscured by
   CursorLine highlighting. If this is a problem, you can set CursorLine to an
   empty definition or disable the cursor line with `set nocursorline`.
+
+Todo / Future ideas
+-------------------
+
+**Automatic Property Inferrence**
+
+Would allow for syntax like:
+
+```lua
+Comment { Normal, gui = "italic" }, -- automatically detect fg, bg and apply
+CursorLine { fg = Normal, bg = Visual } -- automaticlly infer appropriate key
+```
