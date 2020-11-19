@@ -223,6 +223,19 @@ lua require('lush')(require('lush_theme.cool_name'))
 That's essentially all you need to know to write a lush-spec. The starter
 files provide a deeper example and some tips and tricks.
 
+#### Converting an Existing Theme to Lush
+
+Currently there isn't an built in automated method for converting an
+existing theme to Lush, but you can redirect all your current highlights to a
+register, paste that into a buffer then construct some macros to reformat.
+
+```vim
+:redir @z
+:highlight
+" in buffer
+"zp
+```
+
 #### Why `return ...`?
 
 In the lua file, we call `lush(lush-spec)`, which will parse the given
