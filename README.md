@@ -35,8 +35,8 @@ There are two interactive tutorials provided,
 - `lush_tutorial.lua`, a more in-depth guide through various ways to apply
   Lus, accessible via `:LushRunTutorial`.
 
-There are also examples of various topics (lightline, import, export) in the
-`examples` folder.
+A Lush theme template is avaliable in the examples folder, as well as other
+examples for various topics (Lightline, dependecy injection, etc).
 
 Component Guide
 ---------------
@@ -289,6 +289,7 @@ lush(function()
     CursorLine { fg =  harbour.CursorLine.fg, bg = harbour.CursorLine.bg },
   }
 end)
+```
 
 #### Exporting From Lush
 
@@ -341,17 +342,21 @@ To use lushify, open your theme lua file and run
 Now changes you make to a colorscheme are reflected in real time. See the two
 starter files for more information and a demostration.
 
-### Incompatibilities
+Performance of lush.ify is somewhat dependent on your hardware and probably
+more specifally, your terminal. Some terminals are better than others at
+rendering color changes fast.
 
-#### Easy Motion
+#### Lush.ify Incompatibilities
+
+**Easy Motion**
 
 Activating the easy motion plugin *in a lush.ify'd buffer* will cause a lot of
 syntax errors. This is because easy-motion directly modifies the buffer to
 display its "jump keys", which we try to parse.
 
-It is not recommened you activate easy motion in a lush.ify'd buffer. 
+It is not recommened you activate easy motion in a lush.ify'd buffer.
 
-#### Lightline
+**Lightline**
 
 While Lightline can be styled through Lush, realtime updating has some
 caveats and performance may be less than optimal due to vimscripts
@@ -366,6 +371,11 @@ The two examples go into some more detail regarding this method.
 
 Bugs or Limitations
 -------------------
+
+- Sometimes line group and hsl highlighting may appear out of sync if you've
+  applied undo/redo chains to a lush.ify'd file. Generally typing more into the
+  buffer will fix these issues as the highlighter resyncs with the buffer
+  state.
 
 - You may find some elements don't update in real time (LSP sign column for
   example). This is a side effect of colours are applied to those elements,
