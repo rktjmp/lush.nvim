@@ -6,13 +6,13 @@ local function error_to_string(error)
   return str
 end
 
-local function return_error(on, type, msg, also)
+local function group_error(table)
   return function()
     return nil, {
-      on = on,
-      type = type,
-      msg = msg,
-      also = also,
+      on = table.on or "unspecified_group",
+      type = table.type or "unspecified_type",
+      msg = table.msg or "",
+      also = table.also,
     }
   end
 end
@@ -31,24 +31,20 @@ local wrap_group = function(group_name, group_options)
   -- smoke test
 
   if type(group_options) ~= "table" then
-    return function()
-      return nil, {
-        on = group_name,
-        msg = "Options for " .. group_name .. " was " ..
-              type(group_options) .. " but must be table.",
-        type = "definition_must_be_table"
-      }
-    end
+    return group_error({
+      on = group_name,
+      msg = "Options for " .. group_name .. " was " ..
+            type(group_options) .. " but must be table.",
+      type = "definition_must_be_table"
+    })
   end
 
   if group_options.__name then
-    return function()
-      return nil, {
-        on = group_name,
-        msg = "Invalid key, __name is reserved",
-        type = "reserved_keyword"
-      }
-    end
+    return group_error({
+      on = group_name,
+      msg = "Invalid key, __name is reserved",
+      type = "reserved_keyword"
+    })
   end
 
   -- group seems ok to continue
@@ -68,26 +64,23 @@ local wrap_group = function(group_name, group_options)
   local wrapped_opts = {}
   for key, val in pairs(group_options) do
     if type(val) == "table" and val.__type == "lush_group_placeholder" then
-      return function()
-        return nil, {
-          on = group_name,
-          msg = "Attempt to use group " .. val.__name .. " as value, but group isn't defined",
-          type = "undefined_group"
-        }
-      end
+      return group_error({
+        on = group_name,
+        msg = "Attempt to use group " .. val.__name ..
+              " as value, but group isn't defined",
+        type = "undefined_group"
+      })
     end
     if type(val) == "table" and val.__type == "lush_group" then
       local check = val[key]
       if check == nil then
-        return function()
-          return nil, {
-            on = group_name,
-            msg = "Attempted to infer value for " ..  key ..
-                  " from " .. val.__name ..  " but " .. val.__name ..
-                  " has no " .. key..  " key",
-            type = "target_missing_inferred_key"
-          }
-        end
+        return group_error({
+          on = group_name,
+          msg = "Attempted to infer value for " ..  key ..
+                " from " .. val.__name ..  " but " .. val.__name ..
+                " has no " .. key..  " key",
+          type = "target_missing_inferred_key"
+        })
       end
       wrapped_opts[key] = val[key]
     else
@@ -132,13 +125,11 @@ local wrap_group = function(group_name, group_options)
     -- It's difficult to detect this elsewhere.
     __call = function()
       return setmetatable(wrapped_opts, {
-        __call = function()
-          return nil, {
-            on = group_name,
-            type = "group_redefined",
-            msg = "Attempted to redefine group: " .. group_name
-          }
-        end
+        __call = group_error({
+          on = group_name,
+          type = "group_redefined",
+          msg = "Attempted to redefine group: " .. group_name
+        })
       })
     end
   })
@@ -150,14 +141,12 @@ local wrap_link = function(group_name, group_options)
   local link_to = group_options[1]
 
   if link_to.__type == "lush_group_placeholder" then
-    return function()
-      -- error group when resolve is attempted
-      return nil, {
-        on = group_name,
-        msg = "Linked group was never defined, or was not defined before use: " .. link_to.__name,
-        type = "invalid_link_name"
-      }
-    end
+    -- error group when resolve is attempted
+    return group_error({
+      on = group_name,
+      msg = "Linked group was never defined, or was not defined before use: " .. link_to.__name,
+      type = "invalid_link_name"
+    })
   end
 
   return setmetatable({}, {
