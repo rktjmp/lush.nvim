@@ -359,7 +359,7 @@ local parse = function(lush_spec_fn, options)
     local ast, e = group()
 
     if e then
-      error("lush.parser.parse error: " .. error_to_string(e), 4)
+      error("Lush-spec Error:" .. error_to_string(e), 4)
     end
 
     parsed[group.__name] = ast
