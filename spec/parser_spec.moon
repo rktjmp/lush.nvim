@@ -1,47 +1,6 @@
-describe "#main parser", ->
+describe "parser", ->
   parse = require('lush.parser')
 
-  describe "#only inheritance", ->
-    it "can inherit", ->
-      parsed = parse -> {
-        A { bg: "a_bg" },
-        B { A, gui: "italic" },
-      }
-      assert.equals("italic", parsed.B.gui)
-      assert.equals("a_bg", parsed.B.bg)
-
-    it "detects self reference", ->
-      e = assert.error(-> parse -> {
-        A { bg: "a_bg" },
-        B { B, gui: "italic" },
-      })
-      assert.matches("circular_self_reference", e)
-
-    it "detects invalid references", ->
-      e = assert.error(-> parse -> {
-        A { bg: "a_bg" },
-        B { Z, gui: "italic" },
-      })
-      assert.matches("invalid_parent_name", e)
-
-    it "can inherit through a link", ->
-      parsed = parse -> {
-        A { bg: "a_bg" },
-        B { A },
-        C { B, gui: "italic" },
-      }
-      assert.equals("italic", parsed.C.gui)
-      assert.equals("a_bg", parsed.C.bg)
-
-    it "can inherit through a chain", ->
-      parsed = parse -> {
-        A { bg: "a_bg" },
-        B { A },
-        C { B },
-        D { C, gui: "italic" },
-      }
-      assert.equals("italic", parsed.D.gui)
-      assert.equals("a_bg", parsed.D.bg)
 
   it "warns on bad input", ->
     assert.error(-> parse(nil))
@@ -174,3 +133,44 @@ describe "#main parser", ->
     assert.is_number(parsed.A.bg)
     assert.is_true(parsed.A.bg > 0 and parsed.A.bg < 10)
 
+  describe "inheritance", ->
+    it "can inherit", ->
+      parsed = parse -> {
+        A { bg: "a_bg" },
+        B { A, gui: "italic" },
+      }
+      assert.equals("italic", parsed.B.gui)
+      assert.equals("a_bg", parsed.B.bg)
+
+    it "detects self reference", ->
+      e = assert.error(-> parse -> {
+        A { bg: "a_bg" },
+        B { B, gui: "italic" },
+      })
+      assert.matches("circular_self_reference", e)
+
+    it "detects invalid references", ->
+      e = assert.error(-> parse -> {
+        A { bg: "a_bg" },
+        B { Z, gui: "italic" },
+      })
+      assert.matches("invalid_parent_name", e)
+
+    it "can inherit through a link", ->
+      parsed = parse -> {
+        A { bg: "a_bg" },
+        B { A },
+        C { B, gui: "italic" },
+      }
+      assert.equals("italic", parsed.C.gui)
+      assert.equals("a_bg", parsed.C.bg)
+
+    it "can inherit through a chain", ->
+      parsed = parse -> {
+        A { bg: "a_bg" },
+        B { A },
+        C { B },
+        D { C, gui: "italic" },
+      }
+      assert.equals("italic", parsed.D.gui)
+      assert.equals("a_bg", parsed.D.bg)
