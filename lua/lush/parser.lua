@@ -6,6 +6,9 @@ local function error_to_string(error)
   return str
 end
 
+-- lets us get the value or the type of a value, which is important when
+-- we have to work out if we're dealing with a external value or an internal
+-- group masquerading as a value.
 local safe_value = function(value, type)
   return function(help)
     if help then return type end
