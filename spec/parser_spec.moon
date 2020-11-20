@@ -1,7 +1,7 @@
 describe "#main parser", ->
   parse = require('lush.parser')
 
-  describe "inferrence", ->
+  describe "property inferrence", ->
     it "can infer a property", ->
       parsed = parse -> {
         A { bg: "a_bg" },
@@ -18,48 +18,58 @@ describe "#main parser", ->
       assert.equals("a_bg", parsed.C.bg)
       assert.equals("b_fg", parsed.C.fg)
 
+      parsed = parse -> {
+        A { bg: "a_bg", fg: "a_fg" },
+        B { bg: A, fg: A }, -- ok
+      }
+      assert.equals("a_bg", parsed.B.bg)
+      assert.equals("a_fg", parsed.B.fg)
+
+    pending "can chain onto inferred properties", ->
+      color = {
+        ro: (n) -> n * 2
+      }
+      parsed = parse -> {
+        A { bg: color, fg: "a_fg" },
+        -- this needs to follow our values are functions plan
+        -- aka maybes, though not sure how favorable that
+        -- is to external libraries HSL or otherwise.
+        -- and only fg/bg would have the behaviour
+        B { bg: A.ro(10), fg: A }, -- ok
+      }
+
     it "errors on missing key access", ->
       e = assert.error(->
         parse -> {
           A { bg: "a_bg" },
           B { bg: "b_bg" },
-          C { bg: B, fg: A}
+          C { bg: B, fg: A} -- A exists, but no fg key
         })
       assert.matches("target_missing_inferred_key", e)
 
-    pending "multiple infers", ->
-      parsed = parse -> {
-        A { bg: "a_bg", fg: "a_fg" },
-        B { bg: A, fg: a }, -- error
-      }
+    it "errors on missing group", ->
+      e = assert.error(->
+        parse -> {
+          A { bg: "a_bg" },
+          B { bg: Z },
+        })
+      assert.matches("undefined_group", e)
 
-      parsed = parse -> {
-        A { bg: "a_bg", fg: "a_fg" },
-        B { bg: A, fg: A }, -- ok
-      }
+      e = assert.error(->
+        parse -> {
+          A { bg: "a_bg", fg: "a_fg" },
+          B { bg: A, fg: C },
+          C { fg: "c_bg" },
+        })
+      assert.matches("undefined_group", e)
 
-      parsed = parse -> {
-        A { bg: "a_bg", fg: "a_fg" },
-        B { bg: A, fg: B }, -- error
-      }
-
-      parsed = parse -> {
-        A { bg: "a_bg", fg: "a_fg" },
-        B { bg: A, fg: C }, -- error?
-        C { fg: "c_bg" },
-      }
-
-      parsed = parse -> {
-        A { bg: "a_bg", fg: "a_fg" },
-        B { bg: A, fg: C }, -- error?
-        C { fg: B }, -- loop
-      }
-
-    pending "fails on bad prop", ->
-      parse -> {
-        A { bg: "a_bg" },
-        B { fg: A }, -- invalid
-      }
+    it "errors on self reference", ->
+      e = assert.error(->
+        parse -> {
+          A { bg: "a_bg", fg: "a_fg" },
+          B { bg: A, fg: B }, -- error
+        })
+      assert.matches("circular_self_reference", e)
 
     pending "can append to links", ->
       parse -> {

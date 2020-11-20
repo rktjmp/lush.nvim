@@ -6,8 +6,13 @@ local function error_to_string(error)
   return str
 end
 
+-- groups should define their error state "on resolve",
+-- that is to say, when they're called after parsing into the AST.
+-- So this function *returns a function*, which when called, indicates
+-- an error to the parser.
 local function group_error(table)
   return function()
+    -- effectively return nil-group, error
     return nil, {
       on = table.on or "unspecified_group",
       type = table.type or "unspecified_type",
@@ -64,12 +69,21 @@ local wrap_group = function(group_name, group_options)
   local wrapped_opts = {}
   for key, val in pairs(group_options) do
     if type(val) == "table" and val.__type == "lush_group_placeholder" then
-      return group_error({
-        on = group_name,
-        msg = "Attempt to use group " .. val.__name ..
-              " as value, but group isn't defined",
-        type = "undefined_group"
-      })
+      if val.__name == group_name then
+        return group_error({
+          on = group_name,
+          msg = "Attempt to reference group " .. group_name ..
+                " inside " .. val.__name,
+          type = "circular_self_reference"
+        })
+      else
+        return group_error({
+          on = group_name,
+          msg = "Attempt to reference group " .. val.__name ..
+                " as value, but group isn't defined before " .. group_name,
+          type = "undefined_group"
+        })
+      end
     end
     if type(val) == "table" and val.__type == "lush_group" then
       local check = val[key]
