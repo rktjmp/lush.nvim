@@ -1,6 +1,28 @@
 describe "parser", ->
   parse = require('lush.parser')
 
+  describe "#only inferrence", ->
+    it "infers good props", ->
+      parse -> {
+        A { bg: "a_bg" },
+        B { bg: A }
+      }
+      assert.equals("a_bg", B.bg)
+
+    pending "fails on bad prop", ->
+      parse -> {
+        A { bg: "a_bg" },
+        B { fg: A }, -- invalid
+      }
+
+    pending "can append to links", ->
+      parse -> {
+        A { bg: "a_bg" },
+        B { B, gui: "italic" },
+      }
+      assert.equals("italic", B.gui)
+      assert.equals("a_bg", B.bg)
+
   it "warns on bad input", ->
     assert.error(-> parse(nil))
     assert.error(-> parse(""))
