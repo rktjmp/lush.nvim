@@ -1,13 +1,13 @@
-describe "parser", ->
+describe "#main parser", ->
   parse = require('lush.parser')
 
-  describe "#only inferrence", ->
-    it "infers good props", ->
-      parse -> {
+  describe "inferrence", ->
+    pending "#only infers good props", ->
+      parsed = parse -> {
         A { bg: "a_bg" },
         B { bg: A }
       }
-      assert.equals("a_bg", B.bg)
+      assert.equals("a_bg", parsed.B.bg)
 
     pending "fails on bad prop", ->
       parse -> {
@@ -39,7 +39,7 @@ describe "parser", ->
     error = assert.has_error(fn)
     assert.matches("redefined", error)
 
-  it "should define a style", ->
+  it "#only should define a style", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt" }
     }
@@ -110,6 +110,10 @@ describe "parser", ->
     assert.is_not_equal(s.A, s.B, s.C, s.D, s.E, s.F)
   
   it "warns when linking to an invalid style", ->
+    parse -> {
+      A { bg: "a_bg" }
+      X { Z }
+    }
     fn = ->
       parse -> {
         A { bg: "a_bg" }
