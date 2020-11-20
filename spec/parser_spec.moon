@@ -1,6 +1,12 @@
 describe "parser", ->
   parse = require('lush.parser')
 
+  it "wars not to use property inference", ->
+    e = assert.error(-> parse -> {
+      A { fg: "red" },
+      B { fg: A }
+    })
+    assert.matches("feature_disabled", e)
 
   it "warns on bad input", ->
     assert.error(-> parse(nil))

@@ -93,6 +93,12 @@ local wrap_group = function(group_name, group_options)
 
         -- key has value, return the value
         wrapped_opts[key] = val[key]
+
+        return group_error({
+          on = group_name,
+          msg = "Property inference is currently disabled",
+          type = "feature_disabled"
+        })
       else
         wrapped_opts[key] = val
       end
