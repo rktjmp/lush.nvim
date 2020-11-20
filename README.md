@@ -201,7 +201,7 @@ return lush(function()
     Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
     -- And make our comments slightly darker than normal, in italics
     -- Note you must define Normal before you try to use it.
-    Comment { fg = Normal.darken(40), gui = "italic" },
+    Comment { fg = Normal.fg.darken(40), gui = "italic" },
     -- And make Whitespace look the same
     Whitespace { Comment },
     -- and clear all highlighting for CursorLine
