@@ -1,4 +1,4 @@
-describe "parser property inference", ->
+pending "parser property inference", ->
   parse = require('lush.parser')
 
   describe "property inference", ->
