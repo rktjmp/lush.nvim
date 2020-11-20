@@ -198,6 +198,13 @@ local wrap = function(group_name, group_options)
   if type == "inherit" then
     -- extract options and merge, then wrap as normal
     local link = group_options[1]
+    if group_name == link.__name then
+      return group_error({
+        on = group_name,
+        type = "circular_self_reference",
+        msg = "Attempt to inherit properties from self",
+      })
+    end
     -- TODO check link is not placeholder
     local merged = {
       fg = group_options.fg or link.fg,
