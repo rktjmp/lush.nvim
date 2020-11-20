@@ -174,6 +174,14 @@ end
 local wrap_link = function(group_name, group_options)
   local link_to = group_options[1]()
 
+  if link_to.__name == group_name then
+    return group_error({
+      on = group_name,
+      type = "circular_self_reference",
+      msg = "Attempt to link to self",
+    })
+  end
+
   if link_to.__type == "lush_group_placeholder" then
     -- error group when resolve is attempted
     return group_error({
@@ -183,8 +191,6 @@ local wrap_link = function(group_name, group_options)
       type = "invalid_link_name"
     })
   end
-
-  -- TODO circular link test?
 
   return setmetatable({}, {
     __index = function(_, key)

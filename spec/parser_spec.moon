@@ -71,6 +71,20 @@ describe "parser", ->
     assert.is_not_nil(s.D)
     assert.is_equal('C', s.E.link)
 
+  pending "it detects loops in chained links", ->
+    -- kind of a pain to check this, can't check
+    -- by name, must resolve all objects out...
+    -- even then, how often would someone do this?
+    -- work vs reward?
+
+  it "warns on self referencing links", ->
+    e = assert.error(-> parse -> {
+      A { bg: "a_bg", fg: "a_fg" },
+      C { C }
+    })
+    e = assert.matches("circular_self_reference", e)
+
+
   it "can resolve deep chains", ->
     s =  parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
