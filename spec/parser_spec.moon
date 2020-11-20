@@ -25,6 +25,16 @@ describe "#main parser", ->
       assert.equals("a_bg", parsed.B.bg)
       assert.equals("a_fg", parsed.B.fg)
 
+    pending "#only can follow links for inferred values", ->
+      -- TODO also pending value function/Maybe type
+      parsed = parse -> {
+        A { bg: "a_bg"},
+        B { A },
+        C { bg: B }, -- ok
+      }
+      assert.nil(parsed)
+      assert.equals("a_bg", parsed.C.bg)
+
     pending "can chain onto inferred properties", ->
       color = {
         ro: (n) -> n * 2
