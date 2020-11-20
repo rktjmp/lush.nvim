@@ -22,13 +22,6 @@ local function group_error(table)
   end
 end
 
--- Think Pad
---
--- All groups are functions, an invalid group may exist until it is attempted
--- to be resolved, which is the act of calling a group.
-
--- All values will be functions? Or at least we wrap all values? 
-
 -- wrap options in object that either proxies indexes to options
 -- or when called, returns the options
 local wrap_group = function(group_name, group_options)
@@ -222,43 +215,12 @@ local wrap = function(group_name, group_options)
   return nil, err
 end
 
-local validate_group_def = function(group_def)
-  -- TODO allow empty def to test
-  -- if not group_def then
-  --   return false, {
-  --     type = "no_definition",
-  --   }
-  -- end
-  if false and group_def["__name"] then
-    -- this should return a function so parse can see a function
-    -- instead of a a table, which it will recognize as an error,
-    -- then call the function to extract the error.
-    -- We return the function *now* as apposed to the no_definition
-    -- error because the group_def function is actually run when
-    -- lua expands our lush-spec-list, it just happens that the
-    -- spec is invalid.
-    -- In the case of no_definition, the function group_def function
-    -- is never run, until the parser does to retrieve the error
-    return function()
-      return false, {
-        type = "__name_reserved_keyword",
-      }
-    end
-  end
-  return true
-end
-
-local resolve_group_bindings = function(group)
-  return group()
-end
-
-
 local parse = function(lush_spec_fn, options)
   assert(type(lush_spec_fn) == "function", "Must supply function to parser")
 
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
-    __index = function(lush_spec, group_name)
+    __index = function(lush_spec_env, group_name)
 
       -- attempted to access an unknown group name
       -- We will provide an table which can be queried for it's type
@@ -272,7 +234,7 @@ local parse = function(lush_spec_fn, options)
         -- insert group into spec env, this allows us to
         -- reference this group by name in other groups
         -- replace the previously undefined place holder
-        lush_spec[group_name] = group
+        lush_spec_env[group_name] = group
 
         -- this ends up in the spec's return table
         return group
@@ -296,7 +258,7 @@ local parse = function(lush_spec_fn, options)
       })
 
       -- define that we've seen this group name in the spec
-      lush_spec[group_name] = group_placeholder
+      lush_spec_env[group_name] = group_placeholder
 
       -- return the group definer, which will be called immediately
       -- in most cases.
