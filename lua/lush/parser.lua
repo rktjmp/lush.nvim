@@ -6,6 +6,13 @@ local function error_to_string(error)
   return str
 end
 
+local safe_value = function(value, type)
+  return function(help)
+    if help then return type end
+    return value
+  end
+end
+
 -- groups should define their error state "on resolve",
 -- that is to say, when they're called after parsing into the AST.
 -- So this function *returns a function*, which when called, indicates
@@ -49,38 +56,46 @@ local wrap_group = function(group_name, group_options)
   -- TODO: potentially __index and wrap nil returns?
   local wrapped_opts = {}
   for key, val in pairs(group_options) do
-    if type(val) == "table" and val.__type == "lush_group_placeholder" then
-      if val.__name == group_name then
-        return group_error({
-          on = group_name,
-          msg = "Attempt to reference group " .. group_name ..
-                " inside " .. val.__name,
-          type = "circular_self_reference"
-        })
-      else
-        return group_error({
-          on = group_name,
-          msg = "Attempt to reference group " .. val.__name ..
-                " as value, but group isn't defined before " .. group_name,
-          type = "undefined_group"
-        })
-      end
-    end
-    if type(val) == "table" and val.__type == "lush_group" then
-      -- don't return nil on inferred keys
-      local check = val[key]
-      if check == nil then
-        return group_error({
-          on = group_name,
-          msg = "Attempted to infer value for " ..  key ..
-                " from " .. val.__name ..  " but " .. val.__name ..
-                " has no " .. key..  " key",
-          type = "target_missing_inferred_key"
-        })
-      end
+    -- unpack from protected wrapper
+    local internal_type = val('help') == 'internal'
+    val = val()
 
-      -- key has value, return the value
-      wrapped_opts[key] = val[key]
+    if internal_type then
+      if type(val) == "table" and val.__type == "lush_group_placeholder" then
+        if val.__name == group_name then
+          return group_error({
+            on = group_name,
+            msg = "Attempt to reference group " .. group_name ..
+                  " inside " .. val.__name,
+            type = "circular_self_reference"
+          })
+        else
+          return group_error({
+            on = group_name,
+            msg = "Attempt to reference group " .. val.__name ..
+                  " as value, but group isn't defined before " .. group_name,
+            type = "undefined_group"
+          })
+        end
+      end
+      if type(val) == "table" and val.__type == "lush_group" then
+        -- don't return nil on inferred keys
+        local check = val[key]
+        if check == nil then
+          return group_error({
+            on = group_name,
+            msg = "Attempted to infer value for " ..  key ..
+                  " from " .. val.__name ..  " but " .. val.__name ..
+                  " has no " .. key..  " key",
+            type = "target_missing_inferred_key"
+          })
+        end
+
+        -- key has value, return the value
+        wrapped_opts[key] = val[key]
+      else
+        wrapped_opts[key] = val
+      end
     else
       wrapped_opts[key] = val
     end
@@ -118,10 +133,48 @@ local wrap_group = function(group_name, group_options)
   })
 end
 
+local wrap_inherit = function(group_name, group_options)
+  local link = group_options[1]()
+
+  if group_name == link.__name then
+    return group_error({
+      on = group_name,
+      type = "circular_self_reference",
+      msg = "Attempt to inherit properties from self",
+    })
+  end
+
+  -- TODO check link is not placeholder  add test
+  if link.__type == "lush_group_placeholder" then
+    -- error group when resolve is attempted
+    return group_error({
+      on = group_name,
+      msg = "Linked group was never defined, or was not defined" ..
+            "before use: " .. link.__name,
+      type = "invalid_link_name"
+    })
+  end
+
+  local merged = {}
+  -- manually set keys so we don't get [1]
+  for _, key in ipairs({"fg", "bg", "gui", "sp"}) do
+    if group_options[key] then
+      merged[key] = group_options[key]
+    elseif link[key] then
+      -- link will have already had it's values unpacked, so we
+      -- must repack them for now.
+      -- TODO: delay all unmaybeing until resolve
+      merged[key] = safe_value(link[key])
+    end
+  end
+
+  return wrap_group(group_name, merged)
+end
+
 -- wrap link in object that proxies indexes to linked group options
 -- or when called, link descriptor
 local wrap_link = function(group_name, group_options)
-  local link_to = group_options[1]
+  local link_to = group_options[1]()
 
   if link_to.__type == "lush_group_placeholder" then
     -- error group when resolve is attempted
@@ -132,6 +185,8 @@ local wrap_link = function(group_name, group_options)
       type = "invalid_link_name"
     })
   end
+
+  -- TODO circular link test?
 
   return setmetatable({}, {
     __index = function(_, key)
@@ -189,23 +244,7 @@ local wrap = function(group_name, group_options)
   end
 
   if type == "inherit" then
-    -- extract options and merge, then wrap as normal
-    local link = group_options[1]
-    if group_name == link.__name then
-      return group_error({
-        on = group_name,
-        type = "circular_self_reference",
-        msg = "Attempt to inherit properties from self",
-      })
-    end
-    -- TODO check link is not placeholder
-    local merged = {
-      fg = group_options.fg or link.fg,
-      bg = group_options.bg or link.bg,
-      gui = group_options.gui or link.gui,
-      sp = group_options.sp or link.sp
-    }
-    return wrap_group(group_name, merged)
+    return wrap_inherit(group_name, group_options)
   end
 
   if type == "link" then
@@ -218,6 +257,8 @@ end
 local parse = function(lush_spec_fn, options)
   assert(type(lush_spec_fn) == "function", "Must supply function to parser")
 
+
+  local seen_groups = {}
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
     __index = function(lush_spec_env, group_name)
@@ -228,13 +269,29 @@ local parse = function(lush_spec_fn, options)
       -- called (with group_def) to create an group table.
 
       local define_group = function(_, group_def)
+        -- If a value is in the lush_spec_env, it's a group def,
+        -- we need to flag this early here, so we can check for
+        -- placeholders that haven't been properly resolved, but we
+        -- can't rely on just accessing the .__type key because
+        -- external values may respond with an error.
+        -- (AKA hsl.__type is an error of "unsupported modifier")
+        local protected = {}
+
+        for key, val in pairs(group_def) do
+          -- note doing this polutes the spec env namespace with objects
+          protected[key] = safe_value(val, seen_groups[val] and "internal" or "external")
+        end
+
         -- _ is the group_placeholder, which we do not require
         -- wrap group in group or link handler
-        local group = wrap(group_name, group_def)
+        local group = wrap(group_name, protected)
         -- insert group into spec env, this allows us to
         -- reference this group by name in other groups
         -- replace the previously undefined place holder
         lush_spec_env[group_name] = group
+
+        seen_groups[group] = group
+        seen_groups[group_name] = group
 
         -- this ends up in the spec's return table
         return group
@@ -259,6 +316,9 @@ local parse = function(lush_spec_fn, options)
 
       -- define that we've seen this group name in the spec
       lush_spec_env[group_name] = group_placeholder
+
+      seen_groups[group_placeholder] = group_placeholder
+      seen_groups[group_name] = group_placeholder
 
       -- return the group definer, which will be called immediately
       -- in most cases.
