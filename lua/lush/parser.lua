@@ -32,9 +32,7 @@ end
 -- wrap options in object that either proxies indexes to options
 -- or when called, returns the options
 local wrap_group = function(group_name, group_options)
-
   -- smoke test
-
   if type(group_options) ~= "table" then
     return group_error({
       on = group_name,
@@ -43,7 +41,6 @@ local wrap_group = function(group_name, group_options)
       type = "definition_must_be_table"
     })
   end
-
   if group_options.__name then
     return group_error({
       on = group_name,
@@ -51,15 +48,6 @@ local wrap_group = function(group_name, group_options)
       type = "reserved_keyword"
     })
   end
-
-  -- group seems ok to continue
-
-  -- A group looks like:
-  -- {
-  --   __name = "Normal",
-  --   __type = "lush_group",
-  --   ...?
-  -- }
 
   -- We want to normalize the internal interface to any value,
   -- so ensure they are all callable.
@@ -86,6 +74,7 @@ local wrap_group = function(group_name, group_options)
       end
     end
     if type(val) == "table" and val.__type == "lush_group" then
+      -- don't return nil on inferred keys
       local check = val[key]
       if check == nil then
         return group_error({
@@ -96,28 +85,15 @@ local wrap_group = function(group_name, group_options)
           type = "target_missing_inferred_key"
         })
       end
+
+      -- key has value, return the value
       wrapped_opts[key] = val[key]
     else
       wrapped_opts[key] = val
     end
   end
 
-  -- Normal.fg.ro
-  -- Group.index_for_key fg -> hsl
-
-  -- fg: Normal.ro
-  --  Group.index_for_key(ro) -> Norma.fg.hsl
-
-
   -- Define the actual group table
-  -- It defines __name (name of group) and __type ("lush_group")
-  -- When indexed, it returns
-  --    either the above keys, or
-  --    will attempt to provide an inferred value for a key
-  --    Normally this will simply mean the key-value from
-  --    the group options, but if the value would be another group,
-  --    we attempt to chain the key request to that group.
-
   return setmetatable({}, {
 
     -- When the group is index'd, return our special keys
@@ -158,7 +134,8 @@ local wrap_link = function(group_name, group_options)
     -- error group when resolve is attempted
     return group_error({
       on = group_name,
-      msg = "Linked group was never defined, or was not defined before use: " .. link_to.__name,
+      msg = "Linked group was never defined, or was not defined" ..
+            "before use: " .. link_to.__name,
       type = "invalid_link_name"
     })
   end

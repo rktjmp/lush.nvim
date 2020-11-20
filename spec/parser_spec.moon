@@ -114,7 +114,7 @@ describe "#main parser", ->
     error = assert.has_error(fn)
     assert.matches("undefined_group", error)
 
-  it "#only should define a style", ->
+  it "should define a style", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg" }
     }
@@ -123,7 +123,7 @@ describe "#main parser", ->
     assert.is_equal(s.A.bg, "a_bg")
     assert.is_equal(s.A.fg, "a_fg")
 
-  it "#only should allow accesing previous styles", ->
+  it "should allow accesing previous styles", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
@@ -132,7 +132,7 @@ describe "#main parser", ->
     assert.is_equal(s.B.fg, "b_fg")
     assert.is_equal(s.B.opt, nil)
 
-  it "#only should allow linking", ->
+  it "should allow linking", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
