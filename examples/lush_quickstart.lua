@@ -102,6 +102,7 @@ local theme = lush(function()
 
     -- We can also link a group to another group. These will inherit all of the
     -- linked group options (See h: hi-link). (`setlocal cursorcolumn`)
+    -- CursorColumn { CursorLine },
 
     -- Here's how we can set comments to be slightly less visible and italic.
     -- (italics are terminal support dependent)
