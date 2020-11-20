@@ -2,12 +2,58 @@ describe "#main parser", ->
   parse = require('lush.parser')
 
   describe "inferrence", ->
-    pending "#only infers good props", ->
+    it "can infer a property", ->
       parsed = parse -> {
         A { bg: "a_bg" },
         B { bg: A }
       }
       assert.equals("a_bg", parsed.B.bg)
+
+    it "can infer multiple properties", ->
+      parsed = parse -> {
+        A { bg: "a_bg" },
+        B { fg: "b_fg" },
+        C { bg: A, fg: B}
+      }
+      assert.equals("a_bg", parsed.C.bg)
+      assert.equals("b_fg", parsed.C.fg)
+
+    it "errors on missing key access", ->
+      e = assert.error(->
+        parse -> {
+          A { bg: "a_bg" },
+          B { bg: "b_bg" },
+          C { bg: B, fg: A}
+        })
+      assert.matches("target_missing_inferred_key", e)
+
+    pending "multiple infers", ->
+      parsed = parse -> {
+        A { bg: "a_bg", fg: "a_fg" },
+        B { bg: A, fg: a }, -- error
+      }
+
+      parsed = parse -> {
+        A { bg: "a_bg", fg: "a_fg" },
+        B { bg: A, fg: A }, -- ok
+      }
+
+      parsed = parse -> {
+        A { bg: "a_bg", fg: "a_fg" },
+        B { bg: A, fg: B }, -- error
+      }
+
+      parsed = parse -> {
+        A { bg: "a_bg", fg: "a_fg" },
+        B { bg: A, fg: C }, -- error?
+        C { fg: "c_bg" },
+      }
+
+      parsed = parse -> {
+        A { bg: "a_bg", fg: "a_fg" },
+        B { bg: A, fg: C }, -- error?
+        C { fg: B }, -- loop
+      }
 
     pending "fails on bad prop", ->
       parse -> {
@@ -39,17 +85,25 @@ describe "#main parser", ->
     error = assert.has_error(fn)
     assert.matches("redefined", error)
 
+  it "errors on placeholder groups", ->
+    fn = ->
+      parse -> {
+        A { bg: "a_bg" },
+        B { bg: Z },
+      }
+    error = assert.has_error(fn)
+    assert.matches("undefined_group", error)
+
   it "#only should define a style", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt" }
+      A { bg: "a_bg", fg: "a_fg" }
     }
     assert.is_not_nil(s)
     assert.is_not_nil(s.A)
     assert.is_equal(s.A.bg, "a_bg")
     assert.is_equal(s.A.fg, "a_fg")
-    assert.is_equal(s.A.opt, "a_opt")
 
-  it "should allow accesing previous styles", ->
+  it "#only should allow accesing previous styles", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
@@ -58,7 +112,7 @@ describe "#main parser", ->
     assert.is_equal(s.B.fg, "b_fg")
     assert.is_equal(s.B.opt, nil)
 
-  it "should allow linking", ->
+  it "#only should allow linking", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
@@ -84,7 +138,7 @@ describe "#main parser", ->
     assert.is_not_nil(s.D)
     assert.is_equal('C', s.E.link)
 
-  it "can resolve links during compile", ->
+  it "can resolve deep chains", ->
     s =  parse -> {
       A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
@@ -108,21 +162,18 @@ describe "#main parser", ->
       F { bg: E.bg, fg: B.fg } -- bg -> E -> C -> A.bg, fg -> B.fg
     }
     assert.is_not_equal(s.A, s.B, s.C, s.D, s.E, s.F)
-  
-  it "warns when linking to an invalid style", ->
-    parse -> {
-      A { bg: "a_bg" }
-      X { Z }
-    }
+
+  it "warns when linking to an undefined group", ->
     fn = ->
       parse -> {
         A { bg: "a_bg" }
         X { Z }
       }
     error = assert.has_error(fn)
+    assert.matches("invalid_link_name", error)
     assert.matches("X", error)
     assert.matches("Z", error)
-  
+
   it "protects __name", ->
     fn = ->
       parse -> {
