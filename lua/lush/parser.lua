@@ -144,14 +144,12 @@ local wrap_inherit = function(group_name, group_options)
     })
   end
 
-  -- TODO check link is not placeholder  add test
   if link.__type == "lush_group_placeholder" then
-    -- error group when resolve is attempted
     return group_error({
       on = group_name,
-      msg = "Linked group was never defined, or was not defined" ..
-            "before use: " .. link.__name,
-      type = "invalid_link_name"
+      msg = "Parent group '" .. group_name .. "' was never defined," ..
+            "or was not defined before use.",
+      type = "invalid_parent_name"
     })
   end
 
@@ -180,8 +178,8 @@ local wrap_link = function(group_name, group_options)
     -- error group when resolve is attempted
     return group_error({
       on = group_name,
-      msg = "Linked group was never defined, or was not defined" ..
-            "before use: " .. link_to.__name,
+      msg = "Linked group '" .. link_to.__name .. "' was never defined," ..
+            "or was not defined before use.",
       type = "invalid_link_name"
     })
   end

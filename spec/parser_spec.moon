@@ -17,6 +17,13 @@ describe "#main parser", ->
       })
       assert.matches("circular_self_reference", e)
 
+    it "detects invalid references", ->
+      e = assert.error(-> parse -> {
+        A { bg: "a_bg" },
+        B { Z, gui: "italic" },
+      })
+      assert.matches("invalid_parent_name", e)
+
     it "can inherit through a link", ->
       parsed = parse -> {
         A { bg: "a_bg" },
