@@ -237,38 +237,7 @@ local wrap_link = function(group_name, group_options)
   })
 end
 
-local wrap = function(group_name, group_options)
-  local group_type = function(opts)
-    -- order of these checks are important, they cascade protections
-    if type(opts) ~= "table" or group_options == {} then
-      -- !{} or {} or { group, group, ... } -> invalid
-      return nil, "invalid group_options"
-    elseif #group_options > 1 then
-      return nil, "too_many_parents"
-    elseif #group_options == 0 then
-      -- { fg = val, ... } -> group with group_options
-      return "group"
-    elseif #group_options == 1 then
-      -- #group_options == 1, link to group or inherit
-      -- { group, fg = val } -> inherit from group, OR
-      -- { group }, -> link
-      local opts_is_map = false
-      for k,_ in pairs(group_options) do
-        if type(k) ~= "number" then opts_is_map = true end
-      end
-
-      if opts_is_map then
-        -- group has a numberical index (because # == 1)
-        -- but also has non-numeric keys, so we're inheriting
-        return "inherit"
-      else
-        return "link"
-      end
-    else
-      return nil, "unknown_options" .. #group_options
-    end
-  end
-
+local wrap = function(group_type, group_name, group_options)
   if not string.match(group_name, "^[a-zA-Z]") then
     return nil, "invalid_group_name"
   end
@@ -281,22 +250,58 @@ local wrap = function(group_name, group_options)
      return nil, "invalid_group_name"
    end
 
-
-  local type, err = group_type(group_options)
-
-  if type == "group" then
+  if group_type == "group" then
     return wrap_group(group_name, group_options)
   end
 
-  if type == "inherit" then
+  if group_type == "inherit" then
     return wrap_inherit(group_name, group_options)
   end
 
-  if type == "link" then
+  if group_type == "link" then
     return wrap_link(group_name, group_options)
   end
 
-  return nil, err
+  return nil, "unknow_group_type"
+end
+
+local group_type_or_error = function(group_def)
+  -- order of these checks are important, they cascade protections
+  if type(group_def) ~= "table" or group_def == {} then
+    -- !{} or {} or { group, group, ... } -> invalid
+    return nil, "invalid group_options"
+  elseif #group_def > 1 then
+    return nil, "too_many_parents"
+  elseif #group_def == 0 then
+    -- { fg = val, ... } -> group with group_def
+    return "group"
+  elseif #group_def == 1 then
+    -- #group_def == 1, link to group or inherit
+    -- { group, fg = val } -> inherit from group, OR
+    -- { group }, -> link
+    local opts_is_map = false
+    for k,_ in pairs(group_def) do
+      if type(k) ~= "number" then opts_is_map = true end
+    end
+
+    if opts_is_map then
+      -- group has a numberical index (because # == 1)
+      -- but also has non-numeric keys, so we're inheriting
+      return "inherit"
+    else
+      return "link"
+    end
+  else
+    return nil, "unknown_options"
+  end
+end
+
+local group_error_for_reason = function(reason, group_name, group_options)
+  return group_error({
+    on = group_name,
+    type = reason,
+    msg = "not implemented yet"
+  })
 end
 
 local parse = function(lush_spec_fn, options)
@@ -312,7 +317,16 @@ local parse = function(lush_spec_fn, options)
       -- (undefined_group), and name (group_name), and may be
       -- called (with group_def) to create an group table.
 
+      -- _ is the group_placeholder, which we do not require
       local define_group = function(_, group_def)
+
+        local group_type, err = group_type_or_error(group_def)
+        if err then
+          -- definition is fundamentally flawed and there is no point
+          -- continuing
+          return group_error_for_reason(err, group_name, group_def)
+        end
+
         -- If a value is in the lush_spec_env, it's a group def,
         -- we need to flag this early here, so we can check for
         -- placeholders that haven't been properly resolved, but we
@@ -328,11 +342,10 @@ local parse = function(lush_spec_fn, options)
           protected[key] = safe_value(val, seen_groups[val] and "internal" or "external")
         end
 
-        -- _ is the group_placeholder, which we do not require
         -- wrap group in group or link handler
-        local group, err = wrap(group_name, protected)
+        local group, err = wrap(group_type, group_name, protected)
 
-        if err then 
+        if err then
           -- TODO make this less yuck.
           if err == "too_many_parents" then
             group = group_error({
