@@ -130,7 +130,7 @@ local theme = lush(function()
 
     -- Set a highlight group from hsl variables
     -- Uncomment "Normal"
-    -- Normal       { bg = sea_deep, fg = sea_foam }, -- normal text
+    -- Normal { bg = sea_deep, fg = sea_foam }, -- normal text
 
     -- You should be on the water now, Lush.ify has automatically
     -- recognized our Highlight definition and applied it in real time.
@@ -145,7 +145,7 @@ local theme = lush(function()
     -- to be slightly lighter than our normal background.
     --
     -- Set a highlight group from another highlight group
-    -- CursorLine   { bg = Normal.bg.lighten(5) }, -- Screen-line at the cursor, when 'cursorline' is set.  Low-priority if foreground (ctermfg OR guifg) is not set.
+    -- CursorLine { bg = Normal.bg.lighten(5) }, -- Screen-line at the cursor, when 'cursorline' is set.  Low-priority if foreground (ctermfg OR guifg) is not set.
 
     -- Or maybe lets style our visual selection to match Cusorlines background,
     -- and render text in Normal's foreground complement.

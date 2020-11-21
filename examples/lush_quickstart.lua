@@ -82,7 +82,7 @@ local theme = lush(function()
 
     -- Set a highlight group from the hsl variables we defined at the start
     -- Uncomment "Normal"
-    -- Normal       { bg = sea_deep, fg = sea_foam }, -- normal text
+    -- Normal { bg = sea_deep, fg = sea_foam }, -- normal text
 
     -- You should be on the water now, Lush.ify has automatically recognized
     -- our Highlight definition and applied it in real time.
@@ -94,7 +94,7 @@ local theme = lush(function()
     -- to be slightly lighter than our normal background.
 
     -- Set a highlight group from another highlight group
-    -- CursorLine   { bg = Normal.bg.lighten(5) }, -- Screen-line at the cursor, when 'cursorline' is set.  Low-priority if foreground (ctermfg OR guifg) is not set.
+    -- CursorLine { bg = Normal.bg.lighten(5) }, -- Screen-line at the cursor, when 'cursorline' is set.  Low-priority if foreground (ctermfg OR guifg) is not set.
 
     -- Or maybe lets style our visual selection to match Cusorlines background,
     -- and render text in Normal's foreground complement.
@@ -106,7 +106,7 @@ local theme = lush(function()
 
     -- Here's how we can set comments to be slightly less visible and italic.
     -- (italics are terminal support dependent)
-    -- Comment      { fg = Normal.bg.desaturate(25).lighten(25), gui="italic" }, -- (preferred) any comment
+    -- Comment { fg = Normal.bg.desaturate(25).lighten(25), gui="italic" }, -- (preferred) any comment
 
     -- Here's how we might set our line numbers to be relational to Normal,
     -- note that we're also using some function aliases, see the readme for more
