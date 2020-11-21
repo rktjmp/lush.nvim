@@ -30,3 +30,11 @@ describe "compiler", ->
     assert.is_not_nil(compiled)
     assert.is_equal(2, #compiled)
     assert.is_true(any(compiled, (cmd) -> string.find(cmd, "highlight! link B A")))
+
+  it "corrects spaces in gui if present", ->
+    ast = parse -> {
+      A { gui: "bold, italic" },
+    }
+    compiled = compile(ast)
+    assert.is_not_nil(compiled)
+    assert.matches("bold,italic", compiled[1])

@@ -8,12 +8,17 @@ end
 local function make_group(name, opts)
   -- We define groups "greedily", meaning we set any un-set options to NONE
   -- TODO: good idea or nah?
+
+  -- be nice and fix gui spaces if present
+  local gui = opts.gui or 'NONE'
+  gui = string.gsub(gui, ' ', '')
+
   return table.concat({
     'highlight ' .. name,
     'guifg=' .. (opts.fg or 'NONE'),
     'guibg=' .. (opts.bg or 'NONE'),
     'guisp=' .. (opts.sp or 'NONE'),
-    'gui=' .. (opts.gui or 'NONE'),
+    'gui=' .. gui,
   }, ' ')
 end
 
