@@ -199,11 +199,11 @@ return lush(function()
   return {
     -- Define what vims Normal highlight group should look like
     Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
-    -- And make our comments slightly darker than normal, in italics
+    -- And make whitespace slightly darker than normal.
     -- Note you must define Normal before you try to use it.
-    Comment { fg = Normal.fg.darken(40), gui = "italic" },
-    -- And make Whitespace look the same
-    Whitespace { Comment },
+    Whitespace { fg = Normal.fg.darken(40) },
+    -- And make comments look the same, but with italic text
+    Comment { Comment, gui="italic" },
     -- and clear all highlighting for CursorLine
     CursorLine { },
   }
