@@ -246,6 +246,8 @@ Constraints:
 - `value` may be derived from previously defined group properties.
 - All unspported keys are dropped.
 - Group name is CamelCase by convention, but may be any string beginning with
+- Group names may not be `ALL`, `NONE`, `ALLBUT`, `contained` or `contains`,
+  this is a vim constraint.
   an alpha character.
 - `font` key currently unsupported, create an issue if you would like to see this.
 
@@ -297,6 +299,8 @@ Syntax:
 InheritedGroup { Parent, gui = "bold" },
 ```
 
+### Additional Information
+
 #### Converting an Existing Theme to Lush
 
 Currently there isn't an built in automated method for converting an
@@ -337,20 +341,6 @@ You will likely get warnings from linters while writing a lush-spec,
 specifally around "undefined globals". Most of these warnings can be safely
 ignored, you may wish to disable LSP/Linters temporarily when working on a
 theme.
-
-#### Reserved Names
-
-You may not name any groups `ALL`, `NONE`, `ALLBUT`, `contained` or `contains`,
-this is a vim constraint.
-
-#### Other Attributes
-
-Normal Vim highlight attributes such as `gui` and `guisp` can be set via the
-`gui` and `sp` keys respectively.
-
-Other keys are not compiled into the final highlight command, but *are*
-retained in the parsed lush-spec for access in other modules. `__name` is a
-reserved key and may not be used.
 
 #### Dependency Injection (Why can't I access math.random?)
 
