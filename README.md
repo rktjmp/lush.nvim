@@ -225,7 +225,8 @@ lua require('lush')(require('lush_theme.cool_name'))
 That's essentially all you need to know to write a lush-spec. The starter
 files provide a deeper example and some tips and tricks.
 
-### Lush-spec Spec
+Lush-spec Spec
+--------------
 
 Lush supports the following group defintions:
 
@@ -301,7 +302,8 @@ Syntax:
 InheritedGroup { Parent, gui = "bold" },
 ```
 
-### Additional Information
+Additional Information
+----------------------
 
 #### Converting an Existing Theme to Lush
 
