@@ -380,6 +380,16 @@ other modules.
 
 This isn't a strict rule enforced in anyway by Lush, simply a recommendation.
 
+#### Why even do this? Seems like a lot of over engineering.
+
+It's true that you could define most of your scheme with just regular lua
+variables, and maybe pass those in a map to some function to convert to
+VimL commands, indeed that's how most lua themes are made.
+
+Really Lush started as a toy experiment in seeing how capable Lua was at making
+DSLs, but it felt useful enough to me that other people might find it
+interesting.
+
 #### Linters
 
 You will likely get warnings from linters while writing a lush-spec,
