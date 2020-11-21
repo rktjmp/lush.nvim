@@ -41,13 +41,15 @@ There are two interactive tutorials provided,
 A Lush theme template is avaliable in the examples folder, as well as other
 examples for various topics (Lightline, dependecy injection, etc).
 
-Component Guide
----------------
+Table of Contents
+-----------------
 
 Lush broadly has 3 components,
 
 - [A HSL color manipulator](#hsl-colors),
 - The [lush-spec parser and compiler](#lush-spec), and
+  - The [lush-spec spec](#lush-spec-spec),
+  - and [additional information](#additional-information) about lush-specs,
 - [Lushify](#lushify), a buffer highlighting and hot-reload tool.
 
 For a usage example, 
