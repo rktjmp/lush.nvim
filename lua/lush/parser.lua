@@ -60,7 +60,7 @@ local wrap_group = function(group_name, group_options)
   local wrapped_opts = {}
   for key, val in pairs(group_options) do
     -- unpack from protected wrapper
-    local internal_type = val('help') == 'internal'
+    local internal_type = val(true) == 'internal'
     val = val()
 
     if internal_type then
@@ -223,9 +223,11 @@ end
 local wrap = function(group_name, group_options)
   local group_type = function(opts)
     -- order of these checks are important, they cascade protections
-    if type(opts) ~= "table" or #group_options > 1 or group_options == {} then
+    if type(opts) ~= "table" or group_options == {} then
       -- !{} or {} or { group, group, ... } -> invalid
       return nil, "invalid group_options"
+    elseif #group_options > 1 then
+      return nil, "too_many_parents"
     elseif #group_options == 0 then
       -- { fg = val, ... } -> group with group_options
       return "group"
@@ -246,8 +248,12 @@ local wrap = function(group_name, group_options)
         return "link"
       end
     else
-      return nil, "unknown_options"
+      return nil, "unknown_options" .. #group_options
     end
+  end
+
+  if not string.match(group_name, "^[a-zA-Z]") then
+    return nil, "invalid_group_name"
   end
 
   local type, err = group_type(group_options)
@@ -297,7 +303,33 @@ local parse = function(lush_spec_fn, options)
 
         -- _ is the group_placeholder, which we do not require
         -- wrap group in group or link handler
-        local group = wrap(group_name, protected)
+        local group, err = wrap(group_name, protected)
+
+        if err then 
+          -- TODO make this less yuck.
+          if err == "too_many_parents" then
+            group = group_error({
+              on = group_name,
+              type = "too_many_parents",
+              msg = "Group '" .. group_name .. "' tries to inherit from too many parents.",
+            })
+          elseif err == "invalid_group_name" then
+            group = group_error({
+              on = group_name,
+              type = err,
+              msg = "Group '" .. group_name ..
+                    "' is invalid, must begin with a letter.",
+            })
+          else
+            -- unknown error reason
+            group = group_error({
+              on = group_name,
+              type = err,
+              msg = "Spec invalid for unrecognized reason.",
+            })
+          end
+        end
+
         -- insert group into spec env, this allows us to
         -- reference this group by name in other groups
         -- replace the previously undefined place holder

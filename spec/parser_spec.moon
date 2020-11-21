@@ -1,7 +1,7 @@
 describe "parser", ->
   parse = require('lush.parser')
 
-  it "wars not to use property inference", ->
+  it "warns not to use property inference", ->
     e = assert.error(-> parse -> {
       A { fg: "red" },
       B { fg: A }
@@ -33,6 +33,13 @@ describe "parser", ->
     error = assert.has_error(fn)
     assert.matches("undefined_group", error)
 
+  it "errors on bad group names", ->
+    e = assert.has_error(-> parse -> {
+      _ { bg: "bg" },
+    })
+    assert.matches("invalid_group_name", e)
+    -- 1 { ... }, [1] { } are uncompilable moonscript
+
   it "should define a style", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg" }
@@ -50,6 +57,10 @@ describe "parser", ->
     assert.is_equal(s.B.bg, "a_bg")
     assert.is_equal(s.B.fg, "b_fg")
     assert.is_equal(s.B.opt, nil)
+
+  it "drops all keys not on allow list", ->
+    -- TODO enforce string group names, must begin with alpha
+
 
   it "should allow linking", ->
     s = parse -> {
@@ -161,6 +172,25 @@ describe "parser", ->
       }
       assert.equals("italic", parsed.B.gui)
       assert.equals("a_bg", parsed.B.bg)
+
+    it "constraints parents to 1", ->
+      e = assert.error(-> parse -> {
+        A { fg: "red" },
+        B { A },
+        C { B, bg: "blue", A} -- Failure
+      })
+      assert.matches("too_many_parents", e)
+
+    it "can have a useless inherit", ->
+      -- useless: inherit but redefine all properties
+      -- TODO: you could warn/error on this case, but may be more frustrating
+      -- than useful
+      parsed = parse -> {
+        A { bg: "a_bg" },
+        B { A, bg: "b_bg", gui: "italic" },
+      }
+      assert.equals("italic", parsed.B.gui)
+      assert.equals("b_bg", parsed.B.bg)
 
     it "detects self reference", ->
       e = assert.error(-> parse -> {
