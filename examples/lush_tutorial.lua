@@ -157,9 +157,14 @@ local theme = lush(function()
     -- (May have performance impact depending on terminal)
     -- CursorColumn { CursorLine }, -- Screen-column at the cursor, when 'cursorcolumn' is set.
 
-    -- Here's how we can set comments to be slightly less visible and italic.
-    -- (italics are terminal support dependent)
-    -- Comment      { fg = Normal.bg.desaturate(25).lighten(25), gui="italic" }, -- (preferred) any comment
+    -- We can make white space characters slighly visible
+    -- Whitespace { fg = Normal.bg.desaturate(25).lighten(25) },
+
+    -- We can inherit properties if we want to tweak a group slightly
+    -- Note: This looks similar to a link, but the defined group will have its
+    -- own properties, cloned from the parent.
+    -- Lets make Comments look like Whitespace, but with italics
+    -- Comment { Whitespace, gui="italic" },
 
     -- Here's how we might set our line numbers to be relational to Normal,
     -- note we'er also using some shorter aliases here.
