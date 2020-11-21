@@ -38,9 +38,6 @@ There are two interactive tutorials provided,
 - `:LushRunTutorial`, a more in-depth guide through various ways to apply Lush.
   (`lush_tutorial.lua` in the examples folder).
 
-*Warning, saving the quickstart and tutorial file may prevent future `git pull`
-plugin updates from working!, you may have `git restore` to clear any conflicts! Sorry!*
-
 A Lush theme template is avaliable in the examples folder, as well as other
 examples for various topics (Lightline, dependecy injection, etc).
 
@@ -57,7 +54,7 @@ Lush broadly has 3 components,
 
 See also:
 
-- [Todo / Future Ideas](#todo-future-ideas)
+- [Todo / Future Ideas](#todo--future-ideas)
 - [Change Log](#change-log)
 
 For a usage example, see the quickstart, tutorial and examples folder.
