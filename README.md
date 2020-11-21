@@ -515,6 +515,19 @@ Bugs or Limitations
 Todo / Future ideas
 -------------------
 
+**Global HSL shifting / Contrast shifting?**
+
+Unsure how useful this would be in the real world, but switching between some
+machines can render some colourschemes differently, because their screens
+or terminals are different.
+
+The idea would be you could set a global shift on hsl to effect all colours
+that are pushed through it.
+
+In actuality, I think what I *really* want is a contrast scale, which isn't as
+simple as simply "make it all brighter" or "make it all bluer".
+
+
 **Automatic Property Inferrence**
 
 Would allow for syntax like:
