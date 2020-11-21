@@ -238,18 +238,6 @@ local wrap_link = function(group_name, group_options)
 end
 
 local wrap = function(group_type, group_name, group_options)
-  if not string.match(group_name, "^[a-zA-Z]") then
-    return nil, "invalid_group_name"
-  end
-
-  if string.match(group_name, "^ALL$") or
-     string.match(group_name, "^NONE$") or
-     string.match(group_name, "^ALLBUT$") or
-     string.match(group_name, "^contained$") or
-     string.match(group_name, "^contains$") then
-     return nil, "invalid_group_name"
-   end
-
   if group_type == "group" then
     return wrap_group(group_name, group_options)
   end
@@ -296,6 +284,22 @@ local group_type_or_error = function(group_def)
   end
 end
 
+local group_name_or_error = function(group_name)
+  if not string.match(group_name, "^[a-zA-Z]") then
+    return nil, "invalid_group_name"
+  end
+
+  if string.match(group_name, "^ALL$") or
+     string.match(group_name, "^NONE$") or
+     string.match(group_name, "^ALLBUT$") or
+     string.match(group_name, "^contained$") or
+     string.match(group_name, "^contains$") then
+     return nil, "invalid_group_name"
+   end
+
+   return group_name
+end
+
 local group_error_for_reason = function(reason, group_name, group_options)
   return group_error({
     on = group_name,
@@ -320,12 +324,14 @@ local parse = function(lush_spec_fn, options)
       -- _ is the group_placeholder, which we do not require
       local define_group = function(_, group_def)
 
-        local group_type, err = group_type_or_error(group_def)
-        if err then
-          -- definition is fundamentally flawed and there is no point
-          -- continuing
-          return group_error_for_reason(err, group_name, group_def)
-        end
+        -- Smoke test the top surface of the group. We this will find basic
+        -- definition mistakes but interals of a definition may still fail
+        -- at a later point.
+        local err, group_type
+        group_name, err = group_name_or_error(group_name)
+        if err then return group_error_for_reason(err) end
+        group_type, err = group_type_or_error(group_def)
+        if err then return group_error_for_reason(err, group_name, group_def) end
 
         -- If a value is in the lush_spec_env, it's a group def,
         -- we need to flag this early here, so we can check for
