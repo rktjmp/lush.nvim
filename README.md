@@ -246,7 +246,7 @@ Supports the following keys:
 - `gui`: sets the `gui` property of a Vim highlight group.
 - `sp`: sets the `guisp` property of a Vim highlight group.
 - `lush`: a namespace to save arbitary data to a group. Is not exported to the
-          final highlight by may be accessed in the lush-spec or the parsed-lush-spec.
+          final highlight but may be accessed in the lush-spec or the parsed-lush-spec.
 
 Constraints:
 
