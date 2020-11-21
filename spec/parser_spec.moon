@@ -38,7 +38,47 @@ describe "parser", ->
       _ { bg: "bg" },
     })
     assert.matches("invalid_group_name", e)
+
     -- 1 { ... }, [1] { } are uncompilable moonscript
+
+    -- vim reserved keywords
+    e = assert.has_error(-> parse -> {
+      ALL { bg: "bg" },
+    })
+    assert.matches("invalid_group_name", e)
+    e = assert.has_error(-> parse -> {
+      NONE { bg: "bg" },
+    })
+    assert.matches("invalid_group_name", e)
+    e = assert.has_error(-> parse -> {
+      ALLBUT { bg: "bg" },
+    })
+    assert.matches("invalid_group_name", e)
+    e = assert.has_error(-> parse -> {
+      contained { bg: "bg" },
+    })
+    assert.matches("invalid_group_name", e)
+    e = assert.has_error(-> parse -> {
+      contains { bg: "bg" },
+    })
+    assert.matches("invalid_group_name", e)
+
+    -- contains keyword but isnt
+    e = assert.not.has_error(-> parse -> {
+      ALLhere { bg: "bg" },
+    })
+    e = assert.not.has_error(-> parse -> {
+      NONEthere { bg: "bg" },
+    })
+    e = assert.not.has_error(-> parse -> {
+      ALLBUTme { bg: "bg" },
+    })
+    e = assert.not.has_error(-> parse -> {
+      containedinabag { bg: "bg" },
+    })
+    e = assert.not.has_error(-> parse -> {
+      containshambuger { bg: "bg" },
+    })
 
   it "should define a style", ->
     s = parse -> {

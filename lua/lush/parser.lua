@@ -273,6 +273,15 @@ local wrap = function(group_name, group_options)
     return nil, "invalid_group_name"
   end
 
+  if string.match(group_name, "^ALL$") or
+     string.match(group_name, "^NONE$") or
+     string.match(group_name, "^ALLBUT$") or
+     string.match(group_name, "^contained$") or
+     string.match(group_name, "^contains$") then
+     return nil, "invalid_group_name"
+   end
+
+
   local type, err = group_type(group_options)
 
   if type == "group" then
@@ -336,7 +345,9 @@ local parse = function(lush_spec_fn, options)
               on = group_name,
               type = err,
               msg = "Group '" .. group_name ..
-                    "' is invalid, must begin with a letter.",
+                    "' name is invalid, must begin with a letter and not be " ..
+                    "one of the reserved keywords: ALL NONE ALLBUT " ..
+                    "contains contained."
             })
           else
             -- unknown error reason
