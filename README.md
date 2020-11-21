@@ -322,7 +322,9 @@ If you did feel the performance was poor, you can always export your theme to
 VimL after using Lush to aid the development process.
 
 *Times measured with libuv's hrtime(), specifically around the parse, compile
-and apply calls.*
+and apply calls. There may be a few extra nanoseconds not recorded between
+calling in and out of functions, as well as the initial file load time
+(which VimL would also incur).*
 
 ```
 Parse:   286300  ns  0.2863 ms -- resolve lush-spec into concrete values
