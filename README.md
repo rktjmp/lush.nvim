@@ -482,6 +482,14 @@ Todo / Future ideas
 Would allow for syntax like:
 
 ```lua
-Comment { Normal, gui = "italic" }, -- automatically detect fg, bg and apply
-CursorLine { fg = Normal, bg = Visual } -- automaticlly infer appropriate key
+-- automatically infer appropriate key (Normal.fg)
+CursorLine { fg = Normal, bg = Visual }
 ```
+
+Most of this code is actually already present, but the ability to write
+`fg = Normal` tends to encourage `fg = Normal.ro(...)` at a later time,
+is an invalid operation.
+
+Without a uniform solution to this, I'm reticent to "muddy" the API.
+
+For now, you must write `fg = Normal.fg`.
