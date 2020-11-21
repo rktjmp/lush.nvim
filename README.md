@@ -310,6 +310,42 @@ InheritedGroup { Parent, gui = "bold" },
 Additional Information
 ----------------------
 
+#### Performance
+
+I, personally, would say there isn't a noticable performance impact in using
+Lush over a raw VimL colorscheme. The parse and compile stage is generally
+around 1ms on my quite aged core i5 and is comparitively dwarfed by the 3ms spent
+waiting for the VimL comamnds to apply (which should be at least as-slow with
+raw VimL).
+
+If you did feel the performance was poor, you can always export your theme to
+VimL after using Lush to aid the development process.
+
+*Times measured with libuv's hrtime(), specifically around the parse, compile
+and apply calls.*
+
+```
+Parse:   286300  ns  0.2863 ms -- resolve lush-spec into concrete values
+Compile: 671900  ns  0.6719 ms -- convert concrete spec into viml commands
+Apply:   3134300 ns  3.1343 ms -- pass to VimL interprete (iterate array and call "nvim_command", "nvim_exec" performance is identical)
+Total:   4092500 ns  4.0925 ms
+
+Parse:   373500  ns  0.3735 ms
+Compile: 973400  ns  0.9734 ms
+Apply:   3442400 ns  3.4424 ms
+Total:   4789300 ns  4.7893 ms
+
+Parse:   388700  ns  0.3887 ms
+Compile: 705500  ns  0.7055 ms
+Apply:   3446900 ns  3.4469 ms
+Total:   4541100 ns  4.5411 ms
+
+Parse:   299400  ns  0.2994 ms
+Compile: 814600  ns  0.8146 ms
+Apply:   3065300 ns  3.0653 ms
+Total:   4179300 ns  4.1793 ms
+```
+
 #### Converting an Existing Theme to Lush
 
 Currently there isn't an built in automated method for converting an
