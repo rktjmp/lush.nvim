@@ -6,7 +6,7 @@ describe "parser", ->
       A { fg: "red" },
       B { fg: A }
     })
-    assert.matches("feature_disabled", e)
+    assert.matches("inference_disabled", e)
 
   it "warns on bad input", ->
     assert.error(-> parse(nil))
@@ -22,7 +22,7 @@ describe "parser", ->
         B { bg: "B_BG"},
       }
     error = assert.has_error(fn)
-    assert.matches("redefined", error)
+    assert.matches("group_redefined", error)
 
   it "errors on placeholder groups", ->
     fn = ->
@@ -149,7 +149,7 @@ describe "parser", ->
       A { bg: "a_bg", fg: "a_fg" },
       C { C }
     })
-    e = assert.matches("circular_self_reference", e)
+    e = assert.matches("circular_self_link", e)
 
 
   it "can resolve deep chains", ->
@@ -189,13 +189,10 @@ describe "parser", ->
     assert.matches("Z", error)
 
   it "protects __name", ->
-    fn = ->
-      parse -> {
-        A { bg: "a_bg", fg: "a_fg", __name: "failure" },
-      }
-    error = assert.has_error(fn)
-    assert.matches("__name", error)
-    assert.matches("reserved_keyword", error)
+    parsed = parse -> {
+      A { bg: "a_bg", fg: "a_fg", __name: "failure" },
+    }
+    assert.nil(parsed.A.__name)
 
   it "defines __type meta key", ->
     s = parse -> {
@@ -250,14 +247,14 @@ describe "parser", ->
         A { bg: "a_bg" },
         B { B, gui: "italic" },
       })
-      assert.matches("circular_self_reference", e)
+      assert.matches("circular_self_inherit", e)
 
     it "detects invalid references", ->
       e = assert.error(-> parse -> {
         A { bg: "a_bg" },
         B { Z, gui: "italic" },
       })
-      assert.matches("invalid_parent_name", e)
+      assert.matches("invalid_parent", e)
 
     it "can inherit through a link", ->
       parsed = parse -> {
