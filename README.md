@@ -223,6 +223,79 @@ lua require('lush')(require('lush_theme.cool_name'))
 That's essentially all you need to know to write a lush-spec. The starter
 files provide a deeper example and some tips and tricks.
 
+#### Lush-spec Spec
+
+TODO: note about removal of all non-supported keys, add lush key save space?
+
+Lush supports the following group defintions:
+
+**Direct Defintion**
+
+*Used to define a stand alone highlight group, see `:h highlight`.*
+
+Supports the following keys:
+
+- `fg`: sets the `guifg` property of a Vim highlight group.
+- `bg`: sets the `guibg` property of a Vim highlight group.
+- `gui`: sets the `gui` property of a Vim highlight group.
+- `sp`: sets the `guisp` property of a Vim highlight group.
+
+Constraints:
+
+- `value` may be any Lua type which will concatenate with a string.
+- `value` may be derived from previously defined group properties.
+- All unspported keys are dropped. TODO make this realised for group types.
+- Group name is CamelCase by convention, but may be any string beginning with
+  an alpha character.
+
+Syntax:
+
+```lua
+GroupName { fg = value, bg = value, gui = value, sp = value },
+```
+
+**Linked Group**
+
+*Used to define a highlight link. see `:h hi-link`*
+
+Supported keys:
+
+N/A.
+
+Constraints:
+
+Linked group must be defined before the link definetion.
+
+Syntax:
+
+```lua
+LinkedGroup { GroupName },
+```
+
+**Inherited Group**
+
+*Used to define a new highlight group, with properties inherited from another
+group.*
+
+This is logically similar to a *Linked Group*, except you wish to define new
+keys, or redefine old keys.
+
+Supported keys:
+
+See *Direct Definition*.
+
+Constraints:
+
+- Only one parent group may be specified and it must be the first value in the
+  group defintion.
+- Inherits constraints of *Direct Definition*
+
+Syntax:
+
+```lua
+InheritedGroup { Parent, gui = "bold" },
+```
+
 #### Converting an Existing Theme to Lush
 
 Currently there isn't an built in automated method for converting an
