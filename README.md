@@ -52,7 +52,7 @@ Lush broadly has 3 components,
   - and [additional information](#additional-information) about lush-specs,
 - [Lushify](#lushify), a buffer highlighting and hot-reload tool.
 
-For a usage example, 
+For a usage example, see the quickstart, tutorial and examples folder.
 
 HSL Colors
 ----------
