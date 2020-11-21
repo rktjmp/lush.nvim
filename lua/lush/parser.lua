@@ -7,17 +7,9 @@ local function error_to_string(error)
 end
 
 local function allowed_option_keys()
+  -- note, sometimes `1` is manually inserted into allowed options,
+  -- since it's OK in some edge cases (inheritance, links)
   return {"fg", "bg", "sp", "gui", "lush"}
-end
-
--- lets us get the value or the type of a value, which is important when
--- we have to work out if we're dealing with a external value or an internal
--- group masquerading as a value.
-local safe_value = function(value, type)
-  return function(help)
-    if help then return type end
-    return value
-  end
 end
 
 -- groups should define their error state "on resolve",
@@ -61,24 +53,11 @@ local wrap_group = function(group_name, group_options)
   -- This means lush_groups get called, and resolved,
   -- while regular values get called, and returned.
   -- TODO: potentially __index and wrap nil returns?
+
   local wrapped_opts = {}
-  local present_keys = {}
-  -- lua sure has some ugly parts. With no continue/break in the for, we
-  -- must pre-filter allowed keys so we don't attempt to retrieve and 
-  -- nil() later. we can re-write a lot of this module when we have a proper
-  -- fp lib.
-  for _, key in ipairs(allowed_option_keys()) do
-    if group_options[key] then
-      table.insert(present_keys, key)
-    end
-  end
-
-  for _, key in ipairs(present_keys) do
-    local val = group_options[key]
-
-    -- unpack from protected wrapper
-    local internal_type = val(true) == 'internal'
-    val = val()
+  for key, tuple in pairs(group_options) do
+    local val, kind = unpack(tuple)
+    local internal_type = kind == "internal"
 
     if internal_type then
       if type(val) == "table" and val.__type == "lush_group_placeholder" then
@@ -160,7 +139,7 @@ local wrap_group = function(group_name, group_options)
 end
 
 local wrap_inherit = function(group_name, group_options)
-  local link = group_options[1]()
+  local link, kind = unpack(group_options[1])
 
   if group_name == link.__name then
     return group_error({
@@ -179,16 +158,15 @@ local wrap_inherit = function(group_name, group_options)
     })
   end
 
+
+  -- merge values from parent if not present in child
   local merged = {}
-  -- manually set keys so we don't get [1]
   for _, key in ipairs(allowed_option_keys()) do
-    if group_options[key] then
-      merged[key] = group_options[key]
-    elseif link[key] then
-      -- link will have already had it's values unpacked, so we
-      -- must repack them for now.
-      -- TODO: delay all unmaybeing until resolve
-      merged[key] = safe_value(link[key])
+    local tuple = group_options[key]
+    if tuple then
+      merged[key] = tuple
+    else
+      merged[key] = {link[key], nil}
     end
   end
 
@@ -198,7 +176,7 @@ end
 -- wrap link in object that proxies indexes to linked group options
 -- or when called, link descriptor
 local wrap_link = function(group_name, group_options)
-  local link_to = group_options[1]()
+  local link_to, kind = unpack(group_options[1])
 
   if link_to.__name == group_name then
     return group_error({
@@ -300,6 +278,7 @@ local group_name_or_error = function(group_name)
    return group_name
 end
 
+
 local group_error_for_reason = function(reason, group_name, group_options)
   return group_error({
     on = group_name,
@@ -341,11 +320,22 @@ local parse = function(lush_spec_fn, options)
         -- (AKA hsl.__type is an error of "unsupported modifier")
         local protected = {}
 
-        -- TODO can clean group_def here with allowed_option_keys(),
-        -- but must check for error types before doing so
-        for key, val in pairs(group_def) do
-          -- note doing this polutes the spec env namespace with objects
-          protected[key] = safe_value(val, seen_groups[val] and "internal" or "external")
+        for _, key in ipairs(allowed_option_keys()) do
+          local val = group_def[key]
+          if val then
+            local is_group = seen_groups[val]
+            local tuple = {val, is_group and "internal" or "external"}
+            protected[key] = tuple
+          end
+        end
+
+        -- inhert and link both should have a [1] key, but we keep out out of 
+        -- the allowed options check for ease of use elsewhere.
+        if group_def[1] and (group_type == "inherit" or group_type == "link") then
+          local val = group_def[1]
+          local is_group = seen_groups[val]
+          local tuple = {val, is_group and "internal" or "external"}
+          protected[1] = tuple
         end
 
         -- wrap group in group or link handler
