@@ -6,6 +6,10 @@ local function error_to_string(error)
   return str
 end
 
+local function allowed_option_keys()
+  return {"fg", "bg", "sp", "gui", "lush"}
+end
+
 -- lets us get the value or the type of a value, which is important when
 -- we have to work out if we're dealing with a external value or an internal
 -- group masquerading as a value.
@@ -58,7 +62,20 @@ local wrap_group = function(group_name, group_options)
   -- while regular values get called, and returned.
   -- TODO: potentially __index and wrap nil returns?
   local wrapped_opts = {}
-  for key, val in pairs(group_options) do
+  local present_keys = {}
+  -- lua sure has some ugly parts. With no continue/break in the for, we
+  -- must pre-filter allowed keys so we don't attempt to retrieve and 
+  -- nil() later. we can re-write a lot of this module when we have a proper
+  -- fp lib.
+  for _, key in ipairs(allowed_option_keys()) do
+    if group_options[key] then
+      table.insert(present_keys, key)
+    end
+  end
+
+  for _, key in ipairs(present_keys) do
+    local val = group_options[key]
+
     -- unpack from protected wrapper
     local internal_type = val(true) == 'internal'
     val = val()
@@ -164,7 +181,7 @@ local wrap_inherit = function(group_name, group_options)
 
   local merged = {}
   -- manually set keys so we don't get [1]
-  for _, key in ipairs({"fg", "bg", "gui", "sp"}) do
+  for _, key in ipairs(allowed_option_keys()) do
     if group_options[key] then
       merged[key] = group_options[key]
     elseif link[key] then
@@ -276,7 +293,6 @@ end
 local parse = function(lush_spec_fn, options)
   assert(type(lush_spec_fn) == "function", "Must supply function to parser")
 
-
   local seen_groups = {}
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
@@ -296,6 +312,8 @@ local parse = function(lush_spec_fn, options)
         -- (AKA hsl.__type is an error of "unsupported modifier")
         local protected = {}
 
+        -- TODO can clean group_def here with allowed_option_keys(),
+        -- but must check for error types before doing so
         for key, val in pairs(group_def) do
           -- note doing this polutes the spec env namespace with objects
           protected[key] = safe_value(val, seen_groups[val] and "internal" or "external")

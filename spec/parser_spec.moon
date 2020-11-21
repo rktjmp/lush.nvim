@@ -49,14 +49,24 @@ describe "parser", ->
     assert.is_equal(s.A.bg, "a_bg")
     assert.is_equal(s.A.fg, "a_fg")
 
+  it "should the allowed keys list", ->
+    s = parse -> {
+      A { bg: "a_bg", fg: "a_fg", lush: "abc", not_lush: "xyz"},
+    }
+    assert.is_not_nil(s.A)
+    assert.is_equal(s.A.bg, "a_bg")
+    assert.is_equal(s.A.fg, "a_fg")
+    assert.is_equal(s.A.lush, "abc")
+    assert.is_equal(s.A.not_lush, nil)
+
   it "should allow accesing previous styles", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
+      A { bg: "a_bg", fg: "a_fg", lush: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
     }
     assert.is_equal(s.B.bg, "a_bg")
     assert.is_equal(s.B.fg, "b_fg")
-    assert.is_equal(s.B.opt, nil)
+    assert.is_equal(s.B.lush, nil)
 
   it "drops all keys not on allow list", ->
     -- TODO enforce string group names, must begin with alpha
@@ -64,7 +74,7 @@ describe "parser", ->
 
   it "should allow linking", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
+      A { bg: "a_bg", fg: "a_fg", lush: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
       C { A }
     }
@@ -74,7 +84,7 @@ describe "parser", ->
 
   it "should allow chained linking", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
+      A { bg: "a_bg", fg: "a_fg", lush: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
       C { A } -- C -> A
       D { C } -- D -> C
@@ -104,7 +114,7 @@ describe "parser", ->
 
   it "can resolve deep chains", ->
     s =  parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
+      A { bg: "a_bg", fg: "a_fg", lush: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
       C { A } -- C -> A
       D { C } -- D -> C
@@ -118,7 +128,7 @@ describe "parser", ->
 
   it "has unique tables for all groups", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt"}
+      A { bg: "a_bg", fg: "a_fg", lush: "a_opt"}
       B { bg: A.bg, fg: "b_fg" }
       C { A } -- C -> A
       D { C } -- D -> C
@@ -149,7 +159,7 @@ describe "parser", ->
 
   it "defines __type meta key", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", opt: "a_opt" }
+      A { bg: "a_bg", fg: "a_fg", lush: "a_opt" }
     }
     assert.equal('parsed_lush_spec', s.__type)
 
@@ -167,11 +177,14 @@ describe "parser", ->
   describe "inheritance", ->
     it "can inherit", ->
       parsed = parse -> {
-        A { bg: "a_bg" },
-        B { A, gui: "italic" },
+        A { bg: "a_bg", lush: "inherit", not_lush: "lost" },
+        B { A, gui: "italic", also_lost: "this"},
       }
       assert.equals("italic", parsed.B.gui)
       assert.equals("a_bg", parsed.B.bg)
+      assert.equals("inherit", parsed.B.lush)
+      assert.equals(nil, parsed.B.not_lush)
+      assert.equals(nil, parsed.B.also_lost)
 
     it "constraints parents to 1", ->
       e = assert.error(-> parse -> {
