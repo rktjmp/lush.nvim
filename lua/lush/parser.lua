@@ -54,56 +54,56 @@ local wrap_group = function(group_name, group_options)
   -- while regular values get called, and returned.
   -- TODO: potentially __index and wrap nil returns?
 
-  local wrapped_opts = {}
+  local proxied_options = {}
   for key, tuple in pairs(group_options) do
     local val, kind = unpack(tuple)
-    local internal_type = kind == "internal"
 
-    if internal_type then
-      if type(val) == "table" and val.__type == "lush_group_placeholder" then
-        if val.__name == group_name then
-          return group_error({
-            on = group_name,
-            msg = "Attempt to reference group " .. group_name ..
-                  " inside " .. val.__name,
-            type = "circular_self_reference"
-          })
-        else
-          return group_error({
-            on = group_name,
-            msg = "Attempt to reference group " .. val.__name ..
-                  " as value, but group isn't defined before " .. group_name,
-            type = "undefined_group"
-          })
-        end
-      end
-      if type(val) == "table" and val.__type == "lush_group" then
-        -- don't return nil on inferred keys
-        local check = val[key]
-        if check == nil then
-          return group_error({
-            on = group_name,
-            msg = "Attempted to infer value for " ..  key ..
-                  " from " .. val.__name ..  " but " .. val.__name ..
-                  " has no " .. key..  " key",
-            type = "target_missing_inferred_key"
-          })
-        end
-
-        -- key has value, return the value
-        wrapped_opts[key] = val[key]
-
+    if kind == "lush_group_placeholder" then
+      -- placeholder groups that get this far are an error, halt.
+      if val.__name == group_name then
         return group_error({
           on = group_name,
-          msg = "Property inference is currently disabled",
-          type = "feature_disabled"
+          msg = "Attempt to reference group " .. group_name ..
+          " inside " .. val.__name,
+          type = "circular_self_reference"
         })
       else
-        wrapped_opts[key] = val
+        return group_error({
+          on = group_name,
+          msg = "Attempt to reference group " .. val.__name ..
+          " as value, but group isn't defined before " .. group_name,
+          type = "undefined_group"
+        })
       end
-    else
-      wrapped_opts[key] = val
     end
+
+    if kind == "lush_group" then
+      -- WIP for property inference
+      -- don't return nil on inferred keys
+      local check = val[key]
+      if check == nil then
+        return group_error({
+          on = group_name,
+          msg = "Attempted to infer value for " ..  key ..
+          " from " .. val.__name ..  " but " .. val.__name ..
+          " has no " .. key..  " key",
+          type = "target_missing_inferred_key"
+        })
+      end
+
+      -- lush group referenced has key requested,
+      -- so proxy this would-be group's value to the proxy group
+      proxied_options[key] = val[key]
+
+      return group_error({
+        on = group_name,
+        msg = "Property inference is currently disabled",
+        type = "feature_disabled"
+      })
+    end
+
+    -- no group to proxy to, just map key to value
+    proxied_options[key] = val
   end
 
   -- Define the actual group table
@@ -118,7 +118,7 @@ local wrap_group = function(group_name, group_options)
       elseif key == "__type" then
         return "lush_group"
       else
-        return wrapped_opts[key]
+        return proxied_options[key]
       end
     end,
 
@@ -127,7 +127,7 @@ local wrap_group = function(group_name, group_options)
     -- aready resolved and likely re-calling is an attempt to redefine.
     -- It's difficult to detect this elsewhere.
     __call = function()
-      return setmetatable(wrapped_opts, {
+      return setmetatable(proxied_options, {
         __call = group_error({
           on = group_name,
           type = "group_redefined",
@@ -166,7 +166,7 @@ local wrap_inherit = function(group_name, group_options)
     if tuple then
       merged[key] = tuple
     else
-      merged[key] = {link[key], nil}
+      merged[key] = {link[key], type(link[key])}
     end
   end
 
@@ -324,7 +324,7 @@ local parse = function(lush_spec_fn, options)
           local val = group_def[key]
           if val then
             local is_group = seen_groups[val]
-            local tuple = {val, is_group and "internal" or "external"}
+            local tuple = {val, is_group and val.__type or type(val)}
             protected[key] = tuple
           end
         end
@@ -334,7 +334,7 @@ local parse = function(lush_spec_fn, options)
         if group_def[1] and (group_type == "inherit" or group_type == "link") then
           local val = group_def[1]
           local is_group = seen_groups[val]
-          local tuple = {val, is_group and "internal" or "external"}
+          local tuple = {val, is_group and val.__type or type(val)}
           protected[1] = tuple
         end
 
