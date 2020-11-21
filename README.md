@@ -223,9 +223,7 @@ lua require('lush')(require('lush_theme.cool_name'))
 That's essentially all you need to know to write a lush-spec. The starter
 files provide a deeper example and some tips and tricks.
 
-#### Lush-spec Spec
-
-TODO: note about removal of all non-supported keys, add lush key save space?
+### Lush-spec Spec
 
 Lush supports the following group defintions:
 
@@ -239,14 +237,17 @@ Supports the following keys:
 - `bg`: sets the `guibg` property of a Vim highlight group.
 - `gui`: sets the `gui` property of a Vim highlight group.
 - `sp`: sets the `guisp` property of a Vim highlight group.
+- `lush`: a namespace to save arbitary data to a group. Is not exported to the
+          final highlight by may be accessed in the lush-spec or the parsed-lush-spec.
 
 Constraints:
 
 - `value` may be any Lua type which will concatenate with a string.
 - `value` may be derived from previously defined group properties.
-- All unspported keys are dropped. TODO make this realised for group types.
+- All unspported keys are dropped.
 - Group name is CamelCase by convention, but may be any string beginning with
   an alpha character.
+- `font` key currently unsupported, create an issue if you would like to see this.
 
 Syntax:
 
