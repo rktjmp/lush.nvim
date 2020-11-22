@@ -312,7 +312,6 @@ local enforce_no_placeholder_link = function(name, opts)
   end
 end
 
-
 -- wrap link in object that proxies indexes to linked group options
 -- or when called, link descriptor
 local create_link_group = function(group_name, group_options)
@@ -343,7 +342,7 @@ local create_link_group = function(group_name, group_options)
   })
 end
 
-local wrap = function(group_type, group_name, group_options)
+local create_group = function(group_type, group_name, group_options)
   if group_type == "group" then return create_direct_group(group_name, group_options) end
   if group_type == "inherit" then return create_inherit_group(group_name, group_options) end
   if group_type == "link" then return create_link_group(group_name, group_options) end
@@ -434,7 +433,7 @@ local parse = function(lush_spec_fn, options)
         end
 
         -- wrap group in group or link handler
-        local group, err = wrap(group_type, group_name, protected)
+        local group, err = create_group(group_type, group_name, protected)
         if err then
           -- TODO: this could be nicer, technically we should fail before
           --       its possible to get fail group_type inference but ...
