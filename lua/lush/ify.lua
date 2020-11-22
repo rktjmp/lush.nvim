@@ -137,15 +137,32 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
   end
 end
 
+-- Errors can occur in two "spaces", lua-space and lush-space
+-- lush-space errors are things that are spec dependent, bad definitions,
+-- invalid groups, etc.
+-- lua-space errors can be anything, mis-spelt variables, nil indexing, *vim errors*.
+-- Since they can happen in intermingled contexts, we have a unified handler that 
+-- can be called from both stages (loadstring and apply).
+local print_error = function(err)
+  -- table implies (hopefully!) it's a lush error
+  if type(err) == "table" then
+    local msg = "Parser Error (" .. err.code .. "): " .. err.on ..
+                " -> " .. err.msg
+    print(msg)
+  else
+    -- else it's likely another library or plain lua error
+    err = string.gsub(err, "^%[string .+%]:", 'line ') -- strip our loadstring name, leave line number
+    local msg = "Lush.ify: Could not parse buffer due to Lua error: " .. err
+    print(msg)
+  end
+end
+
 -- passes entire contents of buffer to lua interpreter
 -- may print error if one occurs
 -- (number) -> nil
 local function eval_buffer(buf)
   buf = buf or 0
-  print("") -- TODO clear any messages (not great, may clobber other tools)
-
-  -- name used for error reporting
-  local buf_name = api.nvim_buf_get_name(buf)
+  -- local a_time = vim.loop.hrtime()
 
   local all_buf_lines = api.nvim_buf_get_lines(buf, 0, -1, true)
 
@@ -160,37 +177,50 @@ local function eval_buffer(buf)
   -- is why we wrap it in a pcall (else the error propagates up to vim)
   local eval_success, eval_value = pcall(function()
     local code = table.concat(all_buf_lines, "\n")
+    -- local a = vim.loop.hrtime()
     local fn, load_error = loadstring(code, "lush.ify.eval_buffer")
+    --local b = vim.loop.hrtime()
+    -- print(b - a / 1000000)
     -- bubble error up
     if load_error then error(load_error, 2) end
     return fn()
   end)
 
+  if not eval_success then
+    print_error(eval_value)
+  end
+
   if eval_success then
     -- if we eval'd ok, we have a theme to apply, we can actually still
     -- error here, if the actual spec is invalid once executed
     -- (right now we just know it's vaguely valid lua)
-    eval_success, eval_value = pcall(function()
+    local apply_success, apply_value = pcall(function()
       return lush.apply(lush.compile(eval_value, {force_clean = true}))
     end)
-  end
-
-  -- this may catch either pcall's errors
-  if not eval_success then
-    -- eval failed, so try to output a descriptive reason
-    -- format error to be relative to the hot reloaded file
-    eval_value = string.gsub(eval_value, "^%[string .+%]", buf_name)
-    local msg = "Lushify hot reload did not apply: " .. eval_value
-    print(msg)
-    -- if a error message wraps in the command output window, the
-    -- user is prompted to "press enter or type to continue", which is
-    -- pretty annoying for a real time update, so we'll just print
-    -- instead, which doesn't get the pretty colouring but it's less
-    -- frustrating to actually use.
-    -- local cmd = "echohl WarningMsg | echo \"" ..
-    --             msg ..
-    --             "\" | echohl None"
-    -- vim.api.nvim_command(cmd)
+    if not apply_success then
+      print_error(apply_value)
+      -- if a error message wraps in the command output window, the
+      -- user is prompted to "press enter or type to continue", which is
+      -- pretty annoying for a real time update, so we'll just print
+      -- instead, which doesn't get the pretty colouring but it's less
+      -- frustrating to actually use.
+      -- local cmd = "echohl WarningMsg | echo \"" ..
+      --             msg ..
+      --             "\" | echohl None"
+      -- vim.api.nvim_command(cmd)
+    else
+      -- local b_time = vim.loop.hrtime()
+      -- local ms = ((b_time- a_time)/ 100000) -- leave extra sig figure
+      -- ms = math.ceil(ms - 0.5)
+      -- ms = ms / 10
+      -- print("Lush.ify applied successfully in " .. ms .. "ms")
+      --
+      -- If you set ModeMsg, vim will clear the output line, it seems.
+      -- Which makes the above unreliable, so instead of providing an
+      -- so instead we will just clear any previous errors that might
+      -- hang around.
+      print(" ") -- clear error
+    end
   end
 
   -- even if the eval failed, we can still apply hsl() calls
@@ -242,6 +272,12 @@ setmetatable(M, {
     -- change would have to be fake-parsed and we'd have to be watching for
     -- changes only inside the spec line range which while possible, just feels
     -- like a hack.
+    --
+    -- 2020/11/22 - time for loadstring is 5ms, time for apply is between 
+    --              very low 0-2ms and long 10ms?, seemingly depending on how
+    --              vim feels. This difference is observed over the same spec
+    --              with no changes. Having an in-memory spec is unlikely to
+    --              aid anything. the real bottle neck is vim itself.
     --
     -- And all that seems like premature opitmisation anyway, since the
     -- performance cost is so low.
