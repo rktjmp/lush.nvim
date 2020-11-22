@@ -47,10 +47,14 @@ describe "hsl", ->
     check_e(-> hsl(1,2))
     check_e(-> hsl(2, 3, "3"))
     check_e(-> hsl(23, 3))
-    assert.error(-> color hsl(""))
-    assert.error(-> color hsl("hsl('#100000')"))
-    assert.error(-> color hsl("#0df"))
-    assert.error(-> color hsl("#00FF0Z"))
+    e = assert.error(-> color hsl(""))
+    assert.matches("invalid hex_str", e)
+    e = assert.error(-> color hsl("hsl('#100000')"))
+    assert.matches("invalid hex_str", e)
+    e = assert.error(-> color hsl("#0df"))
+    assert.matches("invalid hex_str", e)
+    e = assert.error(-> color hsl("#00FF0Z"))
+    assert.matches("invalid hex_str", e)
 
   describe "modification", ->
     color = hsl(120, 11, 34)
@@ -66,6 +70,11 @@ describe "hsl", ->
 
       assert.is_same(color.rotate(120).h, color.ro(120).h)
 
+      e = assert.error(-> color.rotate())
+      assert.matches("number", e)
+      e = assert.error(-> color.rotate("asd"))
+      assert.matches("number", e)
+
     it "can saturate", ->
       assert.is.equal(color.s, 11)
       assert.is.equal(color.saturate(10).s, 20)
@@ -80,6 +89,11 @@ describe "hsl", ->
 
       assert.is_same(color.saturate(10).s, color.sa(10).s)
       assert.is_same(color.abs_saturate(10).s, color.abs_sa(10).s)
+
+      e = assert.error(-> color.saturate())
+      assert.matches("number", e)
+      e = assert.error(-> color.saturate("asd"))
+      assert.matches("number", e)
 
     it "can desaturate", ->
       assert.is.equal(color.s, 11)
@@ -97,6 +111,11 @@ describe "hsl", ->
       assert.is_same(color.desaturate(10).s, color.de(10).s)
       assert.is_same(color.abs_desaturate(10).s, color.abs_de(10).s)
 
+      e = assert.error(-> color.desaturate())
+      assert.matches("number", e)
+      e = assert.error(-> color.desaturate("asd"))
+      assert.matches("number", e)
+
     it "can lighten", ->
       assert.is.equal(color.l, 34)
       assert.is.equal(color.lighten(10).l, 41)
@@ -112,6 +131,11 @@ describe "hsl", ->
 
       assert.is_same(color.lighten(10).l, color.li(10).l)
       assert.is_same(color.abs_lighten(10).l, color.abs_li(10).l)
+
+      e = assert.error(-> color.lighten())
+      assert.matches("number", e)
+      e = assert.error(-> color.lighten("asd"))
+      assert.matches("number", e)
 
     it "can darken", ->
       assert.is.equal(color.l, 34)
@@ -129,6 +153,11 @@ describe "hsl", ->
       assert.is_same(color.darken(10).l, color.da(10).l)
       assert.is_same(color.abs_darken(10).l, color.abs_da(10).l)
 
+      e = assert.error(-> color.darken())
+      assert.matches("number", e)
+      e = assert.error(-> color.darken("asd"))
+      assert.matches("number", e)
+
     it "can set direct values", ->
       assert.is.equal(color.h, 120)
       assert.is.equal(color.hue(55).h, 55)
@@ -137,9 +166,23 @@ describe "hsl", ->
       assert.is.equal(color.l, 34)
       assert.is.equal(color.lightness(44).l, 44)
 
+      e = assert.error(-> color.hue())
+      assert.matches("number", e)
+      e = assert.error(-> color.hue("asd"))
+      assert.matches("number", e)
+      e = assert.error(-> color.saturation())
+      assert.matches("number", e)
+      e = assert.error(-> color.saturation("asd"))
+      assert.matches("number", e)
+      e = assert.error(-> color.lightness())
+      assert.matches("number", e)
+      e = assert.error(-> color.lightness("asd"))
+      assert.matches("number", e)
+
     it "disables assignment", ->
       color = hsl(0, 0, 0)
-      assert.error(-> color.h = 100)
+      e = assert.error(-> color.h = 100)
+      assert.matches("Member setting disabled", e)
 
   describe "modifier behaviour", ->
     it "can chain modifiers", ->

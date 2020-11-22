@@ -20,6 +20,7 @@ local function wrap_color(color)
 
   local roll_abs_fn = function(color, key)
     return function(abs_value)
+      if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       local new_color = {h = color.h, s = color.s, l = color.l}
       new_color[key] = new_color[key] + abs_value
       return wrap_color(new_color)
@@ -28,6 +29,8 @@ local function wrap_color(color)
 
   local roll_lerp_fn = function(color, key)
     return function(percent)
+      if type(percent) ~= "number" then error("Must provide number to HSL modifiers", 0) end
+
       -- we never modifiy the caller
       local new_color = {h = color.h, s = color.s, l = color.l}
       -- we can safely bounds all relative adjustments to 0, 100
@@ -55,11 +58,13 @@ local function wrap_color(color)
 
   local desaturate = function(color)
     return function(percent)
+      if type(percent) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return roll_lerp_fn(color, "s")(-percent)
     end
   end
   local abs_desaturate = function(color)
     return function(abs_value)
+      if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return roll_abs_fn(color, "s")(-abs_value)
     end
   end
@@ -73,11 +78,13 @@ local function wrap_color(color)
 
   local darken = function(color)
     return function(percent)
+      if type(percent) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return roll_lerp_fn(color, "l")(-percent)
     end
   end
   local abs_darken = function(color)
     return function(abs_value)
+      if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return roll_abs_fn(color, "l")(-abs_value)
     end
   end
@@ -85,16 +92,19 @@ local function wrap_color(color)
 
   local hue = function(color)
     return function(hue)
+      if type(hue) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return wrap_color({h = hue, s = color.s, l = color.l})
     end
   end
   local saturation = function(color)
     return function(saturation)
+      if type(saturation) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return wrap_color({h = color.h, s = saturation, l = color.l})
     end
   end
   local lightness = function(color)
     return function(lightness)
+      if type(lightness) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       return wrap_color({h = color.h, s = color.s, l = lightness})
     end
   end
