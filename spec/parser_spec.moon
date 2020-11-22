@@ -6,22 +6,29 @@ describe "parser", ->
       A { fg: "red" },
       B { fg: A }
     })
-    assert.matches("group_value_is_group", e)
-    -- assert.matches("inference_disabled", e)
+    -- error type now different though test remains important
+    assert.matches("group_value_is_group", e.code)
+    assert.not.matches("No message avaliable", e.msg)
 
   it "warns on bad input", ->
-    assert.error(-> parse(nil))
-    assert.error(-> parse(""))
-    assert.error(-> parse(1,2,3,4))
-    assert.error(-> parse({}))
-
+    bads = {
+      -> parse(nil),
+      -> parse(""),
+      -> parse(1,2,3,4,5),
+      -> parse({})
+    }
+    for bad in *bads
+      e = assert.error(bad)
+      assert.matches("malformed_lush_spec", e.code)
+      assert.not.matches("No message avaliable", e.msg)
 
   it "errors on bad definition", ->
     e = assert.has_error(->
       parse -> {
         A("string"),
       })
-    assert.matches("invalid_group_options", e)
+    assert.matches("invalid_group_options", e.code)
+    assert.not.matches("No message avaliable", e.msg)
 
   it "warns when re-defining a group", ->
     fn = ->
@@ -30,8 +37,9 @@ describe "parser", ->
         A { bg: "DUPLICATE" },
         B { bg: "B_BG"},
       }
-    error = assert.has_error(fn)
-    assert.matches("group_redefined", error)
+    e = assert.has_error(fn)
+    assert.matches("group_redefined", e.code)
+    assert.not.matches("No message avaliable", e.msg)
 
   it "errors on placeholder groups", ->
     fn = ->
@@ -40,13 +48,13 @@ describe "parser", ->
         B { bg: Z },
       }
     error = assert.has_error(fn)
-    assert.matches("undefined_group", error)
+    assert.matches("undefined_group", error.code)
 
   it "errors on bad group names", ->
     e = assert.has_error(-> parse -> {
       _ { bg: "bg" },
     })
-    assert.matches("invalid_group_name", e)
+    assert.matches("invalid_group_name", e.code)
 
     -- 1 { ... }, [1] { } are uncompilable moonscript
 
@@ -54,23 +62,23 @@ describe "parser", ->
     e = assert.has_error(-> parse -> {
       ALL { bg: "bg" },
     })
-    assert.matches("invalid_group_name", e)
+    assert.matches("invalid_group_name", e.code)
     e = assert.has_error(-> parse -> {
       NONE { bg: "bg" },
     })
-    assert.matches("invalid_group_name", e)
+    assert.matches("invalid_group_name", e.code)
     e = assert.has_error(-> parse -> {
       ALLBUT { bg: "bg" },
     })
-    assert.matches("invalid_group_name", e)
+    assert.matches("invalid_group_name", e.code)
     e = assert.has_error(-> parse -> {
       contained { bg: "bg" },
     })
-    assert.matches("invalid_group_name", e)
+    assert.matches("invalid_group_name", e.code)
     e = assert.has_error(-> parse -> {
       contains { bg: "bg" },
     })
-    assert.matches("invalid_group_name", e)
+    assert.matches("invalid_group_name", e.code)
 
     -- contains keyword but isnt
     e = assert.not.has_error(-> parse -> {
@@ -158,8 +166,8 @@ describe "parser", ->
       A { bg: "a_bg", fg: "a_fg" },
       C { C }
     })
-    e = assert.matches("circular_self_link", e)
-
+    assert.matches("circular_self_link", e.code)
+    assert.not.matches("No message avaliable", e.msg)
 
   it "can resolve deep chains", ->
     s =  parse -> {
@@ -193,9 +201,9 @@ describe "parser", ->
         X { Z }
       }
     error = assert.has_error(fn)
-    assert.matches("invalid_link_name", error)
-    assert.matches("X", error)
-    assert.matches("Z", error)
+    assert.matches("invalid_link_name", error.code)
+    assert.matches("X", error.on)
+    assert.matches("Z", error.msg)
 
   it "protects __name", ->
     parsed = parse -> {
@@ -238,7 +246,8 @@ describe "parser", ->
         B { A },
         C { B, bg: "blue", A} -- Failure
       })
-      assert.matches("too_many_parents", e)
+      assert.matches("too_many_parents", e.code)
+      assert.not.matches("No message avaliable", e.msg)
 
     it "can have a useless inherit", ->
       -- useless: inherit but redefine all properties
@@ -256,14 +265,16 @@ describe "parser", ->
         A { bg: "a_bg" },
         B { B, gui: "italic" },
       })
-      assert.matches("circular_self_inherit", e)
+      assert.matches("circular_self_inherit", e.code)
+      assert.not.matches("No message avaliable", e.msg)
 
     it "detects invalid references", ->
       e = assert.error(-> parse -> {
         A { bg: "a_bg" },
         B { Z, gui: "italic" },
       })
-      assert.matches("invalid_parent", e)
+      assert.matches("invalid_parent", e.code)
+      assert.not.matches("No message avaliable", e.msg)
 
     it "can inherit through a link", ->
       parsed = parse -> {

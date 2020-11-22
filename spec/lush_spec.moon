@@ -69,7 +69,9 @@ describe "lush", ->
 
       -- less obviously wrong
       e = assert.error(-> lush(->))
-      assert.equal(e, "malformed lush-spec")
+      assert.equal("malformed_lush_spec", e.code)
+      assert.not.matches("No message avaliable", e.msg)
+
       e = assert.error(-> lush({}))
       assert.equal("lush() supplied incorrect arguments", e)
 

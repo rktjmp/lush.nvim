@@ -1,10 +1,4 @@
-local function error_to_string(error)
-  local str = "group = '"..error.on .. "' message = '" .. error.type .."': " .. error.msg
-  if error.also then
-    str = str .. " -> " .. error_to_string(error.also)
-  end
-  return str
-end
+local parser_error = require('lush.errors').parser.generate_for_code
 
 local function allowed_option_keys()
   -- note, sometimes `1` is manually inserted into allowed options,
@@ -16,69 +10,11 @@ end
 -- that is to say, when they're called after parsing into the AST.
 -- So this function *returns a function*, which when called, indicates
 -- an error to the parser.
-local function resolves_as_error(table)
+local function resolves_as_error(err)
   return function()
     -- effectively return nil-group, error
-    return nil, {
-      on = table.on or "unspecified_group",
-      type = table.type or "unspecified_type",
-      msg = table.msg or "",
-      also = table.also,
-    }
+    return nil, err
   end
-end
-
-local error_for = function(code, context)
-  local base = {
-    on = context.on,
-    msg = "No message avaliable",
-    type = code
-  }
-  local message_map = {
-    invalid_group_options = function()
-      return "Group defition must be a table"
-    end,
-    circular_self_link = function()
-      return "Attempt to link self"
-    end,
-    invalid_link_name = function()
-      return "Linked group '" .. context.link_name .. "' was never defined," ..
-              "or was not defined before use."
-    end,
-    defintion_must_be_table = function()
-      return "Options for " .. context.on .. " was " ..
-             context.type .. " but must be table."
-    end,
-    reserved_keyword = function()
-      return "Invalid key, __name is reserved"
-    end,
-    undefined_group = function()
-      return "Attempt to reference group " .. context.missing ..
-            " as value, but group isn't defined before " .. context.on
-    end,
-    inference_disabled = function()
-      return "Inference feature disabled"
-    end,
-    group_redefined = function()
-      return "Attempted to redefine group: " .. context.on
-    end,
-    circular_self_inherit = function()
-      return "Attempted to inherit from self"
-    end,
-    invalid_parent = function()
-      return "Parent group '" .. context.missing .. "' was never defined, " ..
-             "or was not defined before use."
-    end,
-    too_many_parents = function()
-      return "Group " .. context.on .. " tries to inherit from too many parents"
-    end,
-    group_value_is_group = function()
-      return "Group " .. context.on .. "." .. context.key .. " must be a value, not a group"
-    end
-  }
-
-  if message_map[code] then base.msg = message_map[code]() end
-  return base
 end
 
 local is_group = function(kind)
@@ -100,20 +36,20 @@ local enforce_generic_group_name = function(name, opts)
      string.match(name, "^ALLBUT$") or
      string.match(name, "^contained$") or
      string.match(name, "^contains$") then
-     return {"invalid_group_name"}
+     return parser_error.invalid_group_name({on = name})
    end
 end
 
 local enforce_generic_definition_type = function(name, opts)
   if type(opts) ~= "table" or opts == {} then
     -- !{} or {} or { group, group, ... } -> invalid
-    return {"invalid_group_options"}
+    return parser_error.invalid_group_options({on = name})
   end
 end
 
 local enforce_generic_one_parent = function(name, opts)
   if #opts > 1 then
-    return {"too_many_parents"}
+    return parser_error.too_many_parents({on = name})
   end
 end
 
@@ -122,7 +58,7 @@ local enforce_definition_is_table = function(name, opts)
   --     so this is unlikely to ever fail
   --     retained for clarity reasons (for now)
   if type(opts) ~= "table" or opts == {} then
-    return {"definition_must_be_table", {was = type(opts)}}
+    return parser_error.definition_must_be_table({on = name, was = type(opts)})
   end
 end
 
@@ -130,7 +66,7 @@ local enforce_no_protected_keys = function(name, opts)
   -- NB: technically __name is dropped before this is ever called,
   --     retained as a validation for clarity reasons (for now)
   if opts.__name ~= nil then
-    return {"reserved_keyword"}
+    return parser_error.reserved_keyword({on = name})
   end
 end
 
@@ -139,9 +75,9 @@ local wrap_group_enforce_no_placeholders = function(name, opts)
     local val, kind = unpack(tuple)
     if is_placeholder_group(kind) then
       if val.__name == name then
-        return {"circular_self_reference"}
+        return parser_error.circular_self_reference({on = name})
       else
-        return {"undefined_group", {missing = val.__name}}
+        return parser_error.undefined_group({on = name, missing = val.__name})
       end
     end
   end
@@ -167,7 +103,7 @@ local wrap_group_enforce_no_inference = function(name, opts)
       --  -- lush group referenced has key requested,
       --  -- so proxy this would-be group's value to the proxy group
       --  proxied_options[key] = val[key]
-      return {"inference_disabled", {key = key}}
+      return parser_error.inference_disabled({on = name, key = key})
     end
   end
 end
@@ -176,7 +112,7 @@ local enforce_no_value_is_group = function(name, opts)
   for key, tuple in pairs(opts) do
     local val, kind = unpack(tuple)
     if is_group(kind) then
-      return {"group_value_is_group", {key = key, kind = kind}}
+      return parser_error.group_value_is_group({on = name, key = key, kind = kind})
     end
   end
 end
@@ -197,12 +133,7 @@ local enforce = function(validators, group_name, group_options)
 
   for _, validator in ipairs(validators) do
     local err = validator(group_name, group_options)
-    if err then
-      local code, context = unpack(err)
-      context = context or {}
-      context.on = group_name
-      return error_for(code, context)
-    end
+    if err then return err end
   end
 end
 
@@ -254,7 +185,7 @@ local create_direct_group = function(group_name, group_options)
       -- options being called, which implies a redefinition attempt error
       return setmetatable(proxied_options, {
         -- attempt to redefine group
-        __call = resolves_as_error(error_for("group_redefined", {on = group_name}))
+        __call = resolves_as_error(parser_error.group_redefined({on = group_name}))
       })
     end
   })
@@ -263,14 +194,14 @@ end
 local enforce_no_circular_self_inherit = function(name, opts)
   local link, kind = unpack(opts[1])
   if name == link.__name then
-    return {"circular_self_inherit"}
+    return parser_error.circular_self_inherit({on = name})
   end
 end
 
 local enforce_no_placeholder_inherit = function(name, opts)
   local link, kind = unpack(opts[1])
   if is_placeholder_group(kind) then
-    return {"invalid_parent", {missing = link.__name}}
+    return parser_error.invalid_parent({on = name, missing = link.__name})
   end
 end
 
@@ -301,14 +232,14 @@ end
 local enforce_no_circular_self_link = function(name, opts)
   local link, kind = unpack(opts[1])
   if name == link.__name then
-    return {"circular_self_link"}
+    return parser_error.circular_self_link({on = name})
   end
 end
 
 local enforce_no_placeholder_link = function(name, opts)
   local link, kind = unpack(opts[1])
   if is_placeholder_group(kind) then
-    return {"invalid_link_name", {link_name = link.__name}}
+    return parser_error.invalid_link_name({on = name, link_name = link.__name})
   end
 end
 
@@ -375,7 +306,9 @@ end
 
 
 local parse = function(lush_spec_fn, options)
-  assert(type(lush_spec_fn) == "function", "Must supply function to parser")
+  if type(lush_spec_fn) ~= "function" then
+    error(parser_error.malformed_lush_spec({on = "spec"}))
+  end
 
   local group_lookup = {}
   setfenv(lush_spec_fn, setmetatable({}, {
@@ -437,7 +370,8 @@ local parse = function(lush_spec_fn, options)
         if err then
           -- TODO: this could be nicer, technically we should fail before
           --       its possible to get fail group_type inference but ...
-          error("Unknown group type? " .. err)
+          -- This is hard error for now, dont wait to resolve
+          error(parser_error.could_not_infer_group_type({on = group_name}))
         end
 
         -- insert group into spec env, this allows us to
@@ -483,7 +417,7 @@ local parse = function(lush_spec_fn, options)
 
   -- generate spec
   local spec = lush_spec_fn()
-  if not spec then error("malformed lush-spec", 6) end
+  if not spec then error(parser_error.malformed_lush_spec({on = "spec"})) end
 
   -- we will return the spec in a normalized form
   local parsed = setmetatable({}, {
@@ -502,10 +436,7 @@ local parse = function(lush_spec_fn, options)
     -- attempt to resolve group
     --local ast, e = resolve_group_bindings(group)
     local ast, e = group()
-
-    if e then
-      error("Lush-spec Error:" .. error_to_string(e), 4)
-    end
+    if e then error(e) end
 
     parsed[group.__name] = ast
   end
