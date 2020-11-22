@@ -6,13 +6,22 @@ describe "parser", ->
       A { fg: "red" },
       B { fg: A }
     })
-    assert.matches("inference_disabled", e)
+    assert.matches("group_value_is_group", e)
+    -- assert.matches("inference_disabled", e)
 
   it "warns on bad input", ->
     assert.error(-> parse(nil))
     assert.error(-> parse(""))
     assert.error(-> parse(1,2,3,4))
     assert.error(-> parse({}))
+
+
+  it "errors on bad definition", ->
+    e = assert.has_error(->
+      parse -> {
+        A("string"),
+      })
+    assert.matches("invalid_group_options", e)
 
   it "warns when re-defining a group", ->
     fn = ->
@@ -108,7 +117,7 @@ describe "parser", ->
     assert.is_equal(s.B.fg, "b_fg")
     assert.is_equal(s.B.lush, nil)
 
-  it "drops all keys not on allow list", ->
+  pending "drops all keys not on allow list", ->
     -- TODO enforce string group names, must begin with alpha
 
 
@@ -223,7 +232,7 @@ describe "parser", ->
       assert.equals(nil, parsed.B.not_lush)
       assert.equals(nil, parsed.B.also_lost)
 
-    it "constraints parents to 1", ->
+    it "limits parents to 1", ->
       e = assert.error(-> parse -> {
         A { fg: "red" },
         B { A },
