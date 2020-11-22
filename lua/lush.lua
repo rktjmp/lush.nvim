@@ -34,10 +34,10 @@ local M = {}
 
 -- usability binds
 M.hsl = hsl
-M.ify = function()
+M.ify = function(options)
   -- localise this require so test's don't complain about
   -- missing vim globals, etc
-  require('lush.ify')()
+  require('lush.ify')(options)
 end
 
 -- spec -> table

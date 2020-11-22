@@ -20,7 +20,7 @@ lua << EOF
     vim.cmd("edit " .. temp)
     vim.cmd("set ft=lua")
   else
-    print("Could not create temporary file, please copy " ..
+    print("Vim could not create temporary file, please copy " ..
           "examples/" .. filename .. " to a new directory and open manually")
   end
 EOF

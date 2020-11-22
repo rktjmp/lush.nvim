@@ -1,4 +1,5 @@
 local api = vim.api
+local uv = vim.loop
 local hsl = require('lush.hsl')
 local lush = require('lush')
 
@@ -160,8 +161,11 @@ end
 -- passes entire contents of buffer to lua interpreter
 -- may print error if one occurs
 -- (number) -> nil
+
 local function eval_buffer(buf)
   buf = buf or 0
+  local did_apply = false
+
   -- local a_time = vim.loop.hrtime()
 
   local all_buf_lines = api.nvim_buf_get_lines(buf, 0, -1, true)
@@ -188,6 +192,7 @@ local function eval_buffer(buf)
 
   if not eval_success then
     print_error(eval_value)
+    did_apply = false
   end
 
   if eval_success then
@@ -199,6 +204,7 @@ local function eval_buffer(buf)
     end)
     if not apply_success then
       print_error(apply_value)
+      did_apply = false
       -- if a error message wraps in the command output window, the
       -- user is prompted to "press enter or type to continue", which is
       -- pretty annoying for a real time update, so we'll just print
@@ -220,9 +226,12 @@ local function eval_buffer(buf)
       -- so instead we will just clear any previous errors that might
       -- hang around.
       print(" ") -- clear error
+      did_apply = true
     end
   end
 
+  -- TODO: Can return to just applying this in on_lines
+  --
   -- even if the eval failed, we can still apply hsl() calls
   -- and GroupName highlighting to lines in the file.
   M.named_hex_highlight_groups = {}
@@ -232,18 +241,92 @@ local function eval_buffer(buf)
     set_highlight_groups_on_line(buf, line, i - 1)
     set_highlight_hsl_on_line(buf, line, i - 1)
   end
+
+  return did_apply
 end
 
-M.real_time_eval = function(buf)
+M.setup_realtime_eval = function(buf, options)
   buf = buf or 0
+
+  -- on_lines can be called multiple times per ms (according to uv timers,
+  -- which are some what loose). We will perform a minor debounce, so if a user
+  -- is holding down a letter (or can type *really fast*, or maybe using a
+  -- macro or pasting into term or ...), we don't try to re-eval excessively.
+  --
+  -- Additionally, if the last two attemps to eval the buffer have failed,
+  -- we will debounce with a larger window, this limits some over-eager
+  -- error printing which may degrade performance depending on the term and
+  -- machine.
+  -- 
+  -- We allow for "last two" to provide minor grace if a user goes from
+  -- `hsl(1` to `hsl(` which would error, but they are likley to repair the
+  -- error in the next stroke.
+  --
+  -- Note: Deboucing could be considered 'cumulative', new events will
+  --       continue to "push the debounce" until events stop occuring.
+
+  -- normally we debounce by this much
+  local natural_timeout = options.natural_timeout or 25
+  -- but if we've seen enough errors, debounce by this much
+  local error_timeout = options.error_timeout or 300
+
+  if type(natural_timeout) ~= "number" or
+     type(error_timeout) ~= "number" or
+     natural_timeout <= 0 or
+     error_timeout <= 0 then
+     error("lush.ify natural_timeout and error_timeout must be positive numbers", 0)
+   end
+
+  -- the uv timer
+  local defer_timer = nil
+
+  -- tracks last N runs on a N-size stack,
+  -- push records a run
+  -- had_errors tells us if any runs on the stack had errors
+  local history
+  history = {
+    true, true,
+    push = function(val)
+      history[2] = history[1]
+      history[1] = val
+    end,
+    infer_timeout = function()
+      if not history[1] and not history[2] then
+        -- both recorded runs were false -> error occured
+        return error_timeout
+      else
+        return natural_timeout
+      end
+    end,
+  }
+
   -- bang the buffer on first call
   eval_buffer(0)
   -- then setup a re-eval on any changes
   api.nvim_buf_attach(buf, true, {
     on_lines = function()
-      -- we actually don't care about which lines changed, or anything
-      -- just re-eval the whole buffer wholesale.
-      eval_buffer(buf)
+      local defer_timer_callback = function()
+        if defer_timer then
+          uv.close(defer_timer)
+          defer_timer = nil
+        end
+        vim.schedule(function()
+          local success = eval_buffer(buf)
+          history.push(success)
+        end)
+      end
+
+      -- cancel any standing timer, we will replace it
+      if defer_timer then
+        uv.timer_stop(defer_timer)
+        uv.close(defer_timer)
+        defer_timer = nil
+      end
+
+      defer_timer = uv.new_timer()
+      local defer_timeout = history.infer_timeout()
+      uv.timer_start(defer_timer, defer_timeout, 0, defer_timer_callback)
+
       -- remain attached
       return false
     end
@@ -251,11 +334,14 @@ M.real_time_eval = function(buf)
 end
 
 setmetatable(M, {
-  __call = function()
-    -- real_time_eval evaluates the entire buffer, and lush.apply() will clear
-    -- any highlighting, which means any previous hsl() call groups are removed.
+  __call = function(_, options)
+    options = options or {}
+
+    -- setup_realtime_eval evaluates the entire buffer, and lush.apply() will
+    -- clear any highlighting, which means any previous hsl() call groups are
+    -- removed.
     --
-    -- So for now (?) we *must* re-apply those hsl() colours again in real_time_eval.
+    -- So for now (?) we *must* re-apply those hsl() colours again in setup_realtime_eval.
     -- So the previous buffer attachment -> inspect only changed isn't useful.
     --
     -- (One fix might be to pass an env to loadstring (possible?) that disables
@@ -264,14 +350,14 @@ setmetatable(M, {
     -- So far the performance cost seems near to zero (?!),
     -- so perhaps this is fine.
     --
-    -- Ideally, real_time_eval wouldn't just re-eval the whole file, but would be
-    -- spec-aware and have a running "current spec" in memory that it patches
-    -- and applies. Not sure how resilliant this would be though, through user
-    -- pastes, etc. If the spec was in it's own file, it would be more possible
-    -- since we'd know that any line is a 1:1 match for a spec line, right now a
-    -- change would have to be fake-parsed and we'd have to be watching for
-    -- changes only inside the spec line range which while possible, just feels
-    -- like a hack.
+    -- Ideally, setup_realtime_eval wouldn't just re-eval the whole file, but
+    -- would be spec-aware and have a running "current spec" in memory that it
+    -- patches and applies. Not sure how resilliant this would be though,
+    -- through user pastes, etc. If the spec was in it's own file, it would be
+    -- more possible since we'd know that any line is a 1:1 match for a spec
+    -- line, right now a change would have to be fake-parsed and we'd have to
+    -- be watching for changes only inside the spec line range which while
+    -- possible, just feels like a hack.
     --
     -- 2020/11/22 - time for loadstring is 5ms, time for apply is between 
     --              very low 0-2ms and long 10ms?, seemingly depending on how
@@ -281,7 +367,7 @@ setmetatable(M, {
     --
     -- And all that seems like premature opitmisation anyway, since the
     -- performance cost is so low.
-    M.real_time_eval(0)
+    M.setup_realtime_eval(0, options)
   end
 })
 
