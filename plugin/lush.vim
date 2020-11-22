@@ -17,6 +17,7 @@ lua << EOF
   local success = vim.loop.fs_copyfile(file, temp)
   if success then
     vim.cmd("edit " .. temp)
+    vim.cmd("set ft=lua")
   else
     print("Could not create temporary file, please copy " ..
           "examples/" .. filename .. " to a new directory and open manually")
