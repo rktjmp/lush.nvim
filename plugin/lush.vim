@@ -1,17 +1,18 @@
 
-command! LushRunQuickstart :call <sid>run_temp("lush_quickstart.lua")
-command! LushRunTutorial :call <sid>run_temp("lush_tutorial.lua")
+let s:lush_root = expand('<sfile>:p:h') . "/../"
+command! LushRunQuickstart :call <sid>run_temp(s:lush_root, "lush_quickstart.lua")
+command! LushRunTutorial :call <sid>run_temp(s:lush_root, "lush_tutorial.lua")
 command! Lushify :lua require('lush').ify()
 
-function! s:run_temp(filename)
+function! s:run_temp(lush_root, filename)
 lua << EOF
+  local lush_root = vim.fn.eval("a:lush_root")
   local filename = vim.fn.eval("a:filename")
   -- generate a temp file name
   local temp = vim.fn.tempname()
 
   -- find source
-  local from_dir = vim.fn.expand('<sfile>:p:h')
-  local file = from_dir .. "/examples/" .. filename
+  local file = lush_root .. "/examples/" .. filename
 
   -- open temp
   local success = vim.loop.fs_copyfile(file, temp)
