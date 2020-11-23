@@ -3,13 +3,13 @@
 Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 ====
 
-Lush is a colorscheme creation aid, written in Lua, for Neovim.
+Lush is a color scheme creation aid, written in Lua, for Neovim.
 
 Lush lets you define your scheme as a *mini-dsl*, provides HSL *colour
 manipulation* aids, and gives you *real time* feedback of your changes.
 
-Lush themes can be exported to plain vimscript for distribution (or escape),
-and they can also be *imported* to other lua/vimscript files to access color
+Lush themes can be exported to plain VimL for distribution (or escape),
+and they can also be *imported* to other Lua (or VimL) files to access color)
 data.
 
 **Lush is relatively stable and usable, but it still needs improvement. Some
@@ -26,7 +26,7 @@ Lush is:
   - requires **0.5.0** or greater.
   - "true color" only
 
-Install via any package mangement system, for example, vim-plug:
+Install via any package management system, for example, vim-plug:
 
 ```vim
 Plug 'rktjmp/lush.nvim'
@@ -40,8 +40,8 @@ There are two interactive tutorials provided,
 - `:LushRunTutorial`, a more in-depth guide through various ways to apply Lush.
   (`lush_tutorial.lua` in the examples folder).
 
-A Lush theme template is avaliable in the examples folder, as well as other
-examples for various topics (Lightline, dependecy injection, etc).
+A Lush theme template is available in the examples folder, as well as other
+examples for various topics (Lightline, dependency injection, etc).
 
 Table of Contents
 -----------------
@@ -59,7 +59,7 @@ See also:
 - [Todo / Future Ideas](#todo--future-ideas)
 - [Change Log](#change-log)
 
-For a usage example, see the quickstart, tutorial and examples folder.
+For a usage example, see the quick start, tutorial and examples folder.
 
 HSL Colors
 ----------
@@ -69,7 +69,7 @@ accessed via `require('lush').hsl`.  It may also be included in other modules
 via `require('lush.hsl')`.
 
 You can create HSL colors by providing hue, saturation and lightness values,
-or providing a hexidecimal string.
+or providing a hexadecimal string.
 
 ```lua
 color = hsl(0, 100, 50) -- equivilent to rgb(255,0,0) elsewhere
@@ -86,7 +86,7 @@ There are 3 main operations you may want to perform:
 - Saturate (or desaturate) a color.
 - Lighten (or darken) a color.
 
-Hue/rotate values are wrap around 0-360 degrees, lightness and saturations
+Hue/rotate values are wrap around 0-360 degrees, lightness and saturation
 are clamped between 0-100.
 
 HSL provides the following functions to achieve these operations:
@@ -115,7 +115,7 @@ color.saturate(10) -- adds 10% saturation to 50
 ```
 
 If you wish to add an absolute amount to a color, you can use the `abs_`
-prefixed functions (most of the time you should use relative ajustments):
+prefixed functions (most of the time you should use relative adjustments):
 
 - `color.abs_saturate(n)` (and `abs_desaturate`)
 - `color.abs_lighten(n)` (and `abs_darken`)
@@ -185,7 +185,7 @@ The starter files, `examples/lush_quick_start.lua` and
 `examples/lush_tutorial.lua` provide an interactive tutorial on how to create a
 lush-spec.
 
-The basic definition of a lush-spec is, a lua table which defines your
+The basic definition of a lush-spec is, a Lua table which defines your
 highlight groups, by name, and their associated color and decoration details.
 
 The advantage of using Lush and a lush-spec is that you're able to define
@@ -221,7 +221,7 @@ end)
 
 ```vim
 " cool_name/colors/cool_name.vim
-" yes, unfortunately you still have to write some vimscript
+" yes, unfortunately you still have to write some VimL
 set background=dark
 let g:colors_name="cool_name"
 " you could detect background == dark || light here and require
@@ -235,9 +235,9 @@ files provide a deeper example and some tips and tricks.
 Lush-spec Spec
 --------------
 
-Lush supports the following group defintions:
+Lush supports the following group definitions:
 
-**Direct Defintion**
+**Direct Definition**
 
 *Used to define a stand alone highlight group, see `:h highlight`.*
 
@@ -247,14 +247,14 @@ Supports the following keys:
 - `bg`: sets the `guibg` property of a Vim highlight group.
 - `gui`: sets the `gui` property of a Vim highlight group.
 - `sp`: sets the `guisp` property of a Vim highlight group.
-- `lush`: a namespace to save arbitary data to a group. Is not exported to the
+- `lush`: a namespace to save arbitrary data to a group. Is not exported to the
           final highlight but may be accessed in the lush-spec or the parsed-lush-spec.
 
 Constraints:
 
 - `value` may be any Lua type which will concatenate with a string.
 - `value` may be derived from previously defined group properties.
-- All unspported keys are dropped.
+- All unsupported keys are dropped.
 - Group name is CamelCase by convention, but may be any string beginning with
 - Group names may not be `ALL`, `NONE`, `ALLBUT`, `contained` or `contains`,
   this is a vim constraint.
@@ -277,7 +277,7 @@ N/A.
 
 Constraints:
 
-Linked group must be defined before the link definetion.
+Linked group must be defined before the link definition.
 
 Syntax:
 
@@ -300,7 +300,7 @@ See *Direct Definition*.
 Constraints:
 
 - Only one parent group may be specified and it must be the first value in the
-  group defintion.
+  group definition.
 - Inherits constraints of *Direct Definition*
 
 Syntax:
@@ -314,11 +314,11 @@ Additional Information
 
 #### Performance
 
-I, personally, would say there isn't a noticable performance impact in using
+I, personally, would say there isn't a noticeable performance impact in using
 Lush over a raw VimL colorscheme. The parse and compile stage is generally
-around 1ms on my quite aged core i5 and is comparitively dwarfed by the 3ms spent
-waiting for the VimL comamnds to apply (which should be at least as-slow with
-raw VimL).
+around 1ms on my quite aged core i5 and is comparatively dwarfed by the 3ms
+spent waiting Vim's interpreter to apply the commands, a penalty which raw VimL
+schemes would share.
 
 If you did feel the performance was poor, you can always export your theme to
 VimL after using Lush to aid the development process.
@@ -331,7 +331,7 @@ calling in and out of functions, as well as the initial file load time
 ```
 Parse:   286300  ns  0.2863 ms -- resolve lush-spec into concrete values
 Compile: 671900  ns  0.6719 ms -- convert concrete spec into viml commands
-Apply:   3134300 ns  3.1343 ms -- pass to VimL interprete (iterate array and call "nvim_command", "nvim_exec" performance is identical)
+Apply:   3134300 ns  3.1343 ms -- pass to VimL interpreter (iterate array and call "nvim_command", "nvim_exec" performance is identical)
 Total:   4092500 ns  4.0925 ms
 
 Parse:   373500  ns  0.3735 ms
@@ -365,9 +365,9 @@ register, paste that into a buffer then construct some macros to reformat.
 
 #### Why `return ...`?
 
-In the lua file, we call `lush(lush-spec)`, which will parse the given
-lush-spec, then it will return your theme as lua a table (aka: a
-parsed-lush-spec) You should return this table from your lua theme file to
+In the Lua file, we call `lush(lush-spec)`, which will parse the given
+lush-spec, then it will return your theme as Lua a table (aka: a
+parsed-lush-spec) You should return this table from your Lua theme file to
 allow other modules to `require(a_lush_spec_file)` and access your themes
 colour data.
 
@@ -377,8 +377,8 @@ highlighting and apply our parsed lush-spec.
 #### Why `lua/lush_theme/`?
 
 Lua doesn't have any strict namespacing. Because anything in a plugins `lua/`
-directory becomes avaliable as a module in vim, it's advised to nest your
-theme inside a `lush_theme` folder, essentialy providing a namespace for all
+directory becomes available as a module in vim, it's advised to nest your
+theme inside a `lush_theme` folder, essentially providing a namespace for all
 lush themes to exist in. This is to avoid any collisions between themes and
 other modules.
 
@@ -386,9 +386,9 @@ This isn't a strict rule enforced in anyway by Lush, simply a recommendation.
 
 #### Why even do this? Seems like a lot of over engineering.
 
-It's true that you could define most of your scheme with just regular lua
+It's true that you could define most of your scheme with just regular Lua
 variables, and maybe pass those in a map to some function to convert to
-VimL commands, indeed that's how most lua themes are made.
+VimL commands, indeed that's how most Lua themes are made.
 
 Really Lush started as a toy experiment in seeing how capable Lua was at making
 DSLs, but it felt useful enough to me that other people might find it
@@ -397,13 +397,13 @@ interesting.
 #### Linters
 
 You will likely get warnings from linters while writing a lush-spec,
-specifally around "undefined globals". Most of these warnings can be safely
+specifically around "undefined globals". Most of these warnings can be safely
 ignored, you may wish to disable LSP/Linters temporarily when working on a
 theme.
 
 #### Dependency Injection (Why can't I access math.random?)
 
-Lush-specs are executed a bare environment, so they don't have access to lua
+Lush-specs are executed a bare environment, so they don't have access to Lua
 globals or other modules. However, they are also written as closures, so they
 do have access to any local level variables in the theme file.
 
@@ -433,16 +433,16 @@ end)
 #### Exporting From Lush
 
 If you wish to move your theme away from lush, or export it for use in Vim,
-you can run the following lua code:
+you can run the following Lua code:
 
 ```vim
 :lua require('lush').export_to_buffer(require('lua-module-theme-name'))
 ```
 
 Your Lush theme will be exported to a new floating window, as a collection of
-Vim higlight commands.
+Vim highlight commands.
 
-Note that the name you specify is the name of the lua module in which your
+Note that the name you specify is the name of the Lua module in which your
 theme was defined. In the above short-example, you would run
 
 ```vim
@@ -468,24 +468,24 @@ lush.apply(compiled)
 Lush.ify
 -------
 
-Lush.ify will provide automatic, realtime highlighting of any `hsl(...)` calls,
+Lush.ify will provide automatic, real-time highlighting of any `hsl(...)` calls,
 as well as highlighting any groups in your lush-spec with their appropriate
 colors and decorations.
 
-To use lush.ify, open your theme lua file and run the vim command,
+To use lush.ify, open your theme Lua file and run the vim command,
 
 ```vim
 :Lushify
 ```
 
-or run it directly via lua,
+or run it directly via Lua,
 
 ```vim
 :lua require('lush').ify()
 ```
 
 Now changes you make to a colorscheme are reflected in real time. See the two
-starter files for more information and a demostration.
+starter files for more information and a demonstration.
 
 Performance of lush.ify is somewhat dependent on your hardware and probably
 more specifically, your terminal. Some re-render faster than others.
@@ -509,23 +509,22 @@ Activating the easy motion plugin *in a lush.ify'd buffer* will cause a lot of
 syntax errors. This is because easy-motion directly modifies the buffer to
 display its "jump keys", which we try to parse.
 
-It is not recommened you activate easy motion in a lush.ify'd buffer.
+It is not recommended you activate easy motion in a lush.ify'd buffer.
 
 **Live Search-Replace**
 
-If you use neovims live-updating search-and-replace feature (`:h inccommand`),
-you may see neovim errors being reported. In my experience these can be safely
+If you use Neovim's live-updating search-and-replace feature (`:h inccommand`),
+you may see Neovim errors being reported. In my experience these can be safely
 ignored and you may continue as normal.
 
 **Lightline**
 
-While Lightline can be styled through Lush, realtime updating has some
-caveats and performance may be less than optimal due to vimscripts
-performance.
+While Lightline can be styled through Lush, real-time updating has some
+caveats and performance may be less than optimal due to VimL performance.
 
 See `examples/lightline-one-file` and `examples/lightline-two-files` for
-guidance. Generally, if real time performance with lightline is problemantic,
-I would recommend developing your theme first, then disabiling lush.ify with
+guidance. Generally, if real time performance with Lightline is problematic,
+I would recommend developing your theme first, then disabling lush.ify with
 `:e!` in the buffer and applying your changes via `:luafile %`.
 
 The two examples go into some more detail regarding this method.
@@ -533,9 +532,9 @@ The two examples go into some more detail regarding this method.
 Bugs or Limitations
 -------------------
 
-- Sometimes line group and hsl highlighting may appear out of sync if you've
+- Sometimes line group and HSL highlighting may appear out of sync if you've
   applied undo/redo chains to a lush.ify'd file. Generally typing more into the
-  buffer will fix these issues as the highlighter resyncs with the buffer
+  buffer will fix these issues as the highlighter re-syncs with the buffer
   state.
 
 - You may find some elements don't update in real time (LSP sign column for
@@ -553,7 +552,7 @@ Todo / Future ideas
 
 **Theme Inheritance**
 
-This would give you the ability to require someone elses theme as a base to
+This would give you the ability to require someone else's theme as a base to
 yours.
 
 Imagine you really like a theme, but wish the background was a bit different,
@@ -570,13 +569,13 @@ Unsure how useful this would be in the real world, but switching between some
 machines can render some colourschemes differently, because their screens
 or terminals are different.
 
-The idea would be you could set a global shift on hsl to effect all colours
+The idea would be you could set a global shift on HSL to effect all colours
 that are pushed through it.
 
 In actuality, I think what I *really* want is a contrast scale, which isn't as
 simple as simply "make it all brighter" or "make it all bluer".
 
-**Automatic Property Inferrence**
+**Automatic Property Inference**
 
 Would allow for syntax like:
 
