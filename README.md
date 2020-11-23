@@ -13,7 +13,9 @@ and they can also be *imported* to other lua/vimscript files to access color
 data.
 
 **Lush is relatively stable and usable, but it still needs improvement. Some
-aspects of the API may change. See any [new changes](#change-log).**
+aspects of the API may change.**
+
+**See any [new changes](#change-log).**
 
 Installation and Getting Started
 --------------------------------
@@ -594,10 +596,10 @@ For now, you must write `fg = Normal.fg`.
 Change Log
 ----------
 
-- `7aa5372`
+- 2020-11-23
   - Lush.ify now reports errors in a more consistent format.
   - Lush.ify now rate-limits eval attempts on parsing errors.
-- `b40d03c`
+- 2020-11-21
   - Lush-spec now supports group inheritance.
-- `0617bb6`
+- 2020-11-19
   - Initial release.
