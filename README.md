@@ -509,6 +509,12 @@ display its "jump keys", which we try to parse.
 
 It is not recommened you activate easy motion in a lush.ify'd buffer.
 
+**Live Search-Replace**
+
+If you use neovims live-updating search-and-replace feature (`:h inccommand`),
+you may see neovim errors being reported. In my experience these can be safely
+ignored and you may continue as normal.
+
 **Lightline**
 
 While Lightline can be styled through Lush, realtime updating has some
