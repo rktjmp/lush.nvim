@@ -13,7 +13,7 @@ and they can also be *imported* to other lua/vimscript files to access color
 data.
 
 **Lush is relatively stable and usable, but it still needs improvement. Some
-aspects of the API may change.**
+aspects of the API may change. See any [new changes](#change-log).**
 
 Installation and Getting Started
 --------------------------------
@@ -50,7 +50,7 @@ Lush broadly has 3 components,
 - The [lush-spec parser and compiler](#lush-spec)
   - The [lush-spec spec](#lush-spec-spec)
   - [Additional information](#additional-information) about lush-specs
-- [Lushify](#lushify), a buffer highlighting and hot-reload tool
+- [Lush.ify](#lushify), a buffer highlighting and hot-reload tool
 
 See also:
 
@@ -470,7 +470,13 @@ Lush.ify will provide automatic, realtime highlighting of any `hsl(...)` calls,
 as well as highlighting any groups in your lush-spec with their appropriate
 colors and decorations.
 
-To use lushify, open your theme lua file and run
+To use lush.ify, open your theme lua file and run the vim command,
+
+```vim
+:Lushify
+```
+
+or run it directly via lua,
 
 ```vim
 :lua require('lush').ify()
@@ -480,8 +486,18 @@ Now changes you make to a colorscheme are reflected in real time. See the two
 starter files for more information and a demostration.
 
 Performance of lush.ify is somewhat dependent on your hardware and probably
-more specifally, your terminal. Some terminals are better than others at
-rendering color changes fast.
+more specifically, your terminal. Some re-render faster than others.
+
+Lush.ify will perform some minor event debouncing, with an increased window on
+multiple parser failures. The defaults should allow for a smooth experience,
+but if you desire to change them, you can pass options to lush.ify like so
+(times are in ms),
+
+```vim
+:lua require('lush').ify({natural_timeout = 25, error_timeout = 300})
+```
+
+If you feel performance is poor, please try disabling any linter/lsp/etc first.
 
 #### Lush.ify Incompatibilities
 
@@ -572,5 +588,10 @@ For now, you must write `fg = Normal.fg`.
 Change Log
 ----------
 
-- b40d03c: Learned group inheritance.
-- 0617bb6: Initial release.
+- `7aa5372`
+  - Lush.ify now reports errors in a more consistent format.
+  - Lush.ify now rate-limits eval attempts on parsing errors.
+- `b40d03c`
+  - Lush-spec now supports group inheritance.
+- `0617bb6`
+  - Initial release.
