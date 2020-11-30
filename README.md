@@ -212,7 +212,7 @@ return lush(function()
     -- Note you must define Normal before you try to use it.
     Whitespace { fg = Normal.fg.darken(40) },
     -- And make comments look the same, but with italic text
-    Comment { Comment, gui="italic" },
+    Comment { Whitespace, gui="italic" },
     -- and clear all highlighting for CursorLine
     CursorLine { },
   }
