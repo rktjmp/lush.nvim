@@ -17,20 +17,25 @@ aspects of the API may change.**
 
 **See any [new changes](#change-log).**
 
-Installation and Getting Started
---------------------------------
+Requirements
+------------
 
-Lush is:
+- Neovim 0.5 or greater
+- `termguicolors` enabled for true color support
 
-  - **Neovim only**
-  - requires **0.5.0** or greater.
-  - "true color" only
+Installation
+------------
 
 Install via any package management system, for example, vim-plug:
 
 ```vim
 Plug 'rktjmp/lush.nvim'
 ```
+
+Getting Started
+---------------
+
+<!-- The two tutorials might get merged -->
 
 There are two interactive tutorials provided,
 
@@ -42,6 +47,88 @@ There are two interactive tutorials provided,
 
 A Lush theme template is available in the examples folder, as well as other
 examples for various topics (Lightline, dependency injection, etc).
+
+Usage
+-----
+
+Creating a color scheme in Lush is a three step process:
+
+1. Create your color scheme directory structure (or copy one from the templates)
+2. Define your colors using the HSL module
+3. Define your highlight groups with a Lush spec
+
+Along the way, you can use `:Lushify` to get live feedback on the appereance
+of your color scheme.
+
+<!--
+0. Create your color scheme directories...
+Explain the directory structure of a color scheme: `lua/`, `colors/` etc.
+-->
+
+2. Define your colors with the HSL module
+
+HSL (Hue, Saturation, Lightness) is an alternative color representation to RGB.
+In HSL, hue varies between 0 and 360 (like a color wheel),
+and both saturation and lightness vary between 0 and 100.
+
+The main advantage of HSL is that it allows you to create color palettes using very simple transformations.
+For example, if you want to get the complement of a color, you rotate 180°.
+
+```lua
+local hsl = require('lush').hsl     -- Import and bind the HSL module
+
+local red = hsl(0, 100, 50)         -- Define a simple red color
+
+local complement = red.rotate(180)  -- Define the complement (i.e. cyan)
+```
+
+Note that cyan is also the complement of red in RGB: `(255, 0, 0)' == (0, 255, 255)`,
+but with HSL only one value was modified.
+
+2. Define a Lush-spec
+
+After you've chosen your base colors, you can define a Lush spec.
+
+```lua
+-- in file cool_name/lua/lush_theme/cool_name.lua
+
+-- require lush
+local lush = require('lush')
+
+-- lush() will parse the spec and
+-- return a table containing all color information.
+-- We return it for use in other files.
+return lush(function()
+  return {
+    -- Define Vim's Normal highlight group
+    Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
+
+    -- Make whitespace slightly darker than normal.
+    -- you must define Normal before using it.
+    Whitespace { fg = Normal.fg.darken(40) },
+
+    -- Make comments look the same as whitespace, but with italic text
+    Comment { Whitespace, gui="italic" },
+
+    -- Clear all highlighting for CursorLine
+    CursorLine { },
+  }
+end)
+```
+
+Now in `cool_name/colors/cool_name.vim` you can write:
+
+```vim
+let g:colors_name="cool_name"
+
+" you could check the `background` option,
+" and require different files depending on its value (dark | light)
+
+lua require('lush')(require('lush_theme.cool_name'))
+```
+
+
+********************
 
 Table of Contents
 -----------------
