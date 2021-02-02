@@ -1,4 +1,4 @@
-*lush.txt* color scheme creation tool with real time feedback
+*lush* color scheme creation tool with real time feedback
 
           ,gggg,
          d8" "8I                         ,dPYb,
@@ -40,7 +40,7 @@ Lush Spec                                                            |lush-spec|
     Direct Definition                              |lush-spec-direct-definition|
     Linked Group                                        |lush-spec-linked-group|
     Inherited Group                                  |lush-spec-inherited-group|
-Lush.Ify                                                              |lush-ify|
+Lush.Ify                                                               |lushify|
 Converting an Existing Theme to Lush            |lush-converting-existing-theme|
 Exporting from Lush                                                |lush-export|
 Manual Toolchain                                         |lush-manual-toolchain|
@@ -315,7 +315,7 @@ Constraints:
   Inherits constraints of Direct Definition
 
 --------------------------------------------------------------------------------
-Lush.ify                                                              *lush-ify*
+Lush.ify                                                               *lushify*
 
 Lush.ify will provide automatic, real-time highlighting of any `hsl(...)` calls,
 as well as highlighting any groups in your lush-spec with their appropriate
