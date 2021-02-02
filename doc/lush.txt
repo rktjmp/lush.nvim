@@ -1,0 +1,476 @@
+*lush.txt* color scheme creation tool with real time feedback
+
+          ,gggg,
+         d8" "8I                         ,dPYb,
+         88  ,dP                         IP'`Yb
+      8888888P"                          I8  8I
+         88                              I8  8'
+         88        gg      gg    ,g,     I8 dPgg,
+    ,aa,_88        I8      8I   ,8'8,    I8dP" "8I
+   dP" "88P        I8,    ,8I  ,8'  Yb   I8P    I8
+   Yb,_,d88b,,_   ,d8b,  ,d8b,,8'_   8) ,d8     I8,
+    "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
+
+Lush is a color scheme creation aid, written in Lua, for Neovim.
+
+Lush lets you define your scheme as a mini-dsl, provides HSL colour
+manipulation aids, and gives you real time feedback of your changes.
+
+Lush themes can be exported to plain VimL for distribution (or escape),
+and they can also be imported to other Lua (or VimL) files to access color)
+data.
+
+================================================================================
+CONTENTS                                                              *lush-toc*
+
+Lush Tutorials                                                |*lush-tutorials*|
+HSL Colors                                                   |*lush-hsl-colors*|
+  Define a Color                                           |*lush-define-color*|
+  Color Operations                                     |*lush-color-operations*|
+  rotate, ro                                               |*lush-color-rotate*|
+  saturate, desaturate, sa, de |*lush-color-saturate*| |*lush-color-desaturate*|
+  lighten, darken, li, da           |*lush-color-lighten*| |*lush-color-darken*|
+  abs_*                                       |*lush-color-absolute-operations*|
+  hue, saturation, lightness, .h, .s, .l                   |*lush-color-direct*|
+  .hex, tostring                                  |*lush-color-string-coercion*|
+  Example                                                 |*lush-color-example*|
+Lush Spec                                                          |*lush-spec*|
+  Sample lush-spec                                          |*lush-spec-sample*|
+Lush-Spec Spec                                                |*lush-spec-spec*|
+  Direct Definition                              |*lush-spec-direct-definition*|
+  Linked Group                                        |*lush-spec-linked-group*|
+  Inherited Group                                  |*lush-spec-inherited-group*|
+Lush.Ify                                                            |*lush-ify*|
+Converting an Existing Theme to Lush          |*lush-converting-existing-theme*|
+Exporting from Lush                                              |*lush-export*|
+Manual Toolchain                                       |*lush-manual-toolchain*|
+Pitfalls, Beartraps, Dragons                                   |*lush-pitfalls*|
+Bugs or Limitations                                                |*lush-bugs*|
+
+--------------------------------------------------------------------------------
+Lush Tutorials                                                  *lush-tutorials*
+
+There are two interactive tutorials provided,
+
+:LushRunQuickstart, which will give you a few-minute overview of Lush's
+features. (Or view lush_quick_start.lua in the examples folder.)
+
+:LushRunTutorial, a more in-depth guide through various ways to apply Lush.
+(Or view lush_tutorial.lua in the examples folder).
+
+--------------------------------------------------------------------------------
+HSL Colors                                                     *lush-hsl-colors*
+
+Define a color                                               *lush-define-color*
+
+You can create HSL colors by providing hue, saturation and lightness values,
+or providing a hexadecimal string.
+>
+  color = hsl(0, 100, 50) -- equivilent to rgb(255,0,0) elsewhere
+  hex_color = hsl("#FF0000") -- hex_color == color
+<
+
+Color Operations                                         *lush-color-operations*
+
+All color operation functions are pure, they alway return new colors objects
+and leaving the originals unmodified.
+
+>
+  c1 = hsl(0, 100, 50)
+  c2 = c1.rotate(10) -- c2 != c1
+<
+
+Functions can be chained.
+
+>
+  c.rotate(10).saturate(20).lighten(5)
+<
+
+rotate, ro                                                   *lush-color-rotate*
+
+Rotate values are wrap around 0-360 degrees, `ro` is shorthand for `rotate`.
+
+>
+  color.rotate(n)
+  color.rotate(-n)
+  color.ro(n)
+  color.ro(-n)
+<
+
+saturate, desaturate, sa, de       *lush-color-saturate* *lush-color-desaturate*
+
+Saturation operations are clamped between 0-100. Operations are relative,
+they increase/decrease a percentage, not by adding a flat value
+(see |lush-color-absolute-operations|).
+
+`sa` is shorthand for `saturate`.
+`de` is shorthand for `desaturate`.
+
+>
+  color.saturate(n)
+  color.desaturate(n)
+  color.sa(n)
+  color.de(n)
+<
+
+lighten, darken, li, da                 *lush-color-lighten* *lush-color-darken*
+
+Lightness operations are clamped between 0-100. Operations are relative,
+they increase/decrease a percentage, not by adding a flat value
+(see |lush-color-absolute-operations|).
+
+`li` is shorthand for `lighten`.
+`da` is shorthand for `darken`.
+
+>
+  color.lighten(n)
+  color.darken(n)
+  color.li(n)
+  color.da(n)
+<
+
+abs_*                                           *lush-color-absolute-operations*
+
+Saturation and Lightness operatins work relative to the current values. This is
+generally preferred when making those kind of adjustments, but all functions,
+including shorthands, have absolute counterparts, prefixed by `abs_` which will
+add or subtract an absolute value.
+
+Rotate does not have an `abs_` prefixed function, it always operates absolutely.
+
+>
+  color = hsl(0, 50, 50)
+  color.saturate(10) -- saturates the color by 10%
+  color.abs_saturate(10) -- adds 10 to 50
+<
+
+hue, saturation, lightness, .h, .s, .l                       *lush-color-direct*
+
+You may also directly set a HSL value via:
+
+>
+  hue(n)
+  saturation(n)
+  lightness(n)
+<
+
+And access members with,
+
+>
+  color.h -- hue
+  color.s -- saturation
+  color.l -- lightness
+<
+
+.hex, tostring                                      *lush-color-string-coercion*
+
+Finally, HSL colors can be coerced into a hex string, either by concatenation
+with another string, passing to a function which will invoke tostring() or
+accessing the `.hex` accessor.
+
+Example                                                     *lush-color-example*
+
+>
+    local hsl = require('lush').hsl                 -- include the module
+    local red = hsl(0, 100, 50)                     -- define a color
+    local light_red = red.lighten(20)               -- modify
+    local orange = red.hue(20)                      -- set
+    local sum_hues = red.h + light_red.h + orange.h -- access
+    local chained_compliment = red.ro(180)          -- chain via aliases
+                                  .da(30)
+                                  .sa(10)
+    print(red)                                      -- as string "#FF0000"
+<
+
+--------------------------------------------------------------------------------
+Lush Spec                                                            *lush-spec*
+
+You define your color scheme by writing a lush-spec, which can leverage the
+HSL module (or any other lua module) and be exported to other parts of Neovim.
+Lush will expose your lush-spec as a Lua module.
+
+The basic definition of a lush-spec is, a Lua table which defines your
+highlight groups, by name, and their associated color and decoration details.
+
+The advantage of using Lush and a lush-spec is that you're able to define
+groups from previous groups, and make modifications on those groups to easily
+define relational colours between groups.
+
+Sample Lush-Spec                                              *lush-spec-sample*
+
+Here's a very simple lush-spec:
+>
+    -- cool_name/lua/lush_theme/cool_name.lua
+    -- require lush
+    local lush = require('lush')
+    -- lush(), when given a spec, will parse it and return a table 
+    -- containing your color information.
+    -- We should return it for use in other files.
+    return lush(function()
+      return {
+        -- Define what vims Normal highlight group should look like
+        Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
+        -- And make whitespace slightly darker than normal.
+        -- Note you must define Normal before you try to use it.
+        Whitespace { fg = Normal.fg.darken(40) },
+        -- And make comments look the same, but with italic text
+        Comment { Whitespace, gui="italic" },
+        -- and clear all highlighting for CursorLine
+        CursorLine { },
+      }
+    end)
+<
+>
+    " cool_name/colors/cool_name.vim
+    " yes, unfortunately you still have to write some VimL
+    set background=dark
+    let g:colors_name="cool_name"
+    " you could detect background == dark || light here and require
+    " different files
+    lua require('lush')(require('lush_theme.cool_name'))
+<
+
+--------------------------------------------------------------------------------
+Lush-Spec Spec                                                  *lush-spec-spec*
+
+Lush supports the following group definitions:
+
+Direct Definition                                  *lush-spec-direct-definition*
+
+Used to define a stand alone highlight group.
+
+Syntax:
+>
+  GroupName { fg = value, bg = value, gui = value, sp = value },
+<
+
+Supports the following keys:
+
+  fg:   sets the `guifg` property of a Vim highlight group.
+
+  bg:   sets the `guibg` property of a Vim highlight group.
+
+  gui:  sets the `gui` property of a Vim highlight group.
+
+  sp:   sets the `guisp` property of a Vim highlight group.
+
+  lush: a namespace to save arbitrary data to a group. Is not exported to the
+        final highlight but may be accessed in the lush-spec or the parsed-lush-spec.
+
+Constraints:
+
+  `value` may be any Lua type which will concatenate with a string.
+
+  `value` may be derived from previously defined group properties.
+
+  All unsupported keys are dropped.
+
+  Group name is CamelCase by convention, but may be any string beginning with
+  alpha characters.
+
+  Group names may not be `ALL`, `NONE`, `ALLBUT`, `contained` or `contains`,
+  this is a vim constraint.
+
+
+Linked Group                                            *lush-spec-linked-group*
+
+Used to define a highlight link.
+
+Syntax:
+>
+  LinkedGroup { GroupName },
+<
+
+Supported keys:
+
+  N/A.
+
+Constraints:
+
+  Linked group must be defined before the link definition.
+
+
+Inherited Group                                      *lush-spec-inherited-group*
+
+Used to define a new highlight group, with properties inherited from another
+group.
+
+This is logically similar to a Linked Group, except you wish to define new
+keys, or redefine old keys.
+
+Syntax:
+>
+    InheritedGroup { Parent, gui = "bold" },
+<
+
+Supported keys:
+
+  See Direct Definition.
+
+Constraints:
+
+  Only one parent group may be specified and it must be the first value in the
+  group definition.
+
+  Inherits constraints of Direct Definition
+
+--------------------------------------------------------------------------------
+Lush.ify                                                              *lush-ify*
+
+Lush.ify will provide automatic, real-time highlighting of any `hsl(...)` calls,
+as well as highlighting any groups in your lush-spec with their appropriate
+colors and decorations.
+
+To use lush.ify, open your theme Lua file and run the vim command,
+>
+  :Lushify
+<
+
+or run it directly via Lua,
+>
+  :lua require('lush').ify()
+<
+
+Now changes you make to a colorscheme are reflected in real time. See the two
+starter files for more information and a demonstration.
+
+Performance of lush.ify is somewhat dependent on your hardware and probably
+more specifically, your terminal. Some re-render faster than others.
+
+Lush.ify will perform some minor event debouncing, with an increased window on
+multiple parser failures. The defaults should allow for a smooth experience,
+but if you desire to change them, you can pass options to lush.ify like so
+(times are in ms),
+>
+  :lua require('lush').ify({natural_timeout = 25, error_timeout = 300})
+<
+
+If you feel performance is poor, please try disabling any linter/lsp/etc first.
+
+--------------------------------------------------------------------------------
+Converting an Existing Theme to Lush            *lush-converting-existing-theme*
+
+Currently there isn't an built in automated method for converting an
+existing theme to Lush, but you can redirect all your current highlights to a
+register, paste that into a buffer then construct some macros to reformat.
+>
+    :redir @z
+    :highlight
+    " in buffer
+    "zp
+<
+
+--------------------------------------------------------------------------------
+Exporting From Lush                                                *lush-export*
+
+If you wish to move your theme away from lush, or export it for use in Vim,
+you can run the following Lua code:
+>
+  :lua require('lush').export_to_buffer(require('lua-module-theme-name'))
+<
+
+Your Lush theme will be exported to a new floating window, as a collection of
+Vim highlight commands.
+
+Note that the name you specify is the name of the Lua module in which your
+theme was defined. In the above short-example, you would run
+>
+  :lua require('lush').export_to_buffer(require('lush_theme.cool_name'))
+<
+
+--------------------------------------------------------------------------------
+Manual Toolchain                                         *lush-manual-toolchain*
+
+If desired, you can manually parse -> compile -> apply your lush-spec.
+>
+    local lush = require('lush')
+    local parsed = lush.parse(function() return { ... } end)
+    local compiled = lush.compile(parsed, {force_clean = true })
+    lush.apply(compiled)
+<
+
+`compile` accepts a secondary `options` table with the following options:
+
+*   `force_clean`: `true` or `false`, prepends commands to clear and reset
+    highlighting.
+
+--------------------------------------------------------------------------------
+Pitfalls, Beartraps, Dragons                                     *lush-pitfalls*
+
+Linters:
+
+  You will likely get warnings from linters while writing a lush-spec,
+  specifically around "undefined globals". Most of these warnings can be safely
+  ignored, you may wish to disable LSP/Linters temporarily when working on a
+  theme.
+
+Dependency Injection:
+
+  Lush-specs are executed a bare environment, so they don't have access to Lua
+  globals or other modules. However, they are also written as closures, so they
+  do have access to any local level variables in the theme file.
+
+  This means if you want to access a global module, you simply have to bind it
+  to a local scope variable.
+  >
+    -- all these local variables can be accessed in the spec closure
+    local weather = require('local_weather')
+    local harbour = require('lush_theme.harbour')
+    local math = math
+    lush(function()
+      return {
+        -- set fg color depending on rain or snow
+        Normal  { fg = hsl(weather.hex_color_for_current_weather) },
+        -- set comment color from normal fg, but set to a random
+        -- analogous-ish color
+        Comment { fg = Normal.fg.ro(math.random(-60, 60)) },
+        -- we can even access other theme data
+        -- automatic theme inheritance and extension is WIP
+        CursorLine { fg =  harbour.CursorLine.fg, bg = harbour.CursorLine.bg },
+      }
+    end)
+  <
+
+Easy Motion:
+
+  Activating the easy motion plugin in a lush.ify'd buffer will cause a lot of
+  syntax errors. This is because easy-motion directly modifies the buffer to
+  display its "jump keys", which we try to parse.
+
+  It is not recommended you activate easy motion in a lush.ify'd buffer.
+
+Live Search-Replace:
+
+  If you use Neovim's live-updating search-and-replace feature (),
+  you may see Neovim errors being reported. In my experience these can be safely
+  ignored and you may continue as normal.
+
+Lightline
+
+  While Lightline can be styled through Lush, real-time updating has some
+  caveats and performance may be less than optimal due to VimL performance.
+
+  See `examples/lightline-one-file` and `examples/lightline-two-files` for
+  guidance. Generally, if real time performance with Lightline is problematic,
+  I would recommend developing your theme first, then disabling lush.ify with
+  `:e!` in the buffer and applying your changes via .
+
+  The two examples go into some more detail regarding this method.
+
+--------------------------------------------------------------------------------
+Bugs or Limitations                                                  *lush-bugs*
+
+Sometimes line group and HSL highlighting may appear out of sync if you've
+applied undo/redo chains to a lush.ify'd file. Generally typing more into
+the buffer will fix these issues as the highlighter re-syncs with the buffer
+state.
+
+You may find some elements don't update in real time (LSP sign column for
+example). This is a side effect of colours are applied to those elements,
+only as they are created (I believe). The group name in your lush-spec should
+update to let you see how it will look when your theme is loaded.
+
+Lush.ify'd `hsl()` and group name highlight may sometimes be obscured by
+CursorLine highlighting. If this is a problem, you can set CursorLine to an
+empty definition or disable the cursor line with .
+
