@@ -23,29 +23,29 @@ data.
 ================================================================================
 CONTENTS                                                              *lush-toc*
 
-Lush Tutorials                                                |*lush-tutorials*|
-HSL Colors                                                   |*lush-hsl-colors*|
-  Define a Color                                           |*lush-define-color*|
-  Color Operations                                     |*lush-color-operations*|
-  rotate, ro                                               |*lush-color-rotate*|
-  saturate, desaturate, sa, de |*lush-color-saturate*| |*lush-color-desaturate*|
-  lighten, darken, li, da           |*lush-color-lighten*| |*lush-color-darken*|
-  abs_*                                       |*lush-color-absolute-operations*|
-  hue, saturation, lightness, .h, .s, .l                   |*lush-color-direct*|
-  .hex, tostring                                  |*lush-color-string-coercion*|
-  Example                                                 |*lush-color-example*|
-Lush Spec                                                          |*lush-spec*|
-  Sample lush-spec                                          |*lush-spec-sample*|
-Lush-Spec Spec                                                |*lush-spec-spec*|
-  Direct Definition                              |*lush-spec-direct-definition*|
-  Linked Group                                        |*lush-spec-linked-group*|
-  Inherited Group                                  |*lush-spec-inherited-group*|
-Lush.Ify                                                            |*lush-ify*|
-Converting an Existing Theme to Lush          |*lush-converting-existing-theme*|
-Exporting from Lush                                              |*lush-export*|
-Manual Toolchain                                       |*lush-manual-toolchain*|
-Pitfalls, Beartraps, Dragons                                   |*lush-pitfalls*|
-Bugs or Limitations                                                |*lush-bugs*|
+Lush Tutorials                                                  |lush-tutorials|
+HSL Colors                                                     |lush-hsl-colors|
+  Define a Color                                             |lush-define-color|
+  Color Operations                                       |lush-color-operations|
+  rotate, ro                                                 |lush-color-rotate|
+  saturate, desaturate, sa, de     |lush-color-saturate| |lush-color-desaturate|
+  lighten, darken, li, da               |lush-color-lighten| |lush-color-darken|
+  abs_*                                         |lush-color-absolute-operations|
+  hue, saturation, lightness, .h, .s, .l                     |lush-color-direct|
+  .hex, tostring                                    |lush-color-string-coercion|
+  Example                                                   |lush-color-example|
+Lush Spec                                                            |lush-spec|
+  Sample lush-spec                                            |lush-spec-sample|
+  Lush-Spec Spec                                                |lush-spec-spec|
+    Direct Definition                              |lush-spec-direct-definition|
+    Linked Group                                        |lush-spec-linked-group|
+    Inherited Group                                  |lush-spec-inherited-group|
+Lush.Ify                                                              |lush-ify|
+Converting an Existing Theme to Lush            |lush-converting-existing-theme|
+Exporting from Lush                                                |lush-export|
+Manual Toolchain                                         |lush-manual-toolchain|
+Pitfalls, Beartraps, Dragons                                     |lush-pitfalls|
+Bugs or Limitations                                                  |lush-bugs|
 
 --------------------------------------------------------------------------------
 Lush Tutorials                                                  *lush-tutorials*
