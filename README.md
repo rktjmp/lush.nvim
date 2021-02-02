@@ -59,12 +59,12 @@ Creating a color scheme in Lush is a three step process:
 2. Define your highlight groups with a Lush spec
 3. Organise your color scheme for normal usage and/or distribution
 
-Along the way, you can use `:Lushify` to get live feedback on the appereance
+Along the way, you can use `:Lushify` to get live feedback on the appearance
 of your color scheme.
 
 
-1 Define your colors with the HSL module
------------------------------------------
+
+### 1. Define your colors with the HSL module
 
 HSL (Hue, Saturation, Lightness) is an alternative color representation to RGB.
 In HSL, hue varies between 0 and 360 (like a color wheel),
@@ -82,13 +82,13 @@ local complement = red.rotate(180)  -- Define the complement (i.e. cyan)
 Note that cyan is also the complement of red in RGB: `(255, 0, 0)' == (0, 255, 255)`,
 but using HSL only one value was modified.
 
-Besides rotating hues, you can lighen or darken colors, and saturate or desaturate them.
-Lush provides a comprehensive set of functions for this, make sure to check
-the documentation for more details.
+Besides rotating hues, you can lighten or darken colors, and saturate or desaturate them.
+Lush provides a comprehensive set of functions for this,
+make sure to check out the the tutorial and the docs more details.
 
 
-2 Define a lush-spec
---------------------
+
+### 2. Define a lush-spec
 
 After you've chosen your base colors, you can define a lush-spec.
 
@@ -133,8 +133,8 @@ One of the templates includes a list of all the highlight groups that (Neo)vim c
 There's a lot, so defining simple relations between them is the best way to cover them all.
 
 
-3 Organise your color scheme for distribution
----------------------------------------------
+
+### 3. Organise your color scheme for distribution
 
 There are two ways to use a color scheme created with Lush.
 You can import it as a Lua module, or you can compile it to VimL.
@@ -148,6 +148,7 @@ cool_name/
 |-colors/
   |-cool_name.vim
 ```
+
 
 #### Using Lua
 
