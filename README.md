@@ -108,7 +108,8 @@ local red = hsl(0, 100, 50)         -- Define a simple red color
 local complement = red.rotate(180)  -- Define the complement (i.e. cyan)
 ```
 
-Note that cyan is also the complement of red in RGB: (255, 0, 0)^(-1) == (0, 255, 255),
+Note that cyan is also the complement of red in RGB:
+red is `(255, 0, 0)` and cyan `(0, 255, 255)`,
 but using HSL only one value was modified.
 
 
@@ -131,13 +132,14 @@ After you've chosen your base colors, you can define a lush-spec.
 
 A lush-spec is a Lua table where you define highlight groups with
 their associated colors and decoration details.
-
 The advantage of using a lush-spec is that you can define groups from previous groups,
 and make modifications to easily define relational colors between groups.
 
-For example, create a Lua file, and write this simple lush-spec:
+A simple Lush spec would look like this:
 
 ```lua
+-- In cool_name/lua/lush_theme/cool_name.lua
+
 -- require lush
 local lush = require('lush')
 
@@ -166,7 +168,7 @@ Now, run `:Lushify` to get live feedback on your lush-spec.
 Remember to disable your LSP client and linters, these can interfere and
 give a lot of false positives while using `:Lushify`.
 
-One of the templates includes a list of all the highlight groups that (Neo)vim can use by default.
+One of the templates includes a list of all the highlight groups that Neovim uses by default.
 There's a lot, so defining simple relations between them is the best way to cover them all.
 
 
