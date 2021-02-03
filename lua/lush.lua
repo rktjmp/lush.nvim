@@ -106,10 +106,17 @@ local easy_parsed = function(parsed_spec, options)
   return parsed_spec
 end
 
--- We can call lush in two styles,
--- lush(function() ... end) - > defining a lush spec, returns a parsed spec
--- lush({...})              - > applying a parsed spec, automatically clears
--- Err... ignore the validity of this signature...
+-- We can call lush in two styles, with the intention of making boilerplate
+-- easier. detect_easy is metaprogramed to M.__call.
+--
+-- lush(function() ... end)
+--   -> define a lush spec, returns a parsed spec
+--   -> traditionally called in a lua/lush_theme/theme.lua file
+--
+-- lush({...})
+--   -> applying a parsed spec, automatically sets the clear option
+--   -> traditionally called in the colors/colors.vim file
+--
 -- (spec or parsed_spec, table) -> parsed_spec or apply_spec
 local function detect_easy(spec_or_parsed, options)
   -- specs are functions
@@ -126,6 +133,7 @@ local function detect_easy(spec_or_parsed, options)
   end
 end
 
+-- delegate __call to detect_easy for DX QOL.
 return setmetatable(M, {
   __call = function(m, ...)
     local fn, opts = ...
