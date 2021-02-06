@@ -203,6 +203,27 @@ See the related documentation. <!-- link to parse-compile-apply -->
 QA
 --
 
+#### Why `return ...`?
+
+In Lua modules are just tables.
+Calling `lush(lush-spec)` will parse the given lush-spec,
+then it will return your theme as a Lua table (i.e. a parsed-lush-spec).
+Returning this table allows other modules to `require(lush_spec_file)`
+and access your color scheme data.
+
+In the VimL file, we can call `lush(parsed-lush-spec)` to clear any existing
+highlighting and apply our parsed lush-spec.
+
+#### Why `lua/lush_theme/`?
+
+Lua doesn't have any strict namespacing. Anything in a plugin's `lua/`
+directory becomes available as a module in Vim, so it's advised to nest your
+theme inside a `lush_theme` folder, providing a namespace for all
+lush themes. This is to avoid any collisions between themes and
+other modules.
+
+This isn't a strict rule enforced in any way by Lush, simply a recommendation.
+
 #### Is Lush slow?
 
 Short answer: no.
@@ -243,35 +264,3 @@ Compile: 814600  ns  0.8146 ms
 Apply:   3065300 ns  3.0653 ms
 Total:   4179300 ns  4.1793 ms
 ```
-
-
-#### Why `return ...`?
-
-In Lua modules are just tables.
-Calling `lush(lush-spec)` will parse the given lush-spec,
-then it will return your theme as a Lua table (i.e. a parsed-lush-spec).
-Returning this table allows other modules to `require(lush_spec_file)`
-and access your color scheme data.
-
-In the VimL file, we can call `lush(parsed-lush-spec)` to clear any existing
-highlighting and apply our parsed lush-spec.
-
-#### Why `lua/lush_theme/`?
-
-Lua doesn't have any strict namespacing. Anything in a plugin's `lua/`
-directory becomes available as a module in Vim, so it's advised to nest your
-theme inside a `lush_theme` folder, providing a namespace for all
-lush themes. This is to avoid any collisions between themes and
-other modules.
-
-This isn't a strict rule enforced in any way by Lush, simply a recommendation.
-
-#### Why even do this? Seems like a lot of over engineering.
-
-It's true that you could define your color scheme with just regular Lua
-variables, and maybe pass those in a map to some function to convert to
-VimL commands, indeed that's how most Lua themes are made.
-
-Really Lush started as a toy experiment in seeing how capable Lua was at making
-DSLs, but it felt useful enough to me that other people might find it
-interesting.
