@@ -12,11 +12,6 @@ Lush themes can be exported to plain VimL for distribution (or escape),
 and they can also be *imported* to other Lua (or VimL) files to access color)
 data.
 
-**Lush is relatively stable and usable, but it still needs improvement. Some
-aspects of the API may change.**
-
-**See any [new changes](#change-log).**
-
 
 Requirements
 ------------
@@ -28,10 +23,10 @@ Requirements
 Installation
 ------------
 
-Install via any package management system, for example, vim-plug:
+Install via any package management system, for example, paq:
 
 ```vim
-Plug 'rktjmp/lush.nvim'
+paq 'rktjmp/lush.nvim'
 ```
 
 
@@ -53,45 +48,56 @@ examples for various topics (Lightline, dependency injection, etc).
 Usage
 -----
 
-Creating a color scheme in Lush is just a series of simple steps:
+To create a Vim colorscheme in Lush,
 
-1. Organise your directory structure or copy one of the templates
+1. Create your lush-template directory
 2. Define your colors using the HSL module
 3. Define your highlight groups with a Lush spec
-4. (optional) Organise your color scheme for distribution 
+4. (optional) Export your colorscheme for distribution to non-Neovim clients.
 
-Along the way, you can use `:Lushify` to get live feedback on the appearance
-of your color scheme.
-
+The `:Lushify` command can be used during development for real time feedback on the appearance of your color scheme.
 
 
-### 1. Organise your directory structure or copy one of the templates
+### 1. Create your lush-template directory
 
-To start creating your color scheme, you need a directory with two subdirectories:
-`lua`, where you'll put your lush-spec file;
-and `colors` where you write a small VimL file that's read by Neovim when setting `:colorscheme`,
-or alternatively, where you'll put your color scheme compiled to VimL (see step 4).
-In both cases the structure of your color scheme directory would look like this:
+Either fork or clone the repo at [rktjmp/lush-template](https://github.com/rktjmp/lush-template), then rename two files to match your theme name. You can automate this with the commands below (bash/zsh compatible).
+
+First, set your lush theme name. Don't worry, you can change it later.
+
+```
+export LUSH_NAME=<your lush theme name>
+```
+
+Then run the setup script:
+
+```
+git clone git@github.com:rktjmp/lush-template.git $LUSH_NAME
+cd $LUSH_NAME
+mv colors/lush_template.vim colors/$LUSH_NAME.vim
+mv lua/lush_theme/lush_template.lua lua/lush_theme/$LUSH_NAME.lua
+if command -v sed &> /dev/null then
+  sed -i 's/lush_template/$LUSH_NAME/g' lua/lush_theme/$LUSH_NAME.vim
+else
+  echo "Could not find sed, manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.vim"
+fi
+```
+
+Your lush theme will have two sub-directories:
+ 
+- `lua`: where you'll put your lush-spec file.
+- `colors`: where you write a small VimL file that's read by Neovim when setting 
+`:colorscheme`.
+
+As an example:
 
 ```sh
 cool_name/
 |-lua/
   |-lush_theme/
-    |-cool_name.lua    # Your lush spec goes here
+    |-cool_name.lua # Your lush spec goes here
 |-colors/
   |-cool_name.vim
 ```
-
-If you want to use your color scheme as a Lua module,
-You should write the following in `cool_name/colors/cool_name.vim`,
-that way, you can still set your color scheme with the `:colorscheme` command.
-
-```vim
-" In colors/cool_name.vim
-let g:colors_name="cool_name"
-lua require('lush')(require('lush_theme.cool_name'))
-```
-
 
 ### 2. Define your colors with the HSL module
 
