@@ -102,10 +102,11 @@ cool_name/
 ### 2. Define your colors with the HSL module
 
 HSL (Hue, Saturation, Lightness) is an alternative color representation to RGB.
-In HSL, hue varies between 0 and 360 —like a color wheel—,
-and both saturation and lightness vary between 0 and 100 —like percentages—.
+In HSL, hue varies between 0 and 360 — like a color wheel,
+and both saturation and lightness vary between 0 and 100 —like percentages.
 
-The main advantage of HSL is that it allows you to create color palettes using simple transformations.
+The main advantage of HSL is that it allows you to create color palettes using simple, easy to reckon transformations.
+
 For example, if you want to get the complement of a color, you rotate 180°.
 
 ```lua
@@ -127,9 +128,9 @@ local dark_red = red.darken(30)
 local dusk_red = red.darken(60)
 ```
 
-Lush provides a comprehensive set of functions like these.
-You can rotate hues, lighten or darken colors, and saturate or desaturate them.
-make sure to check out the the tutorial and the docs more details.
+Lush provides a comprehensive set of functions to work with HSL colors. You can rotate hues, lighten or darken colors, and saturate or desaturate them.
+
+Be sure to check out the the tutorial (`:LushRunTutorial`) and the [docs (:h lush)](doc/lush.txt) more details.
 
 
 ### 3. Define a lush-spec
