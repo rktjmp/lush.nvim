@@ -85,7 +85,7 @@ sh << "EOF"
     sed -i "s/COPYRIGHT_NAME/$GIT_NAME/g" LICENSE
     sed -i "s/COPYRIGHT_YEAR/$YEAR/g" LICENSE
     git add .
-    git commit -m "Configure template"
+    git commit -m "Configure template for $LUSH_NAME, please enjoy using Lush!"
   else
     echo "Could not find sed, please manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.vim, and update the LICENCE file."
   fi
