@@ -1,4 +1,4 @@
-![Lush Demo](images/demo.gif)
+![Lush Header](images/header.gif)
 
 Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 ====
@@ -32,6 +32,8 @@ paq 'rktjmp/lush.nvim'
 
 Getting Started
 ---------------
+
+![Lush Demo](images/demo.gif)
 
 There are two interactive tutorials provided,
 
@@ -107,7 +109,7 @@ cool_name/
 
 ### 2. Create your theme
 
-Open your `.lua` file, run `:Lushify` and create your lush-spec.
+Open your `lua/lush_theme/*.lua` file, run `:Lushify` and create your lush-spec.
 
 Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
 or see the [docs (:h lush)](doc/lush.txt) more details.
@@ -176,7 +178,7 @@ this table at the end of the file.
 
 The parsed-lush-spec can be passed to lush to *apply* the spec (as seen in the
 `.vim` file), but by returning the parsed-lush-spec, we can also require the
-lush-spec in other Lua code (`require('lush_theme/cool_name')`) and access it's
+lush-spec in other Lua code (`require('lush_theme.cool_name')`) and access it's
 color values.
 
 #### Why `lua/lush_theme/`?
