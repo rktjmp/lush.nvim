@@ -64,7 +64,7 @@ two files to match your theme name. You can automate this with the commands
 below (bash/zsh compatible).
 
 First, clone down a copy of the template, picking a name for your theme; don't
-worry, it's simple to change this later.
+worry, it's easy to change this later.
 
 ```sh
 git clone git@github.com:rktjmp/lush-template.git <your_theme_name>
@@ -92,15 +92,15 @@ sh << "EOF"
 EOF
 ```
 
-A lush theme directory structure is very simple:
+A lush theme has the following directory structure:
 
 ```
 cool_name/
 |-lua/
   |-lush_theme/
-    |-cool_name.lua # your lush spec
+    |-cool_name.lua # contains your lush spec
 |-colors/
-  |-cool_name.vim # expose your lush theme to neovim
+  |-cool_name.vim   # exposes your lush theme to neovim
 ```
 
 ### 2. Create your theme
@@ -113,9 +113,9 @@ easy to work with color variations within a theme.
 Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
 or see the [docs (:h lush)](doc/lush.txt) more details.
 
-You may prefer to disable LSP/Linters while editing your lush spec. The
-examples folder contains various examples for topics like Lightline or
-dependency injection.
+You may prefer to disable LSP/Linters while editing your lush spec, as they can
+have trouble parsing the meta programming. The examples folder contains various
+examples for topics like Lightline or dependency injection.
 
 A simple lush-spec would look like this:
 
