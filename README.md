@@ -17,8 +17,8 @@ Requirements
 ------------
 
 - Neovim 0.5 or greater
+  - (themes can be exported for Vim compatibilty)
 - `termguicolors` enabled for true color support
-
 
 Installation
 ------------
@@ -50,105 +50,81 @@ Usage
 
 To create a Vim colorscheme in Lush,
 
-1. Create your lush-template directory
-2. Define your colors using the HSL module
-3. Define your highlight groups with a Lush spec
-4. (optional) Export your colorscheme for distribution to non-Neovim clients.
+1. Copy the lush-template
+2. Create your theme
+3. (optional) Export your theme for distribution to non-Neovim clients.
 
-The `:Lushify` command can be used during development for real time feedback on the appearance of your color scheme.
+The `:Lushify` command can be used during development for real time feedback on
+the appearance of your color scheme.
 
 
-### 1. Create your lush-template directory
+### 1. Copy the lush-template
 
-Either fork or clone the repo at [rktjmp/lush-template](https://github.com/rktjmp/lush-template), then rename two files to match your theme name. You can automate this with the commands below (bash/zsh compatible).
+Either fork or clone the repo at
+[rktjmp/lush-template](https://github.com/rktjmp/lush-template), then rename
+two files to match your theme name. You can automate this with the commands
+below (bash/zsh compatible).
 
-First, set your lush theme name. Don't worry, you can change it later.
+First, clone down a copy of the template, picking a name for your theme; don't
+worry, it's simple to change this later.
 
-```
-export LUSH_NAME=<your lush theme name>
+```sh
+git clone git@github.com:rktjmp/lush-template.git <your_theme_name>
+cd <your_theme_name>
 ```
 
 Then run the setup script:
 
-```
-git clone git@github.com:rktjmp/lush-template.git $LUSH_NAME
-cd $LUSH_NAME
-mv colors/lush_template.vim colors/$LUSH_NAME.vim
-mv lua/lush_theme/lush_template.lua lua/lush_theme/$LUSH_NAME.lua
-if command -v sed &> /dev/null then
-  sed -i 's/lush_template/$LUSH_NAME/g' lua/lush_theme/$LUSH_NAME.vim
-else
-  echo "Could not find sed, manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.vim"
-fi
-```
-
-Your lush theme will have two sub-directories:
- 
-- `lua`: where you'll put your lush-spec file.
-- `colors`: where you write a small VimL file that's read by Neovim when setting 
-`:colorscheme`.
-
-As an example:
-
 ```sh
+sh << "EOF"
+  LUSH_NAME=$(basename $(pwd))
+  GIT_NAME=$(git config user.name)
+  YEAR=$(date +"%Y")
+  mv colors/lush_template.vim colors/$LUSH_NAME.vim
+  mv lua/lush_theme/lush_template.lua lua/lush_theme/$LUSH_NAME.lua
+  if command -v sed &> /dev/null; then
+    sed -i "s/lush_template/$LUSH_NAME/g" colors/$LUSH_NAME.vim
+    sed -i "s/COPYRIGHT_NAME/$GIT_NAME/g" LICENSE
+    sed -i "s/COPYRIGHT_YEAR/$YEAR/g" LICENSE
+    git add .
+    git commit -m "Configure template"
+  else
+    echo "Could not find sed, please manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.vim, and update the LICENCE file."
+  fi
+EOF
+```
+
+A lush theme directory structure is very simple:
+
+```
 cool_name/
 |-lua/
   |-lush_theme/
-    |-cool_name.lua # Your lush spec goes here
+    |-cool_name.lua # your lush spec
 |-colors/
-  |-cool_name.vim
+  |-cool_name.vim # expose your lush theme to neovim
 ```
 
-### 2. Define your colors with the HSL module
+### 2. Create your theme
 
-HSL (Hue, Saturation, Lightness) is an alternative color representation to RGB.
-In HSL, hue varies between 0 and 360 — like a color wheel,
-and both saturation and lightness vary between 0 and 100 —like percentages.
+Open your `.lua` file, run `:Lushify` and create your lush-spec.
 
-The main advantage of HSL is that it allows you to create color palettes using simple, easy to reckon transformations.
+Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
+or see the [docs (:h lush)](doc/lush.txt) more details.
 
-For example, if you want to get the complement of a color, you rotate 180°.
+Remember you can define relationships between highlight groups, which makes it
+easy to work with color variations within a theme.
 
-```lua
-local hsl = require('lush').hsl     -- Import and bind the HSL module
-local red = hsl(0, 100, 50)         -- Define a simple red color
-local complement = red.rotate(180)  -- Define the complement (i.e. cyan)
-```
+You may prefer to disable LSP/Linters while editing your lush spec.
 
-Note that cyan is also the complement of red in RGB:
-red is `(255, 0, 0)` and cyan `(0, 255, 255)`,
-but using HSL only one value was modified.
-
-
-If you wanted a monochromatic palette, you can darken a color multiple times:
-
-```
-local red = hsl(0, 100, 50)
-local dark_red = red.darken(30)
-local dusk_red = red.darken(60)
-```
-
-Lush provides a comprehensive set of functions to work with HSL colors. You can rotate hues, lighten or darken colors, and saturate or desaturate them.
-
-Be sure to check out the the tutorial (`:LushRunTutorial`) and the [docs (:h lush)](doc/lush.txt) more details.
-
-
-### 3. Define a lush-spec
-
-After you've chosen your base colors, you can define a lush-spec.
-
-A lush-spec is a Lua table where you define highlight groups with
-their associated colors and decoration details.
-The advantage of using a lush-spec is that you can define groups from previous groups,
-and make modifications to easily define relational colors between groups.
-
-A simple Lush spec would look like this:
+A simple lush-spec would look like this:
 
 ```lua
 -- In cool_name/lua/lush_theme/cool_name.lua
 
 -- require lush
 local lush = require('lush')
+locah hsl = lush.hsl
 
 -- lush() will parse the spec and
 -- return a table containing all color information.
@@ -156,10 +132,10 @@ local lush = require('lush')
 return lush(function()
   return {
     -- Define Vim's Normal highlight group
-    Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
+    Normal { bg = hsl(208, 90, 30), fg = hsl(208, 80, 80) },
 
     -- Make whitespace slightly darker than normal.
-    -- you must define Normal before using it.
+    -- you must define Normal before deriving from it.
     Whitespace { fg = Normal.fg.darken(40) },
 
     -- Make comments look the same as whitespace, but with italic text
@@ -171,19 +147,10 @@ return lush(function()
 end)
 ```
 
-Now, run `:Lushify` to get live feedback on your lush-spec.
-Remember to disable your LSP client and linters, these can interfere and
-give a lot of false positives while using `:Lushify`.
+### 3. (optional) Export your theme for distribution to non-Neovim clients.
 
-One of the templates includes a list of all the highlight groups that Neovim uses by default.
-There's a lot, so defining simple relations between them is the best way to cover them all.
-
-
-
-### 4. (optional) Compile to VimL
-
-If you want to, you can also compile your lush-spec to VimL,
-so you get backwards compatibility with Vim8 for free!
+If you want to, you can also compile your lush-spec to VimL. This is only
+required if you want your theme to be compatible with Vim.
 
 Running the following will open a new floating window with a
 list of highlight groups as defined in VimL.
@@ -192,27 +159,25 @@ list of highlight groups as defined in VimL.
 :lua require('lush').export_to_buffer(require('lush_theme.cool_name'))
 ```
 
-You can then yank the contents of the buffer, and paste it in `cool_name/colors/cool_name.vim`.
-
-Lush also provides functions to export your color scheme in a more automated way.
-See the related documentation. <!-- link to parse-compile-apply -->
-
-
-
+You can then yank the contents of the buffer, and paste it in
+`cool_name/colors/cool_name.vim`.
 
 QA
 --
 
 #### Why `return ...`?
 
-In Lua modules are just tables.
-Calling `lush(lush-spec)` will parse the given lush-spec,
-then it will return your theme as a Lua table (i.e. a parsed-lush-spec).
-Returning this table allows other modules to `require(lush_spec_file)`
-and access your color scheme data.
+By returning our theme it acts as a Lua module, which allows us to use it in
+other Lua code or other themes.
 
-In the VimL file, we can call `lush(parsed-lush-spec)` to clear any existing
-highlighting and apply our parsed lush-spec.
+When we call `lush(lush-spec)` in our `.lua` file, our lush-spec is parsed and
+returned as a Lua table, we call this a "parsed-lush-spec". We then `return`
+this table at the end of the file.
+
+The parsed-lush-spec can be passed to lush to *apply* the spec (as seen in the
+`.vim` file), but by returning the parsed-lush-spec, we can also require the
+lush-spec in other Lua code (`require('lush_theme/cool_name')`) and access it's
+color values.
 
 #### Why `lua/lush_theme/`?
 
@@ -230,10 +195,11 @@ Short answer: no.
 
 Long answer:
 
-There isn't a noticeable performance impact in using Lush over a raw VimL colorscheme.
-The parse and compile stage is generally around 1ms on a quite aged core i5 and
-is comparatively dwarfed by the 3ms spent waiting Vim's interpreter to apply the commands,
-a penalty which raw VimL schemes would share.
+There isn't a noticeable performance impact in using Lush over a raw VimL
+colorscheme.  The parse and compile stage is generally around 1ms on a quite
+aged core i5 and is comparatively dwarfed by the 3ms spent waiting Vim's
+interpreter to apply the commands, a penalty which raw VimL schemes would
+share.
 
 If you noticed a poor performance, you can always export your theme to
 VimL after using Lush to aid the development process.
