@@ -30,6 +30,7 @@ In actuality, I think what I *really* want is a contrast scale, which isn't as
 simple as simply "make it all brighter" or "make it all bluer".
 
 **Automatic Property Inference**
+----------------------------
 
 Would allow for syntax like:
 

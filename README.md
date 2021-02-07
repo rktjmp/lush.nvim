@@ -43,10 +43,6 @@ There are two interactive tutorials provided,
 - `:LushRunTutorial`, a more in-depth guide through various ways to apply Lush.
   (`lush_tutorial.lua` in the examples folder).
 
-A Lush theme template is available in the examples folder, as well as other
-examples for various topics (Lightline, dependency injection, etc).
-
-
 Usage
 -----
 
@@ -62,7 +58,7 @@ the appearance of your color scheme.
 
 ### 1. Copy the lush-template
 
-Either fork or clone the repo at
+Either fork, clone or recreate the repo at
 [rktjmp/lush-template](https://github.com/rktjmp/lush-template), then rename
 two files to match your theme name. You can automate this with the commands
 below (bash/zsh compatible).
@@ -111,13 +107,15 @@ cool_name/
 
 Open your `lua/lush_theme/*.lua` file, run `:Lushify` and create your lush-spec.
 
-Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
-or see the [docs (:h lush)](doc/lush.txt) more details.
-
 Remember you can define relationships between highlight groups, which makes it
 easy to work with color variations within a theme.
 
-You may prefer to disable LSP/Linters while editing your lush spec.
+Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
+or see the [docs (:h lush)](doc/lush.txt) more details.
+
+You may prefer to disable LSP/Linters while editing your lush spec. The
+examples folder contains various examples for topics like Lightline or
+dependency injection.
 
 A simple lush-spec would look like this:
 
@@ -151,7 +149,7 @@ end)
 
 ### 3. (optional) Export your theme for distribution to non-Neovim clients.
 
-If you want to, you can also compile your lush-spec to VimL. This is only
+If you want to, you can also compile your completed theme to VimL. This is only
 required if you want your theme to be compatible with Vim.
 
 Running the following will open a new floating window with a
@@ -164,8 +162,8 @@ list of highlight groups as defined in VimL.
 You can then yank the contents of the buffer, and paste it in
 `cool_name/colors/cool_name.vim`.
 
-QA
---
+Q/A
+---
 
 #### Why `return ...`?
 
@@ -232,3 +230,11 @@ Compile: 814600  ns  0.8146 ms
 Apply:   3065300 ns  3.0653 ms
 Total:   4179300 ns  4.1793 ms
 ```
+
+See Also
+--------
+
+- [Vim Help](doc/lush.txt)
+- [Change Log](CHANGELOG.md)
+- [TODO](TODO.md)
+
