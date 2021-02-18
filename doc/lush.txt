@@ -241,21 +241,24 @@ Used to define a stand alone highlight group.
 
 Syntax:
 >
-  GroupName { fg = value, bg = value, gui = value, sp = value },
+  GroupName { fg = value, bg = value, gui = value, sp = value, blend = value }
 <
 
 Supports the following keys:
 
-  fg:   sets the `guifg` property of a Vim highlight group.
+  fg:    sets the `guifg` property of a Vim highlight group.
 
-  bg:   sets the `guibg` property of a Vim highlight group.
+  bg:    sets the `guibg` property of a Vim highlight group.
 
-  gui:  sets the `gui` property of a Vim highlight group.
+  gui:   sets the `gui` property of a Vim highlight group.
 
-  sp:   sets the `guisp` property of a Vim highlight group.
+  sp:    sets the `guisp` property of a Vim highlight group.
 
-  lush: a namespace to save arbitrary data to a group. Is not exported to the
-        final highlight but may be accessed in the lush-spec or the parsed-lush-spec.
+  blend: sets the `blend` property of a Vim highlight group.
+
+  lush:  a namespace to save arbitrary data to a group. Is not
+         exported to the final highlight but may be accessed in 
+         the lush-spec or the parsed-lush-spec.
 
 Constraints:
 
