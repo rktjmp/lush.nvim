@@ -126,9 +126,7 @@ describe "parser", ->
     assert.is_equal(s.B.fg, "b_fg")
     assert.is_equal(s.B.lush, nil)
 
-  pending "drops all keys not on allow list", ->
-    -- TODO enforce string group names, must begin with alpha
-
+  pending "Enforces group names must begin with alpha character", ->
 
   it "should allow linking", ->
     s = parse -> {
