@@ -3,7 +3,7 @@ local parser_error = require('lush.errors').parser.generate_for_code
 local function allowed_option_keys()
   -- note, sometimes `1` is manually inserted into allowed options,
   -- since it's OK in some edge cases (inheritance, links)
-  return {"fg", "bg", "sp", "gui", "lush"}
+  return {"fg", "bg", "sp", "gui", "lush", "blend"}
 end
 
 -- groups should define their error state "on resolve",
