@@ -106,14 +106,15 @@ describe "parser", ->
     assert.is_equal(s.A.bg, "a_bg")
     assert.is_equal(s.A.fg, "a_fg")
 
-  it "should the allowed keys list", ->
+  it "should only keep keys on allowed keys list", ->
     s = parse -> {
-      A { bg: "a_bg", fg: "a_fg", lush: "abc", not_lush: "xyz"},
+      A { bg: "a_bg", fg: "a_fg", lush: "abc", not_lush: "xyz", blend: "20"},
     }
     assert.is_not_nil(s.A)
     assert.is_equal(s.A.bg, "a_bg")
     assert.is_equal(s.A.fg, "a_fg")
     assert.is_equal(s.A.lush, "abc")
+    assert.is_equal(s.A.blend, "20")
     assert.is_equal(s.A.not_lush, nil)
 
   it "should allow accesing previous styles", ->

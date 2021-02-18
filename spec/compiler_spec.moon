@@ -13,13 +13,15 @@ describe "compiler", ->
 
   it "defines a highlight group", ->
     ast = parse -> {
-      A { bg: "a_bg", fg: "a_fg" }
+      A { bg: "a_bg", fg: "a_fg", gui: "italic", blend: 10 }
     }
     compiled = compile(ast)
     assert.is_not_nil(compiled)
     assert.is_equal(1, #compiled)
     assert.is_not_nil(string.find(compiled[1], "guibg=a_bg"))
     assert.is_not_nil(string.find(compiled[1], "guifg=a_fg"))
+    assert.is_not_nil(string.find(compiled[1], "gui=italic"))
+    assert.is_not_nil(string.find(compiled[1], "blend=10"))
 
   it "defines a link group", ->
     ast = parse -> {

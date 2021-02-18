@@ -24,7 +24,8 @@ describe "lush", ->
     lush_spec = -> {
       Normal { bg: red, fg: blue },
       CursorLine { bg: green, fg: red, gui: "bold" }
-      NormalFloat { Normal }
+      NormalFloat { Normal },
+      PmemuSel { blend: 10 }
     }
 
   it "exports hsl", ->
@@ -47,8 +48,12 @@ describe "lush", ->
       assert.spy(vim.api.nvim_command).was_not_called()
       lush(parsed)
       assert.spy(vim.api.nvim_command).was_called()
-      norm = "highlight Normal guifg=#0000FF guibg=#FF0000 guisp=NONE gui=NONE"
-      assert.spy(vim.api.nvim_command).was_called_with(norm)
+      assert.spy(vim.api.nvim_command).was_called_with(
+        "highlight Normal guifg=#0000FF guibg=#FF0000 guisp=NONE gui=NONE blend=NONE"
+      )
+      assert.spy(vim.api.nvim_command).was_called_with(
+        "highlight PmemuSel guifg=NONE guibg=NONE guisp=NONE gui=NONE blend=10"
+      )
 
     it "applies scheme with default options", ->
       parsed = lush(lush_spec)
@@ -80,12 +85,12 @@ describe "lush", ->
     parsed = lush(lush_spec)
     text = lush.stringify(parsed)
     assert.is_string(text)
-    assert.is_equal(6, select(2, string.gsub(text, '\n', '\n')))
+    assert.is_equal(7, select(2, string.gsub(text, '\n', '\n')))
     -- options
     parsed = lush(lush_spec)
     text = lush.stringify(parsed, {force_clean: false})
     assert.is_string(text)
-    assert.is_equal(2, select(2, string.gsub(text, '\n', '\n')))
+    assert.is_equal(3, select(2, string.gsub(text, '\n', '\n')))
   
   it "is a closure", ->
     math = math
