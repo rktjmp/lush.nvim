@@ -8,6 +8,8 @@ end
 local function make_group(name, opts)
   -- We define groups "greedily", meaning we set any un-set options to NONE
   -- TODO: good idea or nah?
+  -- 2021/02/19 - believe it was chosen because it allowed for {} group defs
+  --              which can clear exiting highlights
 
   -- be nice and fix gui spaces if present
   local gui = opts.gui or 'NONE'
@@ -19,6 +21,7 @@ local function make_group(name, opts)
     'guibg=' .. (opts.bg or 'NONE'),
     'guisp=' .. (opts.sp or 'NONE'),
     'gui=' .. gui,
+    'blend=' .. (opts.blend or 'NONE'),
   }, ' ')
 end
 
