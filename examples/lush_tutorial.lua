@@ -25,6 +25,7 @@
 --  `:lua require('lush').ify()`
 --
 -- (try putting your cursor inside the ` and typing yi`:@"<CR>)
+-- (make sure to enable termguicolors with `set termguicolors`)
 --
 -- Calls to hsl() are now highlighted with the correct background colour
 -- Highlight names groups will have the highlight style applied to them.
@@ -93,7 +94,7 @@ local sea_foam_triadic = sea_foam.rotate(120)
 local sea_foam_complement = sea_foam.rotate(180).darken(10).saturate(10)
 
 -- Now that you know the basics of using hsl(), we can define our colour
--- scheme. Do do this, we will write what is called a lush-spec.
+-- scheme. To do this, we will write what is called a lush-spec.
 
 -- We must pass a function to Lush, which returns a table containing
 -- our spec. This may seem a little confusing at first, it's a lua quirk,
@@ -103,7 +104,7 @@ local sea_foam_complement = sea_foam.rotate(180).darken(10).saturate(10)
 -- a table, which we can use later to compile into vimscript and apply, or
 -- we can access in other lua modules to use our themes color data.
 --
--- If you want more control over the compliation process or to export for use
+-- If you want more control over the compilation process or to export for use
 -- without Lush, see the README or the bottom of this file.
 
 -- Call lush with our lush-spec.
@@ -195,7 +196,7 @@ local theme = lush(function()
     -- If you wish to create a theme, it's recommended you copy the template
     -- folder from the examples folder.
     --
-    -- Referenced/linked groups must come before being referenced/lined,
+    -- Referenced/linked groups must come before being referenced/linked,
     -- (i.e. above we create Normal before trying to set CursorLine)
     -- so the order shown ((mostly) alphabetical) is likely
     -- not the order you will end up with.
