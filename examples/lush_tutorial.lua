@@ -122,7 +122,7 @@ local theme = lush(function()
 
     -- lush-spec statements are in the form:
     --
-    --   <HighlightGroupName> { bg = <hsl>, fg = <hsl>, gui/sp= <string> },
+    --   <HighlightGroupName> { bg = <hsl>, fg = <hsl>, sp = <hsl>, gui = <string> },
     --
     -- Any vim highlight group name is valid, and any unrecognized key is
     -- omitted.
