@@ -1,8 +1,5 @@
 describe "lush", ->
   lush = require('lush')
-  red = lush.hsl(0, 100, 50)
-  green = lush.hsl(120, 100, 50)
-  blue = lush.hsl(240, 100, 50)
 
   it "it exports hidden meta data in __lush", ->
     base_spec = -> {
