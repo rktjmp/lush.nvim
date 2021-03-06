@@ -14,6 +14,8 @@ local known_codes = {
     too_many_parents = "too_many_parents",
     group_value_is_group = "group_value_is_group",
     malformed_lush_spec = "malformed_lush_spec",
+    malformed_lush_spec_options = "malformed_lush_spec_options",
+    malformed_lush_spec_extends_option = "malformed_lush_spec_extends_option",
     invalid_group_name = "invalid_group_name",
     could_not_infer_group_type = "could_not_infer_group_type",
     target_not_lush_type = "target_not_lush_type",
@@ -71,8 +73,15 @@ local message_for_code = function(code)
     target_not_lush_type = function(context)
       return "Target in '" .. context.on .. "' not a lush type, was '" .. context.type .. "'"
     end,
+    malformed_lush_spec_options = function(context)
+      return "Malformed lush-spec options, unrecoverable"
+    end,
+    malformed_lush_spec_extends_option = function(context)
+      return "Malformed lush-spec extends option, must be ordered list of parsed lush specs, " ..
+             "was '" .. context.type .. "', unrecoverable"
+    end,
     invalid_group_name = function(context)
-      return "Invalid group name '" .. context.on .. "', names must " .. 
+      return "Invalid group name '" .. context.on .. "', names must " ..
               "begin with a letter and may not be " ..
               "ALL, NONE, ALLBUT, contains or contained."
     end
