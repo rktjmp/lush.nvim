@@ -32,6 +32,13 @@ describe "lush", ->
     assert.is_equal(child.B.fg, parent.A.fg)
     assert.is_equal(child.C.fg, other.C.fg)
 
+    child = lush.extend(parent)
+    child.extend(other)
+    child = child.with(-> { B { A } })
+
+    assert.is_equal(child.B.fg, parent.A.fg)
+    assert.is_equal(child.C.fg, other.C.fg)
+
   it "accepts any number of parents", ->
     parent = lush(-> {
       A { fg: "a_fg" }
