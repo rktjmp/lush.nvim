@@ -26,7 +26,7 @@ local function make_group(name, opts)
 end
 
 local function compile(ast)
-  assert(type(ast) == "table" and ast.__type == "parsed_lush_spec",
+  assert(type(ast) == "table" and ast.__lush.type == "parsed_lush_spec",
          "can't compile, incorrect argument type", 4)
   local commands = {}
   for group_name, group_def in pairs(ast) do

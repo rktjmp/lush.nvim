@@ -446,8 +446,10 @@ local parse = function(lush_spec_fn, _parser_options)
     -- for error protection, we need to be able to infer the correct
     -- type of the table, but we don't want the key to be iterable.
     __index = function(t, key)
-      if key == "__type" then
-        return 'parsed_lush_spec'
+      if key == "__lush" then
+        return {
+          type = "parsed_lush_spec"
+        }
       else
         return rawget(t, key)
       end

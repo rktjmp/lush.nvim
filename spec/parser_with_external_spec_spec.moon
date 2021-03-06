@@ -1,23 +1,6 @@
 describe "lush", ->
   lush = require('lush')
 
-  it "it exports hidden meta data in __lush", ->
-    base_spec = -> {
-      A { bg: "a_bg" , fg: "a_fg" },
-      B { A },
-    }
-    base = lush(base_spec)
-    assert.is_not_nil(base.A)
-    assert.is_not_nil(base.A.fg)
-    assert.is_not_nil(base.A.__lush)
-    assert.match("A", base.A.__lush.group_name)
-    assert.match("lush_group", base.A.__lush.type)
-
-    assert.is_not_nil(base.B)
-    assert.is_not_nil(base.B.__lush)
-    assert.match("B", base.B.__lush.group_name)
-    assert.match("lush_group_link", base.B.__lush.type)
-
   it "can chain through external specs", ->
     base_spec = -> {
       A { bg: "a_bg" , fg: "a_fg" },

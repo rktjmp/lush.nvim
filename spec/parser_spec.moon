@@ -127,6 +127,23 @@ describe "parser", ->
     assert.is_equal(s.B.fg, "b_fg")
     assert.is_equal(s.B.lush, nil)
 
+  it "it exports hidden meta data in __lush", ->
+    base_spec = -> {
+      A { bg: "a_bg" , fg: "a_fg" },
+      B { A },
+    }
+    base = parse(base_spec)
+    assert.is_not_nil(base.A)
+    assert.is_not_nil(base.A.fg)
+    assert.is_not_nil(base.A.__lush)
+    assert.match("A", base.A.__lush.group_name)
+    assert.match("lush_group", base.A.__lush.type)
+
+    assert.is_not_nil(base.B)
+    assert.is_not_nil(base.B.__lush)
+    assert.match("B", base.B.__lush.group_name)
+    assert.match("lush_group_link", base.B.__lush.type)
+
   pending "Enforces group names must begin with alpha character", ->
 
   it "should allow linking", ->
@@ -214,11 +231,11 @@ describe "parser", ->
     -- but wont be what we tried to set
     assert.not.is_string(parsed.A.__lush)
 
-  it "defines __type meta key", ->
+  it "defines __lush meta key", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", lush: "a_opt" }
     }
-    assert.equal('parsed_lush_spec', s.__type)
+    assert.equal('parsed_lush_spec', s.__lush.type)
 
   it "is a closure", ->
     math = math
@@ -297,3 +314,4 @@ describe "parser", ->
       }
       assert.equals("italic", parsed.D.gui)
       assert.equals("a_bg", parsed.D.bg)
+

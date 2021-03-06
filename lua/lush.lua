@@ -125,7 +125,8 @@ local function detect_easy(spec_or_parsed, options)
     return easy_spec(spec)
   -- parsed specs are tables
   elseif type(spec_or_parsed) == "table" and
-        spec_or_parsed.__type == "parsed_lush_spec" then
+         spec_or_parsed.__lush and
+         spec_or_parsed.__lush.type == "parsed_lush_spec" then
     local parsed = spec_or_parsed
     return easy_parsed(parsed, options)
   else
