@@ -1,6 +1,21 @@
 describe "lush", ->
   parse = require('lush.parser')
 
+  it "only accepts parsed lush specs", ->
+    e = assert.has_error(->
+      parse((-> {
+        B { A }
+      }), {extends: ""}))
+    assert.matches("malformed_lush_spec_extends_option", e.code)
+    assert.not.matches("No message avaliable", e.msg)
+
+    e = assert.has_error(->
+      parse((-> {
+        B { A }
+      }), {extends: {fg: '1'}}))
+    assert.matches("malformed_lush_spec_extends_option", e.code)
+    assert.not.matches("No message avaliable", e.msg)
+
   it "inherits all properties of a parent spec", ->
     parent_spec = -> {
       A { bg: "a_bg" , fg: "a_fg" },
