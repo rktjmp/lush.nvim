@@ -22,7 +22,7 @@ local is_group = function(kind)
 end
 
 local is_placeholder_group = function(kind)
-  return kind == "lush_group_placeholder" 
+  return kind == "lush_group_placeholder"
 end
 
 local is_concrete_group = function(kind)
@@ -63,21 +63,21 @@ local enforce_definition_is_table = function(name, opts)
 end
 
 local enforce_no_protected_keys = function(name, opts)
-  -- NB: technically __name is dropped before this is ever called,
-  --     retained as a validation for clarity reasons (for now)
-  if opts.__name ~= nil then
+  -- NB: technically these are dropped before this is ever called,
+  --     retained as a validation for clarity purposes
+  if opts.__lush ~= nil then
     return parser_error.reserved_keyword({on = name})
   end
 end
 
 local wrap_group_enforce_no_placeholders = function(name, opts)
-  for key, tuple in pairs(opts) do
+  for _key, tuple in pairs(opts) do
     local val, kind = unpack(tuple)
     if is_placeholder_group(kind) then
-      if val.__name == name then
+      if val.__lush.group_name == name then
         return parser_error.circular_self_reference({on = name})
       else
-        return parser_error.undefined_group({on = name, missing = val.__name})
+        return parser_error.undefined_group({on = name, missing = val.__lush.group_name})
       end
     end
   end
@@ -85,7 +85,7 @@ end
 
 local wrap_group_enforce_no_inference = function(name, opts)
   for key, tuple in pairs(opts) do
-    local val, kind = unpack(tuple)
+    local _val, kind = unpack(tuple)
     if is_concrete_group(kind) then
       -- WIP for property inference
       -- don't return nil on inferred keys
@@ -110,7 +110,7 @@ end
 
 local enforce_no_value_is_group = function(name, opts)
   for key, tuple in pairs(opts) do
-    local val, kind = unpack(tuple)
+    local _val, kind = unpack(tuple)
     if is_group(kind) then
       return parser_error.group_value_is_group({on = name, key = key, kind = kind})
     end
@@ -123,7 +123,7 @@ end
 -- IMPORTANT: ensure all validators are non-nil, variable is named correctly,
 --            is in scope, else ipairs() may skip some or all validations!
 --
-local enforce = function(validators, group_name, group_options) 
+local enforce = function(validators, group_name, group_options)
   for i = 1, #validators do
     if type(validators[i]) ~= "function" then
       error("Validate validators malformed, not contiguous or not a function. " ..
@@ -152,48 +152,45 @@ local create_direct_group = function(group_name, group_options)
   local err = enforce(enforcements, group_name, group_options)
   if err then return resolves_as_error(err) end
 
-  local proxied_options = {}
+  local public_properties = {}
   for key, tuple in pairs(group_options) do
-    local val, kind = unpack(tuple)
+    local val, _kind = unpack(tuple)
     -- if is_concrete_group(kind) then
     --   --  -- lush group referenced has key requested,
     --   --  -- so proxy this would-be group's value to the proxy group
-    --   --  proxied_options[key] = val[key]
+    --   --  public_properties[key] = val[key]
     -- end
     -- no group to proxy to, just map key to value
-    proxied_options[key] = val
+    public_properties[key] = val
   end
 
-  -- Define the actual group table
-  return setmetatable({}, {
-
-    -- When the group is index'd, return our special keys
-    -- or proxy out to the wrapped options (which may proxy again to
-    -- a linked group)
+  local was_called_once = false
+  return setmetatable(public_properties, {
     __index = function(_, key)
-      if key == "__name" then
-        return group_name
-      elseif key == "__type" then
-        return "lush_group"
-      else
-        return proxied_options[key]
+      if key == "__lush" then
+        return {
+          group_name = group_name,
+          type = "lush_group"
+        }
       end
     end,
 
-    __call = function()
-      -- return proxied options, but also guard against those
-      -- options being called, which implies a redefinition attempt error
-      return setmetatable(proxied_options, {
-        -- attempt to redefine group
-        __call = resolves_as_error(parser_error.group_redefined({on = group_name}))
-      })
+    -- a group should only be defined once, so any attempt to recall or redefine
+    -- a group is an error.
+    __call = function(table)
+      if was_called_once == false then
+        was_called_once = true
+        return table
+      else
+        return resolves_as_error(parser_error.group_redefined({on = group_name}))()
+      end
     end
   })
 end
 
 local enforce_no_circular_self_inherit = function(name, opts)
-  local link, kind = unpack(opts[1])
-  if name == link.__name then
+  local link, _kind = unpack(opts[1])
+  if name == link.__lush.group_name then
     return parser_error.circular_self_inherit({on = name})
   end
 end
@@ -201,7 +198,7 @@ end
 local enforce_no_placeholder_inherit = function(name, opts)
   local link, kind = unpack(opts[1])
   if is_placeholder_group(kind) then
-    return parser_error.invalid_parent({on = name, missing = link.__name})
+    return parser_error.invalid_parent({on = name, missing = link.__lush.group_name})
   end
 end
 
@@ -215,7 +212,7 @@ local create_inherit_group = function(group_name, group_options)
 
   -- merge values from parent if not present in child
   local merged = {}
-  local link, kind = unpack(group_options[1])
+  local link, _kind = unpack(group_options[1])
   for _, key in ipairs(allowed_option_keys()) do
     local tuple = group_options[key]
     if tuple then
@@ -230,8 +227,8 @@ end
 
 
 local enforce_no_circular_self_link = function(name, opts)
-  local link, kind = unpack(opts[1])
-  if name == link.__name then
+  local link, _kind = unpack(opts[1])
+  if name == link.__lush.group_name then
     return parser_error.circular_self_link({on = name})
   end
 end
@@ -239,7 +236,7 @@ end
 local enforce_no_placeholder_link = function(name, opts)
   local link, kind = unpack(opts[1])
   if is_placeholder_group(kind) then
-    return parser_error.invalid_link_name({on = name, link_name = link.__name})
+    return parser_error.invalid_link_name({on = name, link_name = link.__lush.group_name})
   end
 end
 
@@ -253,22 +250,26 @@ local create_link_group = function(group_name, group_options)
   local err = enforce(enforcements, group_name, group_options)
   if err then return resolves_as_error(err) end
 
-  local link_to, kind = unpack(group_options[1])
-  return setmetatable({}, {
+  local link_to, _kind = unpack(group_options[1])
+
+  local public_properties = {
+    link = link_to.__lush.group_name,
+  }
+
+  return setmetatable(public_properties, {
     __index = function(_, key)
-      if key == "__name" then
-        return group_name
-      elseif key == "__type" then
-        return "lush_group_link"
+      if key == "__lush" then
+        return {
+          group_name = group_name,
+          link_to = link_to.__lush.group_name,
+          type = "lush_group_link"
+        }
       else
-        -- proxy
         return link_to[key]
       end
-    end,
-    __call = function()
-      return {
-        link = link_to.__name
-      }
+    end, 
+    __call = function(table)
+      return table
     end
   })
 end
@@ -277,35 +278,58 @@ local create_group = function(group_type, group_name, group_options)
   if group_type == "group" then return create_direct_group(group_name, group_options) end
   if group_type == "inherit" then return create_inherit_group(group_name, group_options) end
   if group_type == "link" then return create_link_group(group_name, group_options) end
-  return nil, "unknow_group_type"
+  return nil, "unknown_group_type"
 end
 
+
+-- TODO refactor this ugly nesting
 local infer_group_type = function(group_def)
+  local is_direct = false
+  local is_link = false
+  local is_inherit = false
+
   if #group_def == 0 then
     -- { fg = val, ... } -> group with group_def
-    return "group"
+    is_direct = true
+
   elseif #group_def == 1 then
-    -- #group_def == 1, link to group or inherit
+    -- #group_def == 1, link to group, inherit or external (acts as inherit)
     -- { group, fg = val } -> inherit from group, OR
+    -- { ext.group }, -> external link, but acts as inherit
     -- { group }, -> link
+
+    -- group def didn't have a __lush key, so it is a new group and
+    -- we actually have to do some work to sniff the typing
     local opts_is_map = false
     for k,_ in pairs(group_def) do
       if type(k) ~= "number" then opts_is_map = true end
     end
     if opts_is_map then
-      -- group has a numberical index (because # == 1)
+      -- group has a numeric index (because # == 1)
       -- but also has non-numeric keys, so we're inheriting
-      return "inherit"
+      -- Group { Base, fg: "..." }
+      -- _name { 1, non_numeric... }
+      -- Group { ext.Base, fg: "..." }
+      -- _name { 1, non_numeric... }
+      is_inherit = true
     else
-      return "link"
+      is_link = true
+      -- Group { Link }
+      -- _name { 1 = fn -> {fg.., __type: } }
     end
-  else
-    return nil, "unknown_options"
   end
+
+  if is_direct then return "group" end
+  -- if is_external and is_inherit then return "inherit_external" end
+  -- if is_external and is_link then return "link_external" end
+  if is_link then return "link" end
+  -- TODO: inherit -> extend
+  if is_inherit then return "inherit" end
+
+  return nil, "failure_to_infer_group_type"
 end
 
-
-local parse = function(lush_spec_fn, options)
+local parse = function(lush_spec_fn, _parser_options)
   if type(lush_spec_fn) ~= "function" then
     error(parser_error.malformed_lush_spec({on = "spec"}))
   end
@@ -333,11 +357,12 @@ local parse = function(lush_spec_fn, options)
           -- for now it happens here.
           enforce_generic_one_parent,
         }
+        local group = group_placeholder
         local err = enforce(enforcements, group_name, group_def)
         if err then return resolves_as_error(err) end
 
         local group_type = infer_group_type(group_def)
-        -- not implemented, validatins done in wrap_<type>
+        -- not implemented, validations done in wrap_<type>
         -- local _, err = enforce_group_type(type, group_def)
 
         -- If a value is in the lush_spec_env, it's a group def,
@@ -350,8 +375,8 @@ local parse = function(lush_spec_fn, options)
         for _, key in ipairs(allowed_option_keys()) do
           local val = group_def[key]
           if val then
-            local is_group = group_lookup[val]
-            local tuple = {val, is_group and val.__type or type(val)}
+            local is_a_group = group_lookup[val]
+            local tuple = {val, is_a_group and val.__lush.type or type(val)}
             protected[key] = tuple
           end
         end
@@ -360,13 +385,13 @@ local parse = function(lush_spec_fn, options)
         -- the allowed options check for ease of use elsewhere.
         if group_def[1] and (group_type == "inherit" or group_type == "link") then
           local val = group_def[1]
-          local is_group = group_lookup[val]
-          local tuple = {val, is_group and val.__type or type(val)}
+          local is_a_group = group_lookup[val]
+          local tuple = {val, is_a_group and val.__lush.type or type(val)}
           protected[1] = tuple
         end
 
         -- wrap group in group or link handler
-        local group, err = create_group(group_type, group_name, protected)
+        group, err = create_group(group_type, group_name, protected)
         if err then
           -- TODO: this could be nicer, technically we should fail before
           --       its possible to get fail group_type inference but ...
@@ -386,17 +411,18 @@ local parse = function(lush_spec_fn, options)
         return group
       end
 
-      -- This placeholder will sit in the env until we call it, which will 
+      -- This placeholder will sit in the env until we call it, which will
       -- replace the placeholder with the true group.
-      -- Mostly this is useful for error detection, because in correct practice, 
+      -- Mostly this is useful for error detection, because in correct practice,
       -- you will immediately call the placeholder after creation.
       local group_placeholder = setmetatable({}, {
         __call = define_group,
         __index = function(_, key)
-          if key == "__name" then
-            return group_name
-          elseif key == "__type" then
-            return "lush_group_placeholder"
+          if key == "__lush" then
+            return {
+              group_name = group_name,
+              type = "lush_group_placeholder"
+            }
           else
             return nil
           end
@@ -432,14 +458,17 @@ local parse = function(lush_spec_fn, options)
     end
   })
 
+
+
   for _, group in ipairs(spec) do
     -- attempt to resolve group
     --local ast, e = resolve_group_bindings(group)
     local ast, e = group()
     if e then error(e) end
 
-    parsed[group.__name] = ast
+    parsed[group.__lush.group_name] = ast
   end
+
 
   return parsed
 end
