@@ -16,6 +16,7 @@ local known_codes = {
     malformed_lush_spec = "malformed_lush_spec",
     invalid_group_name = "invalid_group_name",
     could_not_infer_group_type = "could_not_infer_group_type",
+    target_not_lush_type = "target_not_lush_type",
 }
 
 local message_for_code = function(code)
@@ -66,6 +67,9 @@ local message_for_code = function(code)
     end,
     malformed_lush_spec = function(context)
       return "Malformed lush-spec, unrecoverable"
+    end,
+    target_not_lush_type = function(context)
+      return "Target in '" .. context.on .. "' not a lush type, was '" .. context.type .. "'"
     end,
     invalid_group_name = function(context)
       return "Invalid group name '" .. context.on .. "', names must " .. 

@@ -29,6 +29,10 @@ local is_concrete_group = function(kind)
   return kind == "lush_group"
 end
 
+local is_lush_type = function(value)
+  return value and type(value) == "table" and value.__lush
+end
+
 local enforce_generic_group_name = function(name, opts)
   if not string.match(name, "^[a-zA-Z]") or
      string.match(name, "^ALL$") or
@@ -50,6 +54,13 @@ end
 local enforce_generic_one_parent = function(name, opts)
   if #opts > 1 then
     return parser_error.too_many_parents({on = name})
+  end
+end
+
+local enforce_target_is_lush_type = function(name, opts)
+  local target, kind = unpack(opts[1])
+  if not is_lush_type(target) then
+    return parser_error.target_not_lush_type({on = name, type = kind})
   end
 end
 
@@ -204,6 +215,7 @@ end
 
 local create_inherit_group = function(group_name, group_options)
   local enforcements = {
+    enforce_target_is_lush_type,
     enforce_no_circular_self_inherit,
     enforce_no_placeholder_inherit,
   }
@@ -244,6 +256,7 @@ end
 -- or when called, link descriptor
 local create_link_group = function(group_name, group_options)
   local enforcements = {
+    enforce_target_is_lush_type,
     enforce_no_circular_self_link,
     enforce_no_placeholder_link
   }
@@ -439,7 +452,9 @@ local parse = function(lush_spec_fn, _parser_options)
 
   -- generate spec
   local spec = lush_spec_fn()
-  if not spec then error(parser_error.malformed_lush_spec({on = "spec"})) end
+  if not spec or type(spec) ~= "table" then
+    error(parser_error.malformed_lush_spec({on = "spec"}))
+  end
 
   -- we will return the spec in a normalized form
   local parsed = setmetatable({}, {
