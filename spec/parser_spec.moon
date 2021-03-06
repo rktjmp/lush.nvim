@@ -205,11 +205,14 @@ describe "parser", ->
     assert.matches("X", error.on)
     assert.matches("Z", error.msg)
 
-  it "protects __name", ->
+  it "protects __lush", ->
     parsed = parse -> {
-      A { bg: "a_bg", fg: "a_fg", __name: "failure" },
+      A { bg: "a_bg", fg: "a_fg", __lush: "failure" },
     }
-    assert.nil(parsed.A.__name)
+    -- __lush will exist
+    assert.not_nil(parsed.A.__lush)
+    -- but wont be what we tried to set
+    assert.not.is_string(parsed.A.__lush)
 
   it "defines __type meta key", ->
     s = parse -> {

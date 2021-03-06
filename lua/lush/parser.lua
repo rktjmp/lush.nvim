@@ -282,7 +282,6 @@ local create_group = function(group_type, group_name, group_options)
 end
 
 
--- TODO refactor this ugly nesting
 local infer_group_type = function(group_def)
   local is_direct = false
   local is_link = false
@@ -291,7 +290,6 @@ local infer_group_type = function(group_def)
   if #group_def == 0 then
     -- { fg = val, ... } -> group with group_def
     is_direct = true
-
   elseif #group_def == 1 then
     -- #group_def == 1, link to group, inherit or external (acts as inherit)
     -- { group, fg = val } -> inherit from group, OR
@@ -320,12 +318,10 @@ local infer_group_type = function(group_def)
   end
 
   if is_direct then return "group" end
-  -- if is_external and is_inherit then return "inherit_external" end
-  -- if is_external and is_link then return "link_external" end
   if is_link then return "link" end
-  -- TODO: inherit -> extend
   if is_inherit then return "inherit" end
 
+  -- no type, error code
   return nil, "failure_to_infer_group_type"
 end
 
