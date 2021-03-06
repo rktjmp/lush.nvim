@@ -338,15 +338,40 @@ local infer_group_type = function(group_def)
   return nil, "failure_to_infer_group_type"
 end
 
-local parse = function(lush_spec_fn, _parser_options)
+local parse = function(lush_spec_fn, parser_options)
+  if parser_options and type(parser_options) ~= "table" then
+    -- TODO: bad options error
+    error(parser_error.malformed_lush_spec({on = "spec"}))
+  end
+
   if type(lush_spec_fn) ~= "function" then
     error(parser_error.malformed_lush_spec({on = "spec"}))
   end
+
+  parser_options = parser_options or {}
+  parser_options.extends = parser_options.extends or {}
+  -- TODO: need to check __lush.type == "parsed_lush_spec"
 
   local group_lookup = {}
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
     __index = function(lush_spec_env, group_name)
+
+    -- it's more natural to specify the extension chain from
+    -- parent to child ({base, ext, ext,...}) but we want to
+    -- use the last given value when we look up a group
+    -- so reverse the given list.
+    local r_extends_from = {}
+    for _, parent in ipairs(parser_options.extends) do
+      table.insert(r_extends_from, 1, parent)
+    end
+      for _, parent in ipairs(r_extends_from) do
+        for parent_name, parent_def in pairs(parent) do
+          if group_name == parent_name then
+            return parent_def
+          end
+        end
+      end
 
       -- attempted to access an unknown group name
       -- We will provide an table which can be queried for it's type
@@ -471,7 +496,13 @@ local parse = function(lush_spec_fn, _parser_options)
     end
   })
 
-
+  -- run any parents into the parsed spec
+  -- then apply the current spc
+  for _, parent in ipairs(parser_options.extends) do
+    for group_name, group_def in pairs(parent) do
+      parsed[group_name] = group_def
+    end
+  end
 
   for _, group in ipairs(spec) do
     -- attempt to resolve group
@@ -481,7 +512,6 @@ local parse = function(lush_spec_fn, _parser_options)
 
     parsed[group.__lush.group_name] = ast
   end
-
 
   return parsed
 end
