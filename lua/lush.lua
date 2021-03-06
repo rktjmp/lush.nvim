@@ -41,8 +41,8 @@ M.ify = function(options)
 end
 
 -- spec -> table
-M.parse = function(spec)
-  return parser(spec)
+M.parse = function(spec, options)
+  return parser(spec, options)
 end
 
 -- table -> table
@@ -87,8 +87,8 @@ end
 
 -- given a spec function, generate a parsed spec
 -- (spec, table) -> table
-local easy_spec = function(spec)
-  local parsed = M.parse(spec)
+local easy_spec = function(spec, options)
+  local parsed = M.parse(spec, options)
   -- return parsed spec for use with externals
   return parsed
 end
@@ -122,7 +122,7 @@ local function detect_easy(spec_or_parsed, options)
   -- specs are functions
   if type(spec_or_parsed) == "function" then
     local spec = spec_or_parsed
-    return easy_spec(spec)
+    return easy_spec(spec, options)
   -- parsed specs are tables
   elseif type(spec_or_parsed) == "table" and
          spec_or_parsed.__lush and
@@ -134,10 +134,38 @@ local function detect_easy(spec_or_parsed, options)
   end
 end
 
+M.extend = function(...)
+
+  local parents = {}
+
+  local with = function(spec, options)
+    options = options or {}
+    options.extends = parents
+    return M.parse(spec, options)
+  end
+
+  local chain = function(...)
+    for _, parent in ipairs({...}) do
+      table.insert(parents, parent)
+    end
+    return {
+      extend = chain,
+      with = with
+    }
+  end
+
+  chain(...)
+
+  return {
+     extend = chain,
+     with = with
+  }
+end
+
 -- delegate __call to detect_easy for DX QOL.
 return setmetatable(M, {
   __call = function(m, ...)
     local fn, opts = ...
     return detect_easy(fn, opts)
-  end
+  end,
 })
