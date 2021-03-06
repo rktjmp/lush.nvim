@@ -16,7 +16,9 @@ describe "parser", ->
       -> parse(""),
       -> parse(1,2,3,4,5),
       -> parse({})
+      -> parse(-> A { fg: 1, 1 })
     }
+
     for bad in *bads
       e = assert.error(bad)
       assert.matches("malformed_lush_spec", e.code)
