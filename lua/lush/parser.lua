@@ -193,7 +193,7 @@ local create_direct_group = function(group_name, group_options)
         was_called_once = true
         return table
       else
-        return resolves_as_error(parser_error.group_redefined({on = group_name}))()
+        return nil, parser_error.group_redefined({on = group_name})
       end
     end
   })
@@ -339,18 +339,34 @@ local infer_group_type = function(group_def)
 end
 
 local parse = function(lush_spec_fn, parser_options)
-  if parser_options and type(parser_options) ~= "table" then
-    -- TODO: bad options error
-    error(parser_error.malformed_lush_spec({on = "spec"}))
-  end
-
   if type(lush_spec_fn) ~= "function" then
     error(parser_error.malformed_lush_spec({on = "spec"}))
   end
 
+  if parser_options and type(parser_options) ~= "table" then
+    error(parser_error.malformed_lush_spec_options({on = "spec_options"}))
+  end
+
   parser_options = parser_options or {}
   parser_options.extends = parser_options.extends or {}
-  -- TODO: need to check __lush.type == "parsed_lush_spec"
+
+  if type(parser_options.extends) ~= "table" then
+    error(parser_error.malformed_lush_spec_extends_option({type = type(parser_options.extends)}))
+  end
+
+  for k, parent in pairs(parser_options.extends) do
+    -- must be ordered list, non numeric key is fail
+    if type(k) ~= "number" then
+      error(parser_error.malformed_lush_spec_extends_option({type = "non-ordered-list"}))
+    end
+
+    -- must be a parsed_lush_spec
+    if type(parent) ~= "table" or
+       parent.__lush == nil or
+       parent.__lush.type ~= "parsed_lush_spec" then
+      error(parser_error.malformed_lush_spec_extends_option({type = type(parent)}))
+    end
+  end
 
   local group_lookup = {}
   setfenv(lush_spec_fn, setmetatable({}, {
