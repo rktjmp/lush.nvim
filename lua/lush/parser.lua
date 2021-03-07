@@ -368,6 +368,11 @@ local parse = function(lush_spec_fn, parser_options)
     end
   end
 
+  local r_extends_from = {}
+  for _, parent in ipairs(parser_options.extends) do
+    table.insert(r_extends_from, 1, parent)
+  end
+
   local group_lookup = {}
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
@@ -377,17 +382,6 @@ local parse = function(lush_spec_fn, parser_options)
     -- parent to child ({base, ext, ext,...}) but we want to
     -- use the last given value when we look up a group
     -- so reverse the given list.
-    local r_extends_from = {}
-    for _, parent in ipairs(parser_options.extends) do
-      table.insert(r_extends_from, 1, parent)
-    end
-      for _, parent in ipairs(r_extends_from) do
-        for parent_name, parent_def in pairs(parent) do
-          if group_name == parent_name then
-            return parent_def
-          end
-        end
-      end
 
       -- attempted to access an unknown group name
       -- We will provide an table which can be queried for it's type
@@ -436,6 +430,17 @@ local parse = function(lush_spec_fn, parser_options)
         if group_def[1] and (group_type == "inherit" or group_type == "link") then
           local val = group_def[1]
           local is_a_group = group_lookup[val]
+
+          if is_placeholder_group(val.__lush.type) then
+            for _, parent in ipairs(r_extends_from) do
+              for parent_name, parent_def in pairs(parent) do
+                if val.__lush.group_name == parent_name then
+                  val = parent_def
+                end
+              end
+            end
+          end
+
           local tuple = {val, is_a_group and val.__lush.type or type(val)}
           protected[1] = tuple
         end
