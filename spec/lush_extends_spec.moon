@@ -17,7 +17,7 @@ describe "lush", ->
       A { fg: "a_fg" }
     })
 
-    child = lush.extend(parent).with(-> { B { A } })
+    child = lush.extends(parent).with(-> { B { A } })
     assert.is_equal(child.B.fg, parent.A.fg)
 
   it "can chain extends", ->
@@ -28,12 +28,12 @@ describe "lush", ->
       C { fg: "c_fg" }
     })
 
-    child = lush.extend(parent).extend(other).with(-> { B { A } })
+    child = lush.extends(parent).extends(other).with(-> { B { A } })
     assert.is_equal(child.B.fg, parent.A.fg)
     assert.is_equal(child.C.fg, other.C.fg)
 
-    child = lush.extend(parent)
-    child.extend(other)
+    child = lush.extends(parent)
+    child.extends(other)
     child = child.with(-> { B { A } })
 
     assert.is_equal(child.B.fg, parent.A.fg)
@@ -47,10 +47,10 @@ describe "lush", ->
       C { fg: "c_fg" }
     })
 
-    child = lush.extend(parent, other).with(-> { B { A } })
+    child = lush.extends(parent, other).with(-> { B { A } })
     assert.is_equal(child.B.fg, parent.A.fg)
     assert.is_equal(child.C.fg, other.C.fg)
 
-    child = lush.extend(unpack({parent, other})).with(-> { B { A } })
+    child = lush.extends(unpack({parent, other})).with(-> { B { A } })
     assert.is_equal(child.B.fg, parent.A.fg)
     assert.is_equal(child.C.fg, other.C.fg)
