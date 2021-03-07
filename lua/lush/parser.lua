@@ -365,11 +365,6 @@ local parse = function(lush_spec_fn, parser_options)
     -- Lua only calls __index if the key doesn't already exist.
     __index = function(lush_spec_env, group_name)
 
-    -- it's more natural to specify the extension chain from
-    -- parent to child ({base, ext, ext,...}) but we want to
-    -- use the last given value when we look up a group
-    -- so reverse the given list.
-
       -- attempted to access an unknown group name
       -- We will provide an table which can be queried for it's type
       -- (undefined_group), and name (group_name), and may be
