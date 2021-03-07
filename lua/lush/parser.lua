@@ -199,13 +199,6 @@ local create_direct_group = function(group_name, group_options)
   })
 end
 
-local enforce_no_circular_self_inherit = function(name, opts)
-  local link, _kind = unpack(opts[1])
-  if name == link.__lush.group_name then
-    return parser_error.circular_self_inherit({on = name})
-  end
-end
-
 local enforce_no_placeholder_inherit = function(name, opts)
   local link, kind = unpack(opts[1])
   if is_placeholder_group(kind) then
@@ -216,7 +209,6 @@ end
 local create_inherit_group = function(group_name, group_options)
   local enforcements = {
     enforce_target_is_lush_type,
-    enforce_no_circular_self_inherit,
     enforce_no_placeholder_inherit,
   }
   local err = enforce(enforcements, group_name, group_options)

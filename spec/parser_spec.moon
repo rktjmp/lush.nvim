@@ -282,13 +282,18 @@ describe "parser", ->
       assert.equals("italic", parsed.B.gui)
       assert.equals("b_bg", parsed.B.bg)
 
-    it "detects self reference", ->
-      e = assert.error(-> parse -> {
-        A { bg: "a_bg" },
-        B { B, gui: "italic" },
-      })
-      assert.matches("circular_self_inherit", e.code)
-      assert.not.matches("No message avaliable", e.msg)
+    -- 2021-03-07-1505
+    -- circular_self_reference now allowed to support
+    -- A { parent.A, fg = ... } extensions
+    -- invalid self references are still caught
+    -- by invalid_parent or group_redefined
+    -- it "detects self reference", ->
+    --   e = assert.error(-> parse -> {
+    --     A { bg: "a_bg" },
+    --     B { B, gui: "italic" },
+    --   })
+    --   assert.matches("circular_self_inherit", e.code)
+    --   assert.not.matches("No message avaliable", e.msg)
 
     it "detects invalid references", ->
       e = assert.error(-> parse -> {

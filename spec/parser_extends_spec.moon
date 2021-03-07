@@ -151,6 +151,22 @@ describe "lush", ->
     assert.is_equal(child.B.bg, "b_bg")
     assert.is_equal(child.B.fg, "a_fg")
 
+  it "can group inherit self from an extended group", ->
+    parent_spec = -> {
+      A { bg: "a_bg" , fg: "a_fg" },
+    }
+    parent = parse(parent_spec)
+
+    child_spec = -> {
+      A { parent.A, bg: "b_bg" }
+    }
+    child = parse(child_spec, {extends: {parent}})
+
+    assert.not_nil(child)
+    assert.is_not_nil(child.A)
+    assert.is_equal(child.A.bg, "b_bg")
+    assert.is_equal(child.A.fg, "a_fg")
+
   it "chain link", ->
     base = parse -> {
       A { bg: "a_bg" , fg: "a_fg" },
