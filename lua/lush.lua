@@ -134,7 +134,11 @@ local function detect_easy(spec_or_parsed, options)
   end
 end
 
-M.extend = function(...)
+M.extends = function(...)
+
+  -- extends chaining isn't hygenic, any call to extends modifys the parents
+  -- list, which is a huge hole for bugs. Either each call to extends needs
+  -- it's own parents list or chaining should be disabled.
 
   local parents = {}
 
@@ -149,7 +153,7 @@ M.extend = function(...)
       table.insert(parents, parent)
     end
     return {
-      extend = chain,
+      extends = chain,
       with = with
     }
   end
@@ -157,7 +161,7 @@ M.extend = function(...)
   chain(...)
 
   return {
-     extend = chain,
+     extends = chain,
      with = with
   }
 end
