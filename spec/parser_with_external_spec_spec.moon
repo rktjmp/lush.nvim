@@ -1,12 +1,25 @@
 describe "lush", ->
-  lush = require('lush')
+  parse = require('lush').parse
+
+  it "self link will error", ->
+    base_spec = -> {
+      Comment { fg: "red" }
+    }
+    base = parse(base_spec)
+
+    my_spec = -> {
+      Comment { base.Comment }
+    }
+    e = assert.has_error(-> parse(my_spec))
+    assert.matches("circular_self_link", e.code)
+    assert.not.matches("No message avaliable", e.msg)
 
   it "can chain through external specs", ->
     base_spec = -> {
       A { bg: "a_bg" , fg: "a_fg" },
       Z { A },
     }
-    base = lush(base_spec)
+    base = parse(base_spec)
 
     another_spec = -> {
       B { fg: base.A.fg }, -- direct prop
@@ -15,7 +28,7 @@ describe "lush", ->
       E { base.Z }, -- multi-interection link though external link
       F { base.Z, bg: "f_bg" }
     }
-    another = lush(another_spec)
+    another = parse(another_spec)
 
     -- spec doesn't die
     assert.not_nil(another)
