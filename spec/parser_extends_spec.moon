@@ -37,7 +37,7 @@ describe "lush", ->
     parent = parse(parent_spec)
 
     child_spec = -> {
-      B { fg: A.fg, bg: "b_bg"}
+      B { fg: parent.A.fg, bg: "b_bg"}
     }
     child = parse(child_spec, {extends: {parent}})
 
@@ -66,29 +66,32 @@ describe "lush", ->
     assert.is_equal(child.B.fg, "base_2_b_fg")
     assert.is_nil(child.B.bg) -- B was redefined, so bg should be nil
 
-  it "performs lookup from last to first", ->
-    base = parse -> {
-      A { bg: "a_bg" , fg: "a_fg" },
-      B { bg: "b_bg", fg: "b_fg" } -- should not end up in final spec
-    }
+  -- 2021-03-07-1420
+  -- no longer performs automatic lookup
+  --
+  -- it "performs lookup from last to first", ->
+  --   base = parse -> {
+  --     A { bg: "a_bg" , fg: "a_fg" },
+  --     B { bg: "b_bg", fg: "b_fg" } -- should not end up in final spec
+  --   }
 
-    base_2 = parse -> {
-      B { fg: "base_2_b_fg" } -- should overwrite base
-    }
+  --   base_2 = parse -> {
+  --     B { fg: "base_2_b_fg" } -- should overwrite base
+  --   }
 
-    child_spec = -> {
-      B { B }
-    }
-    child = parse(child_spec, {extends: {base, base_2}})
+  --   child_spec = -> {
+  --     C { B }
+  --   }
+  --   child = parse(child_spec, {extends: {base, base_2}})
 
-    -- should prefer base_2 values
-    assert.is_equal(child.B.fg, "base_2_b_fg")
-    assert.is_nil(child.B.bg) -- B was redefined, so bg should be nil
+  --   -- should prefer base_2 values
+  --   assert.is_equal(child.C.fg, "base_2_b_fg")
+  --   assert.is_nil(child.C.bg) -- B was redefined, so bg should be nil
 
-    -- should prefer base values
-    child = parse(child_spec, {extends: {base_2, base}})
-    assert.is_equal(child.B.fg, "b_fg")
-    assert.is_equal(child.B.bg, "b_bg")
+  --   -- should prefer base values
+  --   child = parse(child_spec, {extends: {base_2, base}})
+  --   assert.is_equal(child.C.fg, "b_fg")
+  --   assert.is_equal(child.C.bg, "b_bg")
 
   it "can chain extends", ->
     base = parse -> {
@@ -96,12 +99,12 @@ describe "lush", ->
     }
 
     base_2 = parse((-> {
-      B { bg: "b_bg", fg: A.fg },
+      B { bg: "b_bg", fg: base.A.fg },
       C { bg: "c_bg" }
     }), {extends: {base}})
 
     base_3 = parse((-> {
-      D { bg: A.bg, fg: B.fg },
+      D { bg: base_2.A.bg, fg: base_2.B.fg },
       Z { bg: "z_bg" }
     }), {extends: {base_2}})
 
@@ -119,7 +122,7 @@ describe "lush", ->
     parent = parse(parent_spec)
 
     child_spec = -> {
-      B { A }
+      B { parent.A }
     }
     child = parse(child_spec, {extends: {parent}})
 
@@ -137,7 +140,7 @@ describe "lush", ->
     parent = parse(parent_spec)
 
     child_spec = -> {
-      B { A, bg: "b_bg" }
+      B { parent.A, bg: "b_bg" }
     }
     child = parse(child_spec, {extends: {parent}})
 
@@ -154,12 +157,12 @@ describe "lush", ->
     }
 
     base_2 = parse((-> {
-      B { A }
+      B { base.A }
     }), {extends: {base}})
 
     base_3 = parse((-> {
-      C { B }
-      Z { A }
+      C { base_2.B }
+      Z { base_2.A }
     }), {extends: {base_2}})
 
     assert.is_equal(base_3.A.fg, "a_fg")
@@ -170,3 +173,21 @@ describe "lush", ->
     assert.is_equal(base_3.C.bg, "a_bg")
     assert.is_equal(base_3.Z.fg, "a_fg")
     assert.is_equal(base_3.Z.bg, "a_bg")
+
+  it "can handle a complex case", ->
+    base = parse -> {
+      A { bg: "a_bg" , fg: "a_fg" },
+      Y { A },
+      Z { bg: "z_bg", fg: "z_fg" }
+    }
+
+    base_2 = parse((-> {
+      A { fg: base.A.bg },
+      B { bg: "arst", fg: "rsast" }
+      O { base.Y },
+      X { base.Z, fg: "x_z_fg" }
+    }), {extends: {base}})
+
+    assert.is_equal(base_2.O.bg, "a_bg")
+    assert.is_equal(base_2.X.bg, "z_bg")
+    assert.is_equal(base_2.X.fg, "x_z_fg")

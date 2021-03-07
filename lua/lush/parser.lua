@@ -368,11 +368,6 @@ local parse = function(lush_spec_fn, parser_options)
     end
   end
 
-  local r_extends_from = {}
-  for _, parent in ipairs(parser_options.extends) do
-    table.insert(r_extends_from, 1, parent)
-  end
-
   local group_lookup = {}
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
@@ -430,17 +425,6 @@ local parse = function(lush_spec_fn, parser_options)
         if group_def[1] and (group_type == "inherit" or group_type == "link") then
           local val = group_def[1]
           local is_a_group = group_lookup[val]
-
-          if is_placeholder_group(val.__lush.type) then
-            for _, parent in ipairs(r_extends_from) do
-              for parent_name, parent_def in pairs(parent) do
-                if val.__lush.group_name == parent_name then
-                  val = parent_def
-                end
-              end
-            end
-          end
-
           local tuple = {val, is_a_group and val.__lush.type or type(val)}
           protected[1] = tuple
         end
@@ -518,7 +502,7 @@ local parse = function(lush_spec_fn, parser_options)
   })
 
   -- run any parents into the parsed spec
-  -- then apply the current spc
+  -- then apply the current spec over the top
   for _, parent in ipairs(parser_options.extends) do
     for group_name, group_def in pairs(parent) do
       parsed[group_name] = group_def
