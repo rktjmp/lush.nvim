@@ -169,21 +169,35 @@ local theme = lush(function()
     -- These groups are for the native LSP client. Some other LSP clients may use
     -- these groups, or use their own. Consult your LSP client's documentation.
 
-    -- LspDiagnosticsError               { }, -- used for "Error" diagnostic virtual text
-    -- LspDiagnosticsErrorSign           { }, -- used for "Error" diagnostic signs in sign column
-    -- LspDiagnosticsErrorFloating       { }, -- used for "Error" diagnostic messages in the diagnostics float
-    -- LspDiagnosticsWarning             { }, -- used for "Warning" diagnostic virtual text
-    -- LspDiagnosticsWarningSign         { }, -- used for "Warning" diagnostic signs in sign column
-    -- LspDiagnosticsWarningFloating     { }, -- used for "Warning" diagnostic messages in the diagnostics float
-    -- LspDiagnosticsInformation         { }, -- used for "Information" diagnostic virtual text
-    -- LspDiagnosticsInformationSign     { }, -- used for "Information" signs in sign column
-    -- LspDiagnosticsInformationFloating { }, -- used for "Information" diagnostic messages in the diagnostics float
-    -- LspDiagnosticsHint                { }, -- used for "Hint" diagnostic virtual text
-    -- LspDiagnosticsHintSign            { }, -- used for "Hint" diagnostic signs in sign column
-    -- LspDiagnosticsHintFloating        { }, -- used for "Hint" diagnostic messages in the diagnostics float
-    -- LspReferenceText                  { }, -- used for highlighting "text" references
-    -- LspReferenceRead                  { }, -- used for highlighting "read" references
-    -- LspReferenceWrite                 { }, -- used for highlighting "write" references
+    -- LspReferenceText                    { }; -- used for highlighting "text" references
+    -- LspReferenceRead                    { }; -- used for highlighting "read" references
+    -- LspReferenceWrite                   { }; -- used for highlighting "write" references
+
+    --LspDiagnosticsDefaultError           { }; -- Used as the base highlight group. Other LspDiagnostic highlights link to this by default (except Underline)
+    --LspDiagnosticsDefaultWarning         { }; -- Used as the base highlight group. Other LspDiagnostic highlights link to this by default (except Underline)
+    --LspDiagnosticsDefaultInformation     { }; -- Used as the base highlight group. Other LspDiagnostic highlights link to this by default (except Underline)
+    --LspDiagnosticsDefaultHint            { }; -- Used as the base highlight group. Other LspDiagnostic highlights link to this by default (except Underline)
+
+    --LspDiagnosticsVirtualTextError       { }; -- Used for "Error" diagnostic virtual text
+    --LspDiagnosticsVirtualTextWarning     { }; -- Used for "Warning" diagnostic virtual text
+    --LspDiagnosticsVirtualTextInformation { }; -- Used for "Information" diagnostic virtual text
+    --LspDiagnosticsVirtualTextHint        { }; -- Used for "Hint" diagnostic virtual text
+
+    --LspDiagnosticsUnderlineError         { }; -- Used to underline "Error" diagnostics
+    --LspDiagnosticsUnderlineWarning       { }; -- Used to underline "Warning" diagnostics
+    --LspDiagnsticsUnderlineInformation    { }; -- Used to underline "Information" diagnostics
+    --LspDiagnosticsUnderlineHint          { }; -- Used to underline "Hint" diagnostics
+
+    --LspDiagnosticsFloatingError          { }; -- Used to color "Error" diagnostic messages in diagnostics float
+    --LspDiagnosticsFloatingWarning        { }; -- Used to color "Warning" diagnostic messages in diagnostics float
+    --LspDiagnosticsFloatingInformation    { }; -- Used to color "Information" diagnostic messages in diagnostics float
+    --LspDiagnosticsFloatingHint           { }; -- Used to color "Hint" diagnostic messages in diagnostics float
+
+    --LspDiagnosticsSignError              { }; -- Used for "Error" signs in sign column
+    --LspDiagnosticsSignWarning            { }; -- Used for "Warning" signs in sign column
+    --LspDiagnosticsSignInformation        { }; -- Used for "Information" signs in sign column
+    --LspDiagnosticsSignHint               { }; -- Used for "Hint" signs in sign column
+
 
     -- These groups are for the neovim tree-sitter highlights.
     -- As of writing, tree-sitter support is a WIP, group names may change.
