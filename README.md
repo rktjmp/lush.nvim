@@ -234,6 +234,41 @@ Apply:   3065300 ns  3.0653 ms
 Total:   4179300 ns  4.1793 ms
 ```
 
+See also [issue #19](https://github.com/rktjmp/lush.nvim/issues/19), where
+1000, 2000 and 4000 rule specs were tested. VimL is stll consistently the
+bottleneck.
+
+Note that a 1000 rule spec is likely pretty unsual. There are only about 150
+base groups provided by Neovim and most plugins only provide another 5-10 (or
+less).
+
+A 4k rule spec would probably mean you're loading an enourmous number of
+plugins, at which point your load times are probably also already enormous.
+
+Also as per the issue, since VimL is such a huge bottleneck, you may find
+similarly sized colorschemes actually load *faster* via Lush because any maths
+and manipulation is done via Lua instead.
+
+```
+1k rules
+--------
+parse time:    4095342 ns,  4.095342 ms
+compile time:   863515 ns,  0.863515 ms
+apply time:   13150290 ns, 13.150290 ms
+
+2k rules
+--------
+parse time:    8310824 ns,  8.310824 ms
+compile time:  1791501 ns,  1.791501 ms
+apply time:   34649903 ns, 34.649903 ms
+
+4k rules
+--------
+parse time:   15170685 ns, 15.170685 ms
+compile time:  6865722 ns,  6.865722 ms
+apply time:   82630480 ns, 82.630480 ms
+```
+
 See Also
 --------
 
