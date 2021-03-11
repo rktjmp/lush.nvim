@@ -75,6 +75,9 @@ Then run the setup script:
 
 ```sh
 sh << "EOF"
+  git reset --soft 9069669
+  git add .
+  git commit --amend --no-edit
   LUSH_NAME=$(basename $(pwd))
   GIT_NAME=$(git config user.name)
   YEAR=$(date +"%Y")
