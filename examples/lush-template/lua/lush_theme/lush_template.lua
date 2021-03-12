@@ -169,8 +169,9 @@ local theme = lush(function()
 
     -- Todo           { }, -- (preferred) anything that needs extra attention; mostly the keywords TODO FIXME and XXX
 
-    -- These groups are for the native LSP client. Some other LSP clients may use
-    -- these groups, or use their own. Consult your LSP client's documentation.
+    -- These groups are for the native LSP client. Some other LSP clients may
+    -- use these groups, or use their own. Consult your LSP client's
+    -- documentation.
 
     -- LspReferenceText                     { }, -- used for highlighting "text" references
     -- LspReferenceRead                     { }, -- used for highlighting "read" references
