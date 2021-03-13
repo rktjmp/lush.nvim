@@ -134,37 +134,30 @@ local function detect_easy(spec_or_parsed, options)
   end
 end
 
-M.extends = function(...)
-
-  -- extends chaining isn't hygenic, any call to extends modifys the parents
-  -- list, which is a huge hole for bugs. Either each call to extends needs
-  -- it's own parents list or chaining should be disabled.
-
-  local parents = {}
-
+M.extends = function(extends_list)
   local with = function(spec, options)
     options = options or {}
-    options.extends = parents
+    options.extends = extends_list
     return M.parse(spec, options)
   end
 
-  local chain = function(...)
-    for _, parent in ipairs({...}) do
-      table.insert(parents, parent)
-    end
-    return {
-      extends = chain,
-      with = with
-    }
-  end
-
-  chain(...)
-
   return {
-     extends = chain,
-     with = with
+    with = with
   }
 end
+
+M.merge = function(extends_list)
+  local options = {
+    extends = extends_list
+  }
+
+  local spec = function()
+    return {}
+  end
+
+  return M.parse(spec, options)
+end
+
 
 -- delegate __call to detect_easy for DX QOL.
 return setmetatable(M, {
