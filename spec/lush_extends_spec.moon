@@ -1,4 +1,4 @@
-describe "lush", ->
+describe "lush.extends", ->
   lush = require('lush')
 
   it "should pass to parse(spec, {extends: ...})", ->
@@ -34,4 +34,29 @@ describe "lush", ->
     assert.is_equal(child.B.fg, parent_b.B.fg)
     assert.is_equal(child.C.fg, parent_a.A.fg)
     assert.is_equal(child.C.bg, parent_a.A.bg)
+
+describe "lush.merge", ->
+  lush = require('lush')
+
+  it "merge({parent})", ->
+    parent = lush(-> {
+      A { fg: "a_fg" }
+    })
+
+    child = lush.merge({parent})
+    assert.is_equal(child.A.fg, parent.A.fg)
+
+  it "merge({parent, parent})", ->
+    parent_a = lush(-> {
+      A { fg: "a_fg" }
+    })
+
+    parent_b = lush(-> {
+      B { fg: "b_fg" }
+    })
+
+    child = lush.merge({parent_a, parent_b})
+    assert.is_equal(child.A.fg, parent_a.A.fg)
+    assert.is_equal(child.B.fg, parent_b.B.fg)
+
 
