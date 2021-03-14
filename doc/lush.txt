@@ -323,19 +323,135 @@ Constraints:
 Extending lush-specs                                      *extending-lush-specs*
 
 Lush provides two ways to combine multiple lush specs into one, `extends` and
-`merge`. 
+`merge`.
 
-Extends (and with)                                   *lush-spec-inherited-group*
+If you want to combine a list of one or more parsed lush specs, and apply any
+tweaks, you should use `extends({parsed_spec, ...}).with(spec)`.
 
-Used to define a new highlight group, with properties inherited from another
-group.
+It you want to combine a list of one or more parsed lush specs, but do not need
+to adjust them, you can use `merge({parsed_spec, ...}).
 
-This is logically similar to a Linked Group, except you wish to define new
-keys, or redefine old keys.
+In both cases, groups later in the list will specs will overwrite any groups
+before them.
 
-Syntax:
+Given:
 >
-    InheritedGroup { Parent, gui = "bold" },
+  group_1 = {
+    A { fg = "1_a_fg" },
+    B { fg = "1_b_fg" }
+  }
+
+  group_2 = {
+    B { fg = "2_b_fg }
+  }
+<
+
+Extend/merging the groups in order would result in:
+>
+  {group_1, group_2} = {
+    A { fg = "1_a_fg" },
+    B { fg = "2_b_fg" }
+  }
+<
+
+extends({parsed_lush_spec, ...}).with(spec)                  *lush-extends-with*
+
+`extends({parsed_lush_spec, ...})` *must* be proceeded by `with(spec)`, and
+returns a parsed_lush_spec.
+
+If you have an existing spec that you wish to modify, you may wish to use
+`extends.with`.
+
+Potential use cases:
+
+  - You like a lush theme you got from online, but want to change a few
+    specific parts of it, such as the comment style, or the background
+    color.
+
+  - You are writing your own theme and want to make a small tweak on it, say
+    to make a high-contrast version or a colorbind save mode.
+
+>
+  -- you may have installed this theme via your package manager or simliar.
+  -- well behaving lush themes should be importable via this manner.
+  -- or it might be your 'main' theme file if you are writing a variant.
+  local some_theme = require('lush_theme.some_theme')
+
+  -- maybe you also want to include a community extension that patches
+  -- some mising styles in the original theme.
+  local some_theme_lsp = require('lush_theme.some_theme_lsp')
+
+  local spec = lush.extends({some_theme, some_theme_lsp}).with(function()
+    -- note it is also valid to return an empty spec, which is functionally
+    -- equivilent to calling merge({some_theme}).
+
+    -- return { }
+
+    return {
+      -- note, you can use the same group tools as normal: linking and group
+      -- inheritance, but you must access the groups through their imported
+      -- variable.
+
+      -- inherit fg and gui settings, but adjust bg
+      Normal { some_theme.Normal, bg = some_theme.Normal.bg.li(10).sa(20) },
+
+      -- overwrite comment group completely
+      Comment { fg = some_theme.Normal.fg.da(10) },
+
+      -- link cursorline to normal
+      CursorLine { some_theme.Normal }
+    }
+  end)
+
+  return spec
+<
+
+merge({parsed_lush_spec, ...})                               *lush-extends-with*
+
+`merge({parsed_lush_spec, ...})` returns a parsed_lush_spec.
+
+If you have an group of parsed lush specs that you do not want to tweak, you can
+simply merge them.
+
+Potential use cases:
+
+  - You have a collection of plugin highlight groups that you want to allow
+    users to elect to enable.
+  - You want to include a non-original patch/extension to a theme.
+  - You simply want to define your theme in parts for maintenance reasons.
+
+>
+  -- see also extends.with, most concepts are applicable.
+
+  local some_theme = require('lush_theme.some_theme')
+
+  -- maybe LSP is complex and you define it in a different file
+  local some_theme_lsp = require('lush_theme.some_theme_lsp')
+
+  local specs = {
+    some_theme,
+    some_theme_lsp
+  }
+
+  -- only inclued xyz groups if the user wants them
+  if user_config.enable_xyz then
+    table.insert(specs, require('lush_theme.some_theme.xyz')
+  end
+
+  -- you might also include variants this way
+  it user_config.italic_comments then
+    -- you can also do this inline, or this could also
+    -- be done with extends.with
+    table.insert(specs, lush.parse(function()
+      return {
+        Comment { some_theme.Comment, gui = "italic" }
+      }
+    end)
+
+  -- combine into onef
+  local spec = lush.merge(specs)
+
+  return spec
 <
 
 --------------------------------------------------------------------------------
