@@ -171,15 +171,15 @@ accessing the `.hex` accessor.
 Example                                                     *lush-color-example*
 
 >
-    local hsl = require('lush').hsl                 -- include the module
-    local red = hsl(0, 100, 50)                     -- define a color
-    local light_red = red.lighten(20)               -- modify
-    local orange = red.hue(20)                      -- set
-    local sum_hues = red.h + light_red.h + orange.h -- access
-    local chained_compliment = red.ro(180)          -- chain via aliases
-                                  .da(30)
-                                  .sa(10)
-    print(red)                                      -- as string "#FF0000"
+  local hsl = require('lush').hsl                 -- include the module
+  local red = hsl(0, 100, 50)                     -- define a color
+  local light_red = red.lighten(20)               -- modify
+  local orange = red.hue(20)                      -- set
+  local sum_hues = red.h + light_red.h + orange.h -- access
+  local chained_compliment = red.ro(180)          -- chain via aliases
+                                .da(30)
+                                .sa(10)
+  print(red)                                      -- as string "#FF0000"
 <
 
 --------------------------------------------------------------------------------
@@ -319,6 +319,25 @@ Constraints:
   group definition.
 
   Inherits constraints of Direct Definition
+
+--------------------------------------------------------------------------------
+Extending lush-specs                                      *extending-lush-specs*
+
+Lush provides two ways to combine multiple lush specs into one, `extends` and
+`merge`. 
+
+Extends (and with)                                   *lush-spec-inherited-group*
+
+Used to define a new highlight group, with properties inherited from another
+group.
+
+This is logically similar to a Linked Group, except you wish to define new
+keys, or redefine old keys.
+
+Syntax:
+>
+    InheritedGroup { Parent, gui = "bold" },
+<
 
 --------------------------------------------------------------------------------
 Lush.ify                                                               *lushify*
