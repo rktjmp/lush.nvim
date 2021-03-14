@@ -200,34 +200,36 @@ Sample Lush-Spec                                              *lush-spec-sample*
 
 Here's a very simple lush-spec:
 >
-    -- cool_name/lua/lush_theme/cool_name.lua
-    -- require lush
-    local lush = require('lush')
-    -- lush(), when given a spec, will parse it and return a table 
-    -- containing your color information.
-    -- We should return it for use in other files.
-    return lush(function()
-      return {
-        -- Define what vims Normal highlight group should look like
-        Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
-        -- And make whitespace slightly darker than normal.
-        -- Note you must define Normal before you try to use it.
-        Whitespace { fg = Normal.fg.darken(40) },
-        -- And make comments look the same, but with italic text
-        Comment { Whitespace, gui="italic" },
-        -- and clear all highlighting for CursorLine
-        CursorLine { },
-      }
-    end)
+  -- cool_name/lua/lush_theme/cool_name.lua
+  -- require lush
+  local lush = require('lush')
+  -- lush(), when given a spec, will parse it and return a table
+  -- containing your color information.
+  -- We should return it for use in other files.
+  return lush(function()
+    return {
+      -- Define what vims Normal highlight group should look like
+      Normal { bg = lush.hsl(208, 90, 30), fg = lush.hsl(208, 80, 80) },
+      -- And make whitespace slightly darker than normal.
+      -- Note you must define Normal before you try to use it.
+      Whitespace { fg = Normal.fg.darken(40) },
+      -- And make comments look the same, but with italic text
+      Comment { Whitespace, gui="italic" },
+      -- and clear all highlighting for CursorLine
+      CursorLine { },
+    }
+  end)
 <
+
+And the corresponding colorscheme loading file for nvim:
 >
-    " cool_name/colors/cool_name.vim
-    " yes, unfortunately you still have to write some VimL
-    set background=dark
-    let g:colors_name="cool_name"
-    " you could detect background == dark || light here and require
-    " different files
-    lua require('lush')(require('lush_theme.cool_name'))
+  " cool_name/colors/cool_name.vim
+  " yes, unfortunately you still have to write some VimL
+  set background=dark
+  let g:colors_name="cool_name"
+  " you could detect background == dark || light here and require
+  " different files
+  lua require('lush')(require('lush_theme.cool_name'))
 <
 
 --------------------------------------------------------------------------------
@@ -260,7 +262,7 @@ Supports the following keys:
                `pumblend` or `winblend`!
 
   lush:  a namespace to save arbitrary data to a group. Is not
-         exported to the final highlight but may be accessed in 
+         exported to the final highlight but may be accessed in
          the lush-spec or the parsed-lush-spec.
 
 Constraints:
@@ -306,7 +308,7 @@ keys, or redefine old keys.
 
 Syntax:
 >
-    InheritedGroup { Parent, gui = "bold" },
+  InheritedGroup { Parent, gui = "bold" },
 <
 
 Supported keys:
@@ -379,10 +381,10 @@ Currently there isn't an built in automated method for converting an
 existing theme to Lush, but you can redirect all your current highlights to a
 register, paste that into a buffer then construct some macros to reformat.
 >
-    :redir @z
-    :highlight
-    " in buffer
-    "zp
+  :redir @z
+  :highlight
+  " in buffer
+  "zp
 <
 
 --------------------------------------------------------------------------------
@@ -408,16 +410,16 @@ Manual Toolchain                                         *lush-manual-toolchain*
 
 If desired, you can manually parse -> compile -> apply your lush-spec.
 >
-    local lush = require('lush')
-    local parsed = lush.parse(function() return { ... } end)
-    local compiled = lush.compile(parsed, {force_clean = true })
-    lush.apply(compiled)
+  local lush = require('lush')
+  local parsed = lush.parse(function() return { ... } end)
+  local compiled = lush.compile(parsed, {force_clean = true })
+  lush.apply(compiled)
 <
 
 `compile` accepts a secondary `options` table with the following options:
 
-*   `force_clean`: `true` or `false`, prepends commands to clear and reset
-    highlighting.
+* `force_clean`: `true` or `false`, prepends commands to clear and reset
+                 highlighting.
 
 --------------------------------------------------------------------------------
 Pitfalls, Beartraps, Dragons                                     *lush-pitfalls*
@@ -437,24 +439,25 @@ Dependency Injection:
 
   This means if you want to access a global module, you simply have to bind it
   to a local scope variable.
-  >
-    -- all these local variables can be accessed in the spec closure
-    local weather = require('local_weather')
-    local harbour = require('lush_theme.harbour')
-    local math = math
-    lush(function()
-      return {
-        -- set fg color depending on rain or snow
-        Normal  { fg = hsl(weather.hex_color_for_current_weather) },
-        -- set comment color from normal fg, but set to a random
-        -- analogous-ish color
-        Comment { fg = Normal.fg.ro(math.random(-60, 60)) },
-        -- we can even access other theme data
-        -- automatic theme inheritance and extension is WIP
-        CursorLine { fg =  harbour.CursorLine.fg, bg = harbour.CursorLine.bg },
-      }
-    end)
-  <
+
+>
+  -- all these local variables can be accessed in the spec closure
+  local weather = require('local_weather')
+  local harbour = require('lush_theme.harbour')
+  local math = math
+  lush(function()
+    return {
+      -- set fg color depending on rain or snow
+      Normal  { fg = hsl(weather.hex_color_for_current_weather) },
+      -- set comment color from normal fg, but set to a random
+      -- analogous-ish color
+      Comment { fg = Normal.fg.ro(math.random(-60, 60)) },
+      -- we can even access other theme data
+      -- automatic theme inheritance and extension is WIP
+      CursorLine { fg =  harbour.CursorLine.fg, bg = harbour.CursorLine.bg },
+    }
+  end)
+<
 
 Easy Motion:
 
