@@ -337,8 +337,7 @@ tweaks, you should use `extends({parsed_spec, ...}).with(spec)`.
 It you want to combine a list of one or more parsed lush specs, but do not need
 to adjust them, you can use `merge({parsed_spec, ...}).
 
-In both cases, groups later in the list will specs will overwrite any groups
-before them.
+In both cases, groups later in the list will overwrite any groups before them.
 
 Given:
 >
@@ -374,8 +373,8 @@ Potential use cases:
     specific parts of it, such as the comment style, or the background
     color.
 
-  - You are writing your own theme and want to make a small tweak on it, say
-    to make a high-contrast version or a colorbind save mode.
+  - You are writing your own theme and want to make a small tweaks to create a
+    variant, for example a high-contrast or colorbind safe mode.
 
 >
   -- you may have installed this theme via your package manager or simliar.
@@ -390,7 +389,6 @@ Potential use cases:
   local spec = lush.extends({some_theme, some_theme_lsp}).with(function()
     -- note it is also valid to return an empty spec, which is functionally
     -- equivilent to calling merge({some_theme}).
-
     -- return { }
 
     return {
@@ -423,7 +421,9 @@ Potential use cases:
 
   - You have a collection of plugin highlight groups that you want to allow
     users to elect to enable.
+
   - You want to include a non-original patch/extension to a theme.
+
   - You simply want to define your theme in parts for maintenance reasons.
 
 >
@@ -448,13 +448,13 @@ Potential use cases:
   it user_config.italic_comments then
     -- you can also do this inline, or this could also
     -- be done with extends.with
-    table.insert(specs, lush.parse(function()
+    table.insert(specs, lush(function()
       return {
         Comment { some_theme.Comment, gui = "italic" }
       }
     end)
 
-  -- combine into onef
+  -- combine into one
   local spec = lush.merge(specs)
 
   return spec
