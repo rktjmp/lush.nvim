@@ -40,6 +40,9 @@ Lush Spec                                                            |lush-spec|
     Direct Definition                              |lush-spec-direct-definition|
     Linked Group                                        |lush-spec-linked-group|
     Inherited Group                                  |lush-spec-inherited-group|
+Extending lush-specs                                      |extending-lush-specs|
+  extends({parsed_lush_spec, ...}).with(spec)                |lush-extends-with|
+  merge({parsed_lush_spec, ...})                                    |lush-merge|
 Lush.Ify                                                               |lushify|
 Converting an Existing Theme to Lush            |lush-converting-existing-theme|
 Exporting from Lush                                                |lush-export|
@@ -409,7 +412,7 @@ Potential use cases:
   return spec
 <
 
-merge({parsed_lush_spec, ...})                               *lush-extends-with*
+merge({parsed_lush_spec, ...})                                      *lush-merge*
 
 `merge({parsed_lush_spec, ...})` returns a parsed_lush_spec.
 
