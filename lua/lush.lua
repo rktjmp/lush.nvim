@@ -56,6 +56,7 @@ M.compile = function(ast, options)
   return compiled
 end
 
+-- accepts list of highlight commands from compile() to apply
 M.apply = function(compiled)
   for _, cmd in ipairs(compiled) do
     vim.api.nvim_command(cmd)
@@ -134,6 +135,9 @@ local function detect_easy(spec_or_parsed, options)
   end
 end
 
+-- accepts list of parsed specs which it passes to the 'with'd specs
+-- under the extends option
+-- returns a parsed_lush_spec
 M.extends = function(extends_list)
   local with = function(spec, options)
     options = options or {}
@@ -146,16 +150,19 @@ M.extends = function(extends_list)
   }
 end
 
+-- accepts a list of parsed specs, merges them in order
+-- (equivilent to extends({...}).with(empty_spec))
+-- returns a parsed_lush_spec
 M.merge = function(extends_list)
   local options = {
     extends = extends_list
   }
 
-  local spec = function()
+  local empty_spec = function()
     return {}
   end
 
-  return M.parse(spec, options)
+  return M.parse(empty_spec, options)
 end
 
 
