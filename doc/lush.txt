@@ -325,13 +325,13 @@ Constraints:
 --------------------------------------------------------------------------------
 Extending lush-specs                                      *extending-lush-specs*
 
-Lush provides two ways to combine multiple lush specs into one, `extends` and
+Lush provides two ways to combine multiple lush specs into one: `extends` and
 `merge`.
 
 If you want to combine a list of one or more parsed lush specs, and apply any
 tweaks, you should use `extends({parsed_spec, ...}).with(spec)`.
 
-It you want to combine a list of one or more parsed lush specs, but do not need
+If you want to combine a list of one or more parsed lush specs, but don't need
 to adjust them, you can use `merge({parsed_spec, ...}).
 
 In both cases, groups later in the list will overwrite any groups before them.
@@ -361,42 +361,41 @@ extends({parsed_lush_spec, ...}).with(spec)                  *lush-extends-with*
 `extends({parsed_lush_spec, ...})` *must* be proceeded by `with(spec)`, and
 returns a parsed_lush_spec.
 
-If you have an existing spec that you wish to modify, you may wish to use
+If you have an existing spec that you wish to modify, you may want to use
 `extends.with`.
 
 Potential use cases:
 
-  - You like a lush theme you got from online, but want to change a few
-    specific parts of it, such as the comment style, or the background
-    color.
+  - You like a lush theme you got online, but want to change a few specific
+    parts of it, such as the comment style, or the background color.
 
   - You are writing your own theme and want to make a small tweaks to create a
     variant, for example a high-contrast or colorblind safe mode.
 
 >
-  -- you may have installed this theme via your package manager or similar.
-  -- well behaving lush themes should be importable via this manner.
-  -- or it might be your 'main' theme file if you are writing a variant.
+  -- You may have installed this theme via your package manager or similar
+  -- (good lush themes should be portable), or you might be writing a variant
+  -- for your main theme.
   local some_theme = require('lush_theme.some_theme')
 
-  -- maybe you also want to include a community extension that patches
+  -- Maybe you also want to include a community extension that patches
   -- some missing styles in the original theme.
   local some_theme_lsp = require('lush_theme.some_theme_lsp')
 
   local spec = lush.extends({some_theme, some_theme_lsp}).with(function()
-    -- note it is also valid to return an empty spec, which is functionally
+    -- It's also valid to return an empty spec, that's functionally
     -- equivalent to calling merge({some_theme}).
     -- return { }
 
     return {
-      -- note, you can use the same group tools as normal: linking and group
+      -- You can use the same group tools as normal: linking and group
       -- inheritance, but you must access the groups through their imported
-      -- variable.
+      -- variables.
 
-      -- inherit fg and gui settings, but adjust bg
+      -- Inherit fg and gui settings, but adjust bg
       Normal { some_theme.Normal, bg = some_theme.Normal.bg.li(10).sa(20) },
 
-      -- overwrite comment group completely
+      -- Overwrite comment group completely
       Comment { fg = some_theme.Normal.fg.da(10) },
 
       -- link cursorline to normal
@@ -411,8 +410,8 @@ merge({parsed_lush_spec, ...})                                      *lush-merge*
 
 `merge({parsed_lush_spec, ...})` returns a parsed_lush_spec.
 
-If you have an group of parsed lush specs that you do not want to tweak, you can
-simply merge them.
+If you have an group of parsed lush specs that you do not want to tweak, you
+can simply merge them.
 
 Potential use cases:
 
@@ -424,11 +423,11 @@ Potential use cases:
   - You simply want to define your theme in parts for maintenance reasons.
 
 >
-  -- see also extends.with, most concepts are applicable.
+  -- See also extends.with, most concepts are applicable.
 
   local some_theme = require('lush_theme.some_theme')
 
-  -- maybe LSP is complex and you define it in a different file
+  -- Maybe LSP highlights are complex and you define them in a different file
   local some_theme_lsp = require('lush_theme.some_theme_lsp')
 
   local specs = {
@@ -436,22 +435,21 @@ Potential use cases:
     some_theme_lsp
   }
 
-  -- only include xyz groups if the user wants them
+  -- Only include xyz groups if the user wants them
   if user_config.enable_xyz then
     table.insert(specs, require('lush_theme.some_theme.xyz')
   end
 
-  -- you might also include variants this way
+  -- You might also include variants this way
   it user_config.italic_comments then
-    -- you can also do this inline, or this could also
-    -- be done with extends.with
+    -- You can also do this inline, or with extends.with
     table.insert(specs, lush(function()
       return {
         Comment { some_theme.Comment, gui = "italic" }
       }
     end)
 
-  -- combine into one
+  -- Combine into one
   local spec = lush.merge(specs)
 
   return spec
