@@ -383,7 +383,7 @@ Potential use cases:
   local some_theme_lsp = require('lush_theme.some_theme_lsp')
 
   local spec = lush.extends({some_theme, some_theme_lsp}).with(function()
-    -- It's also valid to return an empty spec, that's functionally
+    -- It's also valid to return an empty spec. That's functionally
     -- equivalent to calling merge({some_theme}).
     -- return { }
 
