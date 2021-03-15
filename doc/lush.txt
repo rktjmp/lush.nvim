@@ -344,7 +344,7 @@ Given:
   }
 
   group_2 = {
-    B { fg = "2_b_fg }
+    B { fg = "2_b_fg" }
   }
 <
 
@@ -371,21 +371,21 @@ Potential use cases:
     color.
 
   - You are writing your own theme and want to make a small tweaks to create a
-    variant, for example a high-contrast or colorbind safe mode.
+    variant, for example a high-contrast or colorblind safe mode.
 
 >
-  -- you may have installed this theme via your package manager or simliar.
+  -- you may have installed this theme via your package manager or similar.
   -- well behaving lush themes should be importable via this manner.
   -- or it might be your 'main' theme file if you are writing a variant.
   local some_theme = require('lush_theme.some_theme')
 
   -- maybe you also want to include a community extension that patches
-  -- some mising styles in the original theme.
+  -- some missing styles in the original theme.
   local some_theme_lsp = require('lush_theme.some_theme_lsp')
 
   local spec = lush.extends({some_theme, some_theme_lsp}).with(function()
     -- note it is also valid to return an empty spec, which is functionally
-    -- equivilent to calling merge({some_theme}).
+    -- equivalent to calling merge({some_theme}).
     -- return { }
 
     return {
@@ -436,7 +436,7 @@ Potential use cases:
     some_theme_lsp
   }
 
-  -- only inclued xyz groups if the user wants them
+  -- only include xyz groups if the user wants them
   if user_config.enable_xyz then
     table.insert(specs, require('lush_theme.some_theme.xyz')
   end
