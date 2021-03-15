@@ -386,7 +386,7 @@ Potential use cases:
   local some_theme_lsp = require('lush_theme.some_theme_lsp')
 
   local spec = lush.extends({some_theme, some_theme_lsp}).with(function()
-    -- It's also valid to return an empty spec. That's functionally
+    -- It is also valid to return an empty spec. This is functionally
     -- equivalent to calling merge({some_theme}).
     -- return { }
 
@@ -418,10 +418,11 @@ can simply merge them.
 
 Potential use cases:
 
-  - You have a collection of plugin highlight groups that you want to allow
-    users to elect to enable.
+  - You have a collection of plugin highlight groups want to let users configure
+    which highlight groups are enabled.
 
-  - You want to include a non-original patch/extension to a theme.
+  - You want to apply a patch/extension to a theme that isn't provided by the
+    main theme repo.
 
   - You simply want to define your theme in parts for maintenance reasons.
 
@@ -445,7 +446,7 @@ Potential use cases:
 
   -- You might also include variants this way
   it user_config.italic_comments then
-    -- You can also do this inline, or with extends.with
+    -- You can also do this inline, or by using extends.with
     table.insert(specs, lush(function()
       return {
         Comment { some_theme.Comment, gui = "italic" }
