@@ -256,6 +256,9 @@ Supports the following keys:
 
   blend: sets the `blend` property of a Vim highlight group.
 
+         note: you must have enabled blending in neovim via
+               `pumblend` or `winblend`!
+
   lush:  a namespace to save arbitrary data to a group. Is not
          exported to the final highlight but may be accessed in 
          the lush-spec or the parsed-lush-spec.
