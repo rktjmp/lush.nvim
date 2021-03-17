@@ -1,21 +1,6 @@
 Future ideas
 ============
 
-Theme Inheritance
------------------
-
-This would give you the ability to require someone else's theme as a base to
-yours.
-
-Imagine you really like a theme, but wish the background was a bit different,
-you could define your lush-spec with that theme as base/parent and just change
-the groups you want.
-
-I have a draft of this written but was unsure how useful it would really be as
-a feature and if it was worth the work hours. Perhaps if Lush were popular this
-more sense.
-
-
 Global HSL Shifting / Contrast Shifting?
 ----------------------------------------
 
