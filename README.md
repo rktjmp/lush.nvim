@@ -215,19 +215,25 @@ Q/A
 
 #### Lush is too magical, will I get burned?
 
+Meta programming can be scary. It can be confusing to reason with and can be
+very infrutrating to debug when something goes wrong "inside the box".
+
 Maybe like all good magic tricks, Lush *looks* a lot more magical than it
 really is.
 
-Meta programming can be scary. It can be confusing to debug or reason with and
-it can be very frutrating when something goes wrong "inside the box".
+The metaprogramming is really only in the parser, and this is where you write a
+very strict subset of instructions (group names, fg, bg, etc).
 
-The magic is only really in the parser, and this is where you write a
-very strict subset of instructions (group names, fg, bg, etc). As long as your
-spec is valid lua code (correct braces, commas, closing quotation marks, no
-spurious characters, etc), there shouldn't be a steep learning curve or much to
-actually debug. All you're really doing is writing a Lua table.
+As long as your spec is valid lua code (correct braces, commas, closing
+quotation marks, no spurious characters, etc), there shouldn't be a steep
+learning curve or much to actually debug. All you're really doing is writing a
+Lua table.
 
 ```lua
+-- no magic zone
+-- anything you do here is just plain old regular lua
+local ten = 8 + 2
+
 local spec = lush(function ()
   return {
     -- ~*~ some magic zone ~*~
@@ -251,10 +257,10 @@ end)
 -- and you can work with it like any other lua table: delete keys, copy values
 -- transform values, write to json, etc.
 
-spec.Normal.fg
-^    ^      ^ just a table with functions attached
-|    | just a table
-| just a table
+local normal_fg = spec.Normal.fg
+--                ^    ^      ^ just a table with functions attached
+--                |    | just a table
+--                | just a table
 ```
 
 Similarly in your `color/.vim` file,
@@ -265,9 +271,10 @@ local parsed_spec = require('lush_theme.theme')
 --    ^             ^ no magic, just a normal lua module
 --    | just a table
 lush(parsed_spec)
-^ just an if check for table or function and either parses or applies the theme
--- the compiler just iterates over the spec (which is just a table) and
--- interpolates the values into some strings which get sent to vim to interpret.
+--   ^ just an if check for table or function and either parses or applies the
+--     theme the compiler just iterates over the spec (which is just a table)
+--     and interpolates the values into some strings which get sent to vim to
+--     interpret.
 ```
 
 `:Lushify` is also pretty non-magic. It just reads the current buffer, sends it
