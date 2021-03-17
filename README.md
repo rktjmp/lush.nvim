@@ -8,6 +8,8 @@ Lush is a colorscheme creation aid, written in Lua, for Neovim.
 Lush lets you define your scheme as a *mini-dsl*, provides HSL *colour
 manipulation* aids, and gives you *real time* feedback of your changes.
 
+It also enables extension or modification of other Lush schemes.
+
 Lush themes can be exported to plain VimL for distribution (or escape),
 and they can also be *imported* to other Lua (or VimL) files to access color)
 data.
@@ -55,6 +57,7 @@ To create a Vim colorscheme in Lush,
 The `:Lushify` command can be used during development for real time feedback on
 the appearance of your colorscheme.
 
+See also, Advanced Usage and `:h lush` for more detailed documentation.
 
 ### 1. Copy the lush-template
 
@@ -164,6 +167,47 @@ list of highlight groups as defined in VimL.
 
 You can then yank the contents of the buffer, and paste it in
 `cool_name/colors/cool_name.vim`.
+
+Advanced Usage
+--------------
+
+### Spec Extension and Merging
+
+Lush provides two methods for extending existing lush themes,
+`lush.extends({parsed_spec, ...}).with(spec)` and
+`lush.merge({parsed_spec, ...})`.
+
+Potential reasons you may wish to extend a spec:
+
+- You like a lush theme you got online, but want to change a few specific
+  parts of it, such as the comment style, or the background color.
+
+- You are writing your own theme and want to make a small tweaks to create a
+  variant, for example a high-contrast or colorblind safe mode.
+
+Potential reasons you may wish to merge specs:
+
+- You have a collection of plugin highlight groups want to let users configure
+  which highlight groups are enabled.
+
+- You want to apply a patch/extension to a theme that isn't provided by the
+  main theme repo.
+
+- You simply want to define your theme in parts for maintenance reasons.
+
+For more detailed usage and examples, see `:h lush-extending-specs`.
+
+### Using Lush Data Elsewhere
+
+Every Lush theme is a compiled down to a Lua table. This lets you import it into
+other Lua modules or into other themes.
+
+An demonstration of this is shown in the examples folder, where a parsed lush
+spec is used to set the lightline theme.
+
+Another example can be seen in [savq/melange](https://github.com/savq/melange),
+where the parsed lush spec is used to generate an Alacritty terminal theme.
+
 
 Q/A
 ---
