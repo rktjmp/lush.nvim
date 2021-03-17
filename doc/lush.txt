@@ -361,7 +361,7 @@ Extend/merging the groups in order would result in:
 
 extends({parsed_lush_spec, ...}).with(spec)                  *lush-extends-with*
 
-`extends({parsed_lush_spec, ...})` *must* be proceeded by `with(spec)`, and
+`extends({parsed_lush_spec, ...})` *must* be proceeded by `with(spec)`, which
 returns a parsed_lush_spec.
 
 If you have an existing spec that you wish to modify, you may want to use
@@ -375,6 +375,7 @@ Potential use cases:
   - You are writing your own theme and want to make a small tweaks to create a
     variant, for example a high-contrast or colorblind safe mode.
 
+Example:
 >
   -- You may have installed this theme via your package manager or similar
   -- (good lush themes should be portable), or you might be writing a variant
@@ -426,6 +427,7 @@ Potential use cases:
 
   - You simply want to define your theme in parts for maintenance reasons.
 
+Example:
 >
   -- See also extends.with, most concepts are applicable.
 
@@ -470,12 +472,10 @@ To use lush.ify, open your theme Lua file and run the vim command,
 >
   :Lushify
 <
-
 or run it directly via Lua,
 >
   :lua require('lush').ify()
 <
-
 Now changes you make to a colorscheme are reflected in real time. See the two
 starter files for more information and a demonstration.
 
@@ -489,7 +489,6 @@ but if you desire to change them, you can pass options to lush.ify like so
 >
   :lua require('lush').ify({natural_timeout = 25, error_timeout = 300})
 <
-
 If you feel performance is poor, please try disabling any linter/lsp/etc first.
 
 --------------------------------------------------------------------------------
@@ -513,7 +512,6 @@ you can run the following Lua code:
 >
   :lua require('lush').export_to_buffer(require('lua-module-theme-name'))
 <
-
 Your Lush theme will be exported to a new floating window, as a collection of
 Vim highlight commands.
 
@@ -533,7 +531,6 @@ If desired, you can manually parse -> compile -> apply your lush-spec.
   local compiled = lush.compile(parsed, {force_clean = true })
   lush.apply(compiled)
 <
-
 `compile` accepts a secondary `options` table with the following options:
 
 * `force_clean`: `true` or `false`, prepends commands to clear and reset
