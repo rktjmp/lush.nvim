@@ -203,11 +203,12 @@ Every Lush theme is a compiled down to a Lua table. This lets you import it into
 other Lua modules or into other themes.
 
 An demonstration of this is shown in the examples folder, where a parsed lush
-spec is used to set the lightline theme.
+spec is used to set the lightline theme, or above when using `extends`.
 
 Another example can be seen in [savq/melange](https://github.com/savq/melange),
-where the parsed lush spec is used to generate an Alacritty terminal theme.
-
+where the parsed lush spec is used to generate an Alacritty terminal theme. You
+could extend this concept into generating colors for your diff tool, css code
+blocks, etc.
 
 Q/A
 ---
