@@ -3,7 +3,7 @@
 Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 ====
 
-Lush is a color scheme creation aid, written in Lua, for Neovim.
+Lush is a colorscheme creation aid, written in Lua, for Neovim.
 
 Lush lets you define your scheme as a *mini-dsl*, provides HSL *colour
 manipulation* aids, and gives you *real time* feedback of your changes.
@@ -53,7 +53,7 @@ To create a Vim colorscheme in Lush,
 3. (optional) Export your theme for distribution to non-Neovim clients.
 
 The `:Lushify` command can be used during development for real time feedback on
-the appearance of your color scheme.
+the appearance of your colorscheme.
 
 
 ### 1. Copy the lush-template
