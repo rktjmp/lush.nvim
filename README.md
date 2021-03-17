@@ -213,6 +213,67 @@ blocks, etc.
 Q/A
 ---
 
+#### Lush is too magical, will I get burned?
+
+Maybe like all good magic tricks, Lush *looks* a lot more magical than it
+really is.
+
+Meta programming can be scary. It can be confusing to debug or reason with and
+it can be very frutrating when something goes wrong "inside the box".
+
+The magic is only really in the parser, and this is where you write a
+very strict subset of instructions (group names, fg, bg, etc). As long as your
+spec is valid lua code (correct braces, commas, closing quotation marks, no
+spurious characters, etc), there shouldn't be a steep learning curve or much to
+actually debug. All you're really doing is writing a Lua table.
+
+```lua
+local spec = lush(function ()
+  return {
+    -- ~*~ some magic zone ~*~
+    -- here we are defining our DSL, some magic required, no magic "leaks" out.
+
+    Normal { fg = "red", bg = hsl(200, 40, 20) },
+--  ^      ^                  ^ no magic, just returns a lua table with functions attached
+--  |      | just a lua table, no magic
+--  | some magic to used to turn function call Normal({...}) into table key Normal = {...}
+
+    CursorLine { fg = Normal.fg.da(10) },
+--                    ^ no magic, just a table lookup
+
+    Comment { Normal, fg = "blue" }
+--            ^ no magic, just copying one table to another
+  }
+end)
+
+-- no magic zone
+-- returned parsed spec is just a lua table, it has no special magic attached
+-- and you can work with it like any other lua table: delete keys, copy values
+-- transform values, write to json, etc.
+
+spec.Normal.fg
+^    ^      ^ just a table with functions attached
+|    | just a table
+| just a table
+```
+
+Similarly in your `color/.vim` file,
+
+```lua
+-- no magic zone
+local parsed_spec = require('lush_theme.theme') 
+--    ^             ^ no magic, just a normal lua module
+--    | just a table
+lush(parsed_spec)
+^ just an if check for table or function and either parses or applies the theme
+-- the compiler just iterates over the spec (which is just a table) and
+-- interpolates the values into some strings which get sent to vim to interpret.
+```
+
+`:Lushify` is also pretty non-magic. It just reads the current buffer, sends it
+to the lua interpreter, hoping to get back a parsed lush spec, and then calls
+`compile` and `apply` in the background.
+
 #### Why `return ...`?
 
 By returning our theme it acts as a Lua module, which allows us to use it in
