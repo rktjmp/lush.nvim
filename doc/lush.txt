@@ -40,7 +40,7 @@ Lush Spec                                                            |lush-spec|
     Direct Definition                              |lush-spec-direct-definition|
     Linked Group                                        |lush-spec-linked-group|
     Inherited Group                                  |lush-spec-inherited-group|
-Extending lush-specs                                      |extending-lush-specs|
+Extending lush-specs                                      |lush-extending-specs|
   extends({parsed_lush_spec, ...}).with(spec)                |lush-extends-with|
   merge({parsed_lush_spec, ...})                                    |lush-merge|
 Lush.Ify                                                               |lushify|
@@ -326,7 +326,7 @@ Constraints:
   Inherits constraints of Direct Definition
 
 --------------------------------------------------------------------------------
-Extending lush-specs                                      *extending-lush-specs*
+Extending lush-specs                                      *lush-extending-specs*
 
 Lush provides two ways to combine multiple lush specs into one: `extends` and
 `merge`.
