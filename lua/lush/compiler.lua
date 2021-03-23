@@ -15,6 +15,10 @@ local function make_group(name, opts)
   local gui = opts.gui or 'NONE'
   gui = string.gsub(gui, ' ', '')
 
+  if gui == '' then
+    gui = 'NONE'
+  end
+
   return table.concat({
     'highlight ' .. name,
     'guifg=' .. (opts.fg or 'NONE'),
