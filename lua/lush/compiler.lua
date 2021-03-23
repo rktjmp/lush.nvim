@@ -5,6 +5,14 @@ local function make_link(from, to)
   return "highlight! link " .. from .. " " .. to
 end
 
+local function value_or_NONE(value)
+  if value == nil or value == '' then
+    return 'NONE'
+  end
+
+  return value
+end
+
 local function make_group(name, opts)
   -- We define groups "greedily", meaning we set any un-set options to NONE
   -- TODO: good idea or nah?
@@ -17,11 +25,11 @@ local function make_group(name, opts)
 
   return table.concat({
     'highlight ' .. name,
-    'guifg=' .. (opts.fg or 'NONE'),
-    'guibg=' .. (opts.bg or 'NONE'),
-    'guisp=' .. (opts.sp or 'NONE'),
-    'gui=' .. gui,
-    'blend=' .. (opts.blend or 'NONE'),
+    'guifg=' .. value_or_NONE(opts.fg),
+    'guibg=' .. value_or_NONE(opts.bg),
+    'guisp=' .. value_or_NONE(opts.sp),
+    'gui=' .. value_or_NONE(gui),
+    'blend=' .. value_or_NONE(opts.blend),
   }, ' ')
 end
 
