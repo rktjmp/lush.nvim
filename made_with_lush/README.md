@@ -22,7 +22,7 @@ Adding your theme to the list
 Submit a pull request with:
 
 - [x] The theme details template filled out (see below)
-- [x] At most 2 images:
+- [x] At most 2 images (optional but recommended):
   - PNG format
   - Reasonable size (i.e. not a 4k res 30mb file)
   - Filenames follow the format: `<gh_username>_<gh_reponame_with_dots_as_underscores>_[1|2].png` and are in the `made_with_lush` directory (alongside this file)
