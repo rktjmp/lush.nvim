@@ -14,6 +14,7 @@ Lush themes can be exported to plain VimL for distribution (or escape),
 and they can also be *imported* to other Lua (or VimL) files to access color)
 data.
 
+See some themes [**Made with Lush**](made_with_lush/README.md).
 
 Requirements
 ------------
