@@ -25,7 +25,7 @@ Submit a pull request with:
 - [x] At most 2 images:
   - PNG format
   - Reasonable size (i.e. not a 4k res 30mb file)
-  - Filenames follow the format: `<gh_username>_<gh_reponame_with_dots_as_underscores>_[1|2].png` and are in the `made_with_lush` directory (alongside this file).
+  - Filenames follow the format: `<gh_username>_<gh_reponame_with_dots_as_underscores>_[1|2].png` and are in the `made_with_lush` directory (alongside this file)
 - [x] Squash your commits with the message "`Add <theme name> to made_with_lush`"
   - ("`Update <theme_name> in made_with_lush`" if you are submitting a patch)
 
