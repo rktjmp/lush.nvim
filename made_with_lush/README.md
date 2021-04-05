@@ -14,7 +14,15 @@ list](#adding-your-theme-to-the-list) at the bottom of this file.*
 Lush Community Themes
 ---------------------
 
-It's empty! :sob:
+### jellybeans-nvim
+
+[metalelf0/jellybeans-nvim](https://github.com/metalelf0/jellybeans-nvim)
+
+`require('lush_theme.jellybeans-nvim')`
+
+A port of the jellybeans theme.
+
+![first screenshot](metalelf0_jellybeans-nvim_1.png)
 
 ---
 
