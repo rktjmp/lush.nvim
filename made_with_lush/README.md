@@ -27,7 +27,7 @@ A port of the jellybeans theme.
 ---
 ### onedark.nvim
 
-[olimorris/ondedark.nvim](https://github.com/olimorris/onedark.nvim)
+[olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
 
 ```lua
 vim.o.background = 'dark'
