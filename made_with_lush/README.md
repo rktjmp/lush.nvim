@@ -29,10 +29,7 @@ A port of the jellybeans theme.
 
 [olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
 
-```lua
-vim.o.background = 'dark'
-vim.g.colors_name = 'onedark_nvim'
-```
+`require('lush')(require('lush_theme.onedark_nvim'))`
 
 My personal One Dark port for Neovim with Treesitter and LSP support, dark/light versions and lots of plugins.
 
