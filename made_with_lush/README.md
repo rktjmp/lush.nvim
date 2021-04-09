@@ -18,7 +18,9 @@ Lush Community Themes
 
 [metalelf0/jellybeans-nvim](https://github.com/metalelf0/jellybeans-nvim)
 
-`require('lush_theme.jellybeans-nvim')`
+Lua module: `require('lush_theme.jellybeans-nvim')`
+
+Usage: `colorscheme jellybeans-nvim`
 
 A port of the jellybeans theme.
 
@@ -29,7 +31,14 @@ A port of the jellybeans theme.
 
 [olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
 
-`require('lush')(require('lush_theme.onedark_nvim'))`
+Lua module: `require('lush_theme.onedark_nvim')`
+
+Usage:
+
+```lua
+vim.o.background = 'dark'
+vim.g.colors_name = 'onedark_nvim'
+```
 
 My personal One Dark port for Neovim with Treesitter and LSP support, dark/light versions and lots of plugins.
 
@@ -56,12 +65,14 @@ Submit a pull request with:
 
 Details template:
 
-```
+```markdown
 ### <theme_name>
 
 [<gh_username/gh_reponame> or simliar service](https://github.com/user/repo)
 
-`require(<what you require in your colours/vim file, probably 'lush_theme.theme_name'>)`
+Lua module: `require(<what you require in your colours/vim file, probably 'lush_theme.theme_name'>)`
+
+Usage: `colorscheme theme_name`
 
 <(optional) max 50ish (be reasonable) word description of theme or features (plugins, terminal themes, etc).>
 
