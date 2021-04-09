@@ -1,15 +1,13 @@
 Made with Lush
 ==============
 
-*You can use Lush with any theme on this page to adjust or extend them. See
+You can use Lush with any theme on this page to adjust or extend them. See
 [advanced
 usage](https://github.com/rktjmp/lush.nvim#spec-extension-and-merging) in the
-readme or `:h lush-extending-specs` for more details.*
+readme or `:h lush-extending-specs` for more details. To add your theme to this list, see [Adding your theme to the
+list](#adding-your-theme-to-the-list) at the bottom of this file.
 
-*To add your theme to this list, see [Adding your theme to the
-list](#adding-your-theme-to-the-list) at the bottom of this file.*
-
-*Themes are sorted alphanumeric by theme name.*
+Themes are sorted alphanumeric by theme name.
 
 Lush Community Themes
 ---------------------
