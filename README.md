@@ -183,6 +183,8 @@ Potential reasons you may wish to extend a spec:
 - You like a lush theme you got online, but want to change a few specific
   parts of it, such as the comment style, or the background color.
 
+- You want to add a plugin to an theme by using it's existing groups.
+
 - You are writing your own theme and want to make a small tweaks to create a
   variant, for example a high-contrast or colorblind safe mode.
 
@@ -197,6 +199,30 @@ Potential reasons you may wish to merge specs:
 - You simply want to define your theme in parts for maintenance reasons.
 
 For more detailed usage and examples, see `:h lush-extending-specs`.
+
+An example of adding missing plugin support:
+
+```lua
+local lush = require('lush')
+local hsl = lush.hsl
+
+-- some theme from the internet
+local harbour = require('lush_theme.harbour')
+
+local spec = lush.extends({harbour}).with(function()
+  return {
+    -- make Sneak look like Search
+    Sneak { harbour.Search },
+    -- you can now use Sneak just like any other group (ref, inherit, etc)
+    SneakScope { bg = Sneak.bg.li(10) },
+    SneakLabel { Sneak, gui = "italic" },
+    -- you can use bits from anywhere
+    MixAndMatch { bg = harbour.Normal.fg, fg = SneakLabel.fg, gui = "underline" },
+  }
+end)
+
+return spec
+```
 
 ### Using Lush Data Elsewhere
 

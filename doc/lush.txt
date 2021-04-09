@@ -372,10 +372,35 @@ Potential use cases:
   - You like a lush theme you got online, but want to change a few specific
     parts of it, such as the comment style, or the background color.
 
+  - You want to add a plugin to an theme by using it's existing groups.
+
   - You are writing your own theme and want to make a small tweaks to create a
     variant, for example a high-contrast or colorblind safe mode.
 
-Example:
+Example - adding plugin support:
+>
+  local lush = require('lush')
+  local hsl = lush.hsl
+
+  -- some theme from the internet
+  local harbour = require('lush_theme.harbour')
+
+  local spec = lush.extends({harbour}).with(function()
+    return {
+      -- make Sneak look like Search
+      Sneak { harbour.Search },
+      -- you can now use Sneak just like any other group (ref, inherit, etc)
+      SneakScope { bg = Sneak.bg.li(10) },
+      SneakLabel { Sneak, gui = "italic" },
+      -- you can use bits from anywhere
+      MixAndMatch { bg = harbour.Normal.fg, fg = SneakLabel.fg, gui = "underline" },
+    }
+  end)
+
+  return spec
+<
+
+Example - complex combination:
 >
   -- You may have installed this theme via your package manager or similar
   -- (good lush themes should be portable), or you might be writing a variant
