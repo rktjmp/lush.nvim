@@ -5,14 +5,11 @@ Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 
 Lush is a colorscheme creation aid, written in Lua, for Neovim.
 
-Lush lets you define your scheme as a *mini-dsl*, provides HSL *colour
-manipulation* aids, and gives you *real time* feedback of your changes.
-
-It also enables extension or modification of other Lush schemes.
-
-Lush themes can be exported to plain VimL for distribution (or escape),
-and they can also be *imported* to other Lua (or VimL) files to access color)
-data.
+- [x] [Real time feedback!](#getting-started)
+- [x] [HSL color aids!](#2-create-your-theme)
+- [x] [Lua fast!](#is-lush-slow)
+- [x] Easily [extend](#advanced-example) other [themes!](made_with_lush/README.md#made-with-lush)
+- [x] Export to [Vim](#3-optional-export-your-theme-for-distribution-to-non-neovim-clients) or [other tools!](#using-lush-data-elsewhere)
 
 See some themes [**Made with Lush**](made_with_lush/README.md#made-with-lush).
 
@@ -169,6 +166,13 @@ list of highlight groups as defined in VimL.
 You can then yank the contents of the buffer, and paste it in
 `cool_name/colors/cool_name.vim`.
 
+**Important Warning**
+
+Vim does not support the `blend` property, and so if you intend to export to Vim
+you will have to 1) not use blend and 2) filter out `blend=NONE` in the exported file.
+
+A method to ease this is forthcomming, see [#29](https://github.com/rktjmp/lush.nvim/issues/29) and [#30](https://github.com/rktjmp/lush.nvim/issues/30).
+
 Advanced Usage
 --------------
 
@@ -201,6 +205,8 @@ Potential reasons you may wish to merge specs:
 For more detailed usage and examples, see `:h lush-extending-specs`.
 
 An example of adding missing plugin support:
+
+#### Advanced Example
 
 ```lua
 local lush = require('lush')
