@@ -25,6 +25,19 @@ A port of the jellybeans theme.
 ![first screenshot](metalelf0_jellybeans-nvim_1.png)
 
 ---
+### onedark.nvim
+
+[olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
+
+`require('lush')(require('lush_theme.onedark_nvim'))`
+
+My personal One Dark port for Neovim with Treesitter and LSP support, dark/light versions and lots of plugins.
+
+![Dark](olimorris_onedark-nvim_dark.png)
+
+![Light](olimorris_onedark-nvim_light.png)
+
+---
 
 Adding your theme to the list
 -----------------------------
