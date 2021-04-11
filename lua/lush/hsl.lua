@@ -1,12 +1,16 @@
 local convert = require('lush.hsl.convert')
 
+-- clamp val between min and max
+local clamp = function(val, min, max)
+  return math.min(max, math.max(min, val))
+end
+
+-- round float, implementation rounds 0.5 upwards.
+local round = function(val)
+  return math.floor(val + 0.5)
+end
+
 local function hsl_clamp(color)
-  local clamp = function(val, min, max)
-    return math.min(max, math.max(min, val))
-  end
-  local round = function(val)
-    return math.floor(val + 0.5)
-  end
   local h, s, l
   h = color.h % 360
   s = round(clamp(color.s, 0, 100))
