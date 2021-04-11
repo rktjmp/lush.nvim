@@ -93,6 +93,42 @@ local function wrap_color(color)
     end
   end
 
+  local mix = function(color)
+    return function(target, strength)
+      strength = clamp(strength, 0, 100) / 100
+      -- strength of 0 means no mix towards target, so
+      -- color vector strength is 1
+      local cv_str = (1 - strength)
+      -- target strength is the remainder, so
+      -- str = 0, cv_str = 1, tv_str = 0
+      -- str = 100, cv_str = 0, tv_str = 1
+      local tv_str = 1 - cv_str
+      -- convert colors to vector
+      local cv = {
+        x = math.cos(color.h / 180 * math.pi) * color.s,
+        y = math.sin(color.h / 180 * math.pi) * color.s,
+        z = color.l
+      }
+      local tv = {
+        x = math.cos(target.h / 180 * math.pi) * target.s,
+        y = math.sin(target.h / 180 * math.pi) * target.s,
+        z = target.l
+      }
+      -- combine
+      local rv = {
+        x = ((cv.x * cv_str) + (tv.x * tv_str)) / 1,
+        y = ((cv.y * cv_str) + (tv.y * tv_str)) / 1,
+        z = ((cv.z * cv_str) + (tv.z * tv_str)) / 1,
+      }
+      -- back to color
+      local new_color = {
+        h = math.atan2(rv.y, rv.x) * (180 / math.pi),
+        s = math.sqrt(rv.x * rv.x + rv.y * rv.y),
+        l = rv.z
+      }
+      return wrap_color(new_color)
+    end
+  end
 
   local hue = function(color)
     return function(hue)
@@ -137,6 +173,8 @@ local function wrap_color(color)
     abs_darken = abs_darken,
     abs_da = abs_darken,
 
+    mix = mix,
+
     hue = hue,
     saturation = saturation,
     lightness = lightness
@@ -149,6 +187,7 @@ local function wrap_color(color)
       if key_name == "s" then return color.s end
       if key_name == "l" then return color.l end
       if key_name == "hex" then return convert.hsl_to_hex(color) end
+      if key_name == "hsl" then return {h = color.h, s = color.s, l = color.l} end
 
       if mod_fns[key_name] then
         return mod_fns[key_name](color)
