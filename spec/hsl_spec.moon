@@ -184,6 +184,24 @@ describe "hsl", ->
       e = assert.error(-> color.h = 100)
       assert.matches("Member setting disabled", e)
 
+  describe "mix", ->
+    it "0 strength returns base", ->
+      color = hsl(123, 50, 100)
+      assert.is_same(color, color.mix(hsl(0, 10, 99), 0))
+
+    it "100 strength returns target", ->
+      color = hsl(123, 50, 100)
+      target = hsl(22, 44, 88)
+      assert.is_same(target, color.mix(target, 100))
+
+    it "mixes the same as sass", ->
+      aqua = hsl(180, 100, 50)
+      black = hsl(0, 100, 0)
+      require 'pl'
+      pretty(black)
+      assert.is_same(black.hsl, aqua.mix(black, 100).hsl)
+      assert.is_same(hsl(180, 100, 40).hsl, aqua.mix(black, 20).hsl)
+
   describe "modifier behaviour", ->
     it "can chain modifiers", ->
       color = hsl(120, 11, 34)
