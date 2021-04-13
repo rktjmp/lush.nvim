@@ -95,6 +95,13 @@ local function wrap_color(color)
 
   local mix = function(color)
     return function(target, strength)
+      if target == 'black' then
+        target = {h = color.h, s = color.s, l = 0}
+      end
+      if target == 'white' then
+        target = {h = color.h, s = color.s, l = 100}
+      end
+
       strength = clamp(strength, 0, 100) / 100
       -- strength of 0 means no mix towards target, so
       -- color vector strength is 1
