@@ -1,10 +1,12 @@
 local api = vim.api
 local uv = vim.loop
-local hsl = require('lush.hsl')
+local hsl = require('lush.vivid.hsl')
+local hsluv = require('lush.vivid.hsluv')
 local lush = require('lush')
 
 local vt_group_ns = api.nvim_create_namespace("lushify_group")
 local vt_hsl_ns = api.nvim_create_namespace("lushify_hsl")
+local vt_hsluv_ns = api.nvim_create_namespace("lushify_hsluv")
 
 -- must define up here since named_hex_highlight_groups is used in a
 -- non mod function TODO adjust named_hex_highlight_groups
@@ -42,7 +44,24 @@ local function hsl_hex_call_to_color(hsl_hex_str)
   return hsl(hex)
 end
 
--- hsl -> string
+-- converts a "hsluv(n, n, n)" string to a color
+-- (n, n, n) -> hsluv
+local function hsluv_hsluv_call_to_color(hsluv_hsluv_str)
+  local h, s, l = string.match(hsluv_hsluv_str,
+                               "hsluv%(%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)")
+  return hsluv(tonumber(h), tonumber(s), tonumber(l))
+end
+
+-- converts a "hsluv(hex_str)" string to a color
+-- string -> hlsuv
+local function hsluv_hex_call_to_color(hsluv_hex_str)
+  local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
+  local hex = string.match(hsluv_hex_str,
+                          "hsluv%([\"'](#"..hex_pat..")[\"']%)")
+  return hsluv(hex)
+end
+
+-- hsl/hsluv -> string
 local function create_highlght_group_name_for_color(color)
   -- substring color from #000000 to 000000
   return "lushify_" .. string.sub(tostring(color), 2)
@@ -116,10 +135,63 @@ local function find_all_hsl_in_str(str, read_head, matches)
   return matches
 end
 
+-- reduce function, matches contains all matches found in str
+-- (string, number, table) -> table
+local function find_all_hsluv_in_str(str, read_head, matches)
+  -- setup
+  local hsluv_pat = "(hsluv%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
+  local hex_chs = string.rep("[0-9abcdefABCDEF]", 6)
+  local hex_pat = "(hsluv%([\"']#"..hex_chs.."[\"']%))"
+
+  -- check line for match with either colour type
+  local hsluv_fs, hsl_fe = string.find(str, hsluv_pat)
+  local hex_fs, hex_fe = string.find(str, hex_pat)
+  local fs, fe, type
+
+  -- set fs depending on match success (future ops are type independent)
+  if hsluv_fs then
+    fs, fe = hsluv_fs, hsl_fe
+    type = "hsluv"
+  elseif hex_fs then
+    fs, fe = hex_fs, hex_fe
+    type = "hex"
+  end
+
+  -- match'd either colour type, save the call and where it is in the line
+  if fs then
+    -- make color
+    local hsluv_call = string.sub(str, fs, fe)
+    local color = type == "hsluv" and
+                  hsluv_hsluv_call_to_color(hsluv_call) or
+                  hsluv_hex_call_to_color(hsluv_call)
+
+    -- save color
+    local match = {
+      color = color,
+      from = read_head + fs,
+      to = read_head + fe,
+    }
+    table.insert(matches, match)
+
+    -- inspect rest of string
+    read_head = read_head + fe - 1
+    str = string.sub(str, fe)
+    find_all_hsluv_in_str(str, read_head, matches)
+  end
+
+  -- no match ahead, return all matches, stop looking
+  return matches
+end
+
 -- finds all hsl() calls on a line and applies suitable highlighting
 -- (number, string, number) -> nil
 local function set_highlight_hsl_on_line(buf, line, line_num)
-  local colors = find_all_hsl_in_str(line, 0, {})
+  local hsl_colors = find_all_hsl_in_str(line, 0, {})
+  local hsluv_colors = find_all_hsluv_in_str(line, 0, {})
+  local colors = hsl_colors
+  for _,v in ipairs(hsluv_colors) do
+    table.insert(colors, v)
+  end
 
   -- apply any colors we found
   if #colors > 0 then
