@@ -1,14 +1,13 @@
-local convert = require('lush.hsl.convert')
+local clamp = require('lush.math').clamp
+local round = require('lush.math').round
 
--- clamp val between min and max
-local clamp = function(val, min, max)
-  return math.min(max, math.max(min, val))
-end
-
--- round float, implementation rounds 0.5 upwards.
-local round = function(val)
-  return math.floor(val + 0.5)
-end
+--
+-- HSL-like colours
+--
+-- We support both HSL and HSLUV colourspaces, which behave
+-- the same except when they are converting out into RGB
+-- so this module allows us to unify code for both color models.
+--
 
 local function hsl_clamp(color)
   local h, s, l
@@ -18,7 +17,9 @@ local function hsl_clamp(color)
   return { h = h, s = s, l = l }
 end
 
-local function wrap_color(color, color_space_to_hex_fn)
+local function wrap_color(color, colorspace_to_hex_fn)
+  if not colorspace_to_hex_fn then error("Must specify colorspace_to_hex_fn") end
+
   -- make sure our color is valid
   color = hsl_clamp(color)
 
@@ -27,7 +28,7 @@ local function wrap_color(color, color_space_to_hex_fn)
       if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
       local new_color = {h = color.h, s = color.s, l = color.l}
       new_color[key] = new_color[key] + abs_value
-      return wrap_color(new_color)
+      return wrap_color(new_color, colorspace_to_hex_fn)
     end
   end
 
@@ -45,7 +46,7 @@ local function wrap_color(color, color_space_to_hex_fn)
       local lerp_space = percent < 0 and new_color[key] or (max - new_color[key])
       -- perform the lerp
       new_color[key] = new_color[key] + (lerp_space * (percent / 100))
-      return wrap_color(new_color)
+      return wrap_color(new_color, colorspace_to_hex_fn)
     end
   end
 
@@ -136,26 +137,26 @@ local function wrap_color(color, color_space_to_hex_fn)
         s = math.sqrt(rv.x * rv.x + rv.y * rv.y),
         l = rv.z
       }
-      return wrap_color(new_color)
+      return wrap_color(new_color, colorspace_to_hex_fn)
     end
   end
 
   local hue = function(color)
     return function(hue)
       if type(hue) ~= "number" then error("Must provide number to HSL modifiers", 0) end
-      return wrap_color({h = hue, s = color.s, l = color.l})
+      return wrap_color({h = hue, s = color.s, l = color.l}, colorspace_to_hex_fn)
     end
   end
   local saturation = function(color)
     return function(saturation)
       if type(saturation) ~= "number" then error("Must provide number to HSL modifiers", 0) end
-      return wrap_color({h = color.h, s = saturation, l = color.l})
+      return wrap_color({h = color.h, s = saturation, l = color.l}, colorspace_to_hex_fn)
     end
   end
   local lightness = function(color)
     return function(lightness)
       if type(lightness) ~= "number" then error("Must provide number to HSL modifiers", 0) end
-      return wrap_color({h = color.h, s = color.s, l = lightness})
+      return wrap_color({h = color.h, s = color.s, l = lightness}, colorspace_to_hex_fn)
     end
   end
 
@@ -196,7 +197,7 @@ local function wrap_color(color, color_space_to_hex_fn)
       if key_name == "h" then return color.h end
       if key_name == "s" then return color.s end
       if key_name == "l" then return color.l end
-      if key_name == "hex" then return convert.hsl_to_hex(color) end
+      if key_name == "hex" then return colorspace_to_hex_fn(color) end
       if key_name == "hsl" then return {h = color.h, s = color.s, l = color.l} end
 
       if mod_fns[key_name] then
@@ -219,7 +220,7 @@ local function wrap_color(color, color_space_to_hex_fn)
     end,
 
     __tostring = function(hsl)
-      return color_space_to_hex_fn(hsl)
+      return colorspace_to_hex_fn(hsl)
     end,
 
     __concat = function(lhs, rhs)

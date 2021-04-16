@@ -1,4 +1,6 @@
-local hsl = require('lush.hsl')
+local hsl = require('lush.vivid.hsl')
+local hsluv = require('lush.vivid.hsluv')
+
 local parser = require('lush.parser')
 local compiler = require('lush.compiler')
 
@@ -34,6 +36,7 @@ local M = {}
 
 -- usability binds
 M.hsl = hsl
+M.hsluv = hsluv
 M.ify = function(options)
   -- localise this require so test's don't complain about
   -- missing vim globals, etc
