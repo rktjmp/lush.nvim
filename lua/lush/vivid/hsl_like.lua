@@ -161,6 +161,16 @@ local function wrap_color(color, colorspace_to_hex_fn)
     end
   end
 
+  local readable = function(color)
+    return function()
+      if color.l >= 50 then
+        return wrap_color({h = color.h, s = color.s, l = 0}, colorspace_to_hex_fn)
+      else
+        return wrap_color({h = color.h, s = color.s, l = 100}, colorspace_to_hex_fn)
+      end
+    end
+  end
+
   local mod_fns = {
     rotate = rotate,
     ro = rotate,
@@ -186,6 +196,7 @@ local function wrap_color(color, colorspace_to_hex_fn)
     abs_da = abs_darken,
 
     mix = mix,
+    readable = readable,
 
     hue = hue,
     saturation = saturation,
