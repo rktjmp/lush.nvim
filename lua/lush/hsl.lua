@@ -93,6 +93,8 @@ local function wrap_color(color)
     end
   end
 
+  -- mix ref:
+  -- https://stackoverflow.com/questions/35816179/calculation-algorithm-to-mix-3-hsl-colors
   local mix = function(color)
     return function(target, strength)
       if target == 'black' then
@@ -110,6 +112,7 @@ local function wrap_color(color)
       -- str = 0, cv_str = 1, tv_str = 0
       -- str = 100, cv_str = 0, tv_str = 1
       local tv_str = 1 - cv_str
+
       -- convert colors to vector
       local cv = {
         x = math.cos(color.h / 180 * math.pi) * color.s,

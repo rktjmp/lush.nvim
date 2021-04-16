@@ -194,13 +194,12 @@ describe "hsl", ->
       target = hsl(22, 44, 88)
       assert.is_same(target, color.mix(target, 100))
 
-    it "mixes the same as sass", ->
-      aqua = hsl(180, 100, 50)
-      black = hsl(0, 100, 0)
-      require 'pl'
-      pretty(black)
-      assert.is_same(black.hsl, aqua.mix(black, 100).hsl)
-      assert.is_same(hsl(180, 100, 40).hsl, aqua.mix(black, 20).hsl)
+    -- 2021-04-16: undecided whether sass should be ref imp or not
+    -- it  "mixes the same as sass", ->
+    --   aqua = hsl(180, 100, 50)
+    --   black = hsl(0, 100, 0)
+    --   assert.is_same(black.hsl, aqua.mix(black, 100).hsl)
+    --   assert.is_same(hsl(180, 100, 40).hsl, aqua.mix(black, 20).hsl)
 
   describe "modifier behaviour", ->
     it "can chain modifiers", ->
