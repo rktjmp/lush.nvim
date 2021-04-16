@@ -98,6 +98,7 @@ local function wrap_color(color, colorspace_to_hex_fn)
   -- https://stackoverflow.com/questions/35816179/calculation-algorithm-to-mix-3-hsl-colors
   local mix = function(color)
     return function(target, strength)
+      assert(strength, "must provide strength to mix")
       if target == 'black' then
         target = {h = color.h, s = color.s, l = 0}
       end
