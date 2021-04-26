@@ -35,9 +35,8 @@ end
 
 local function make_group(name, values, options)
   -- We define groups "greedily", meaning we set any un-set options to NONE
-  -- TODO: good idea or nah?
-  -- 2021/02/19 - believe it was chosen because it allowed for {} group defs
-  --              which can clear exiting highlights
+  -- This allows for Group {} to actually clear highlighting, which was
+  -- personally preferable to me who uses very few highlights.
 
   -- filter the keys we will get thorugh the exclude_keys list
   local accepted = {}
