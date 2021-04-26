@@ -20,7 +20,7 @@ local function make_group(name, opts)
   --              which can clear exiting highlights
 
   -- be nice and fix gui spaces if present
-  local gui = opts.gui or 'NONE'
+  local gui = value_or_NONE(opts.gui)
   gui = string.gsub(gui, ' ', '')
 
   return table.concat({
