@@ -553,13 +553,48 @@ If desired, you can manually parse -> compile -> apply your lush-spec.
 >
   local lush = require('lush')
   local parsed = lush.parse(function() return { ... } end)
-  local compiled = lush.compile(parsed, {force_clean = true })
+  local compiled = lush.compile(parsed)
+  -- may want to manually insert clearing existing highlights here
+  -- see lush.lua, search for insert_force_clean for an example
   lush.apply(compiled)
 <
-`compile` accepts a secondary `options` table with the following options:
 
-* `force_clean`: `true` or `false`, prepends commands to clear and reset
-                 highlighting.
+Parse                                              *lush-manual-toolchain-parse*
+
+Accepts a lush spec and returns a parsed lush spec.
+
+Accepts no options.
+>
+  local parsed = lush.parse(function() return { ... } end)
+<
+
+Compile                                          *lush-manual-toolchain-compile*
+
+Accepts a parsed lush spec and returns a list of vim commands to apply the spec.
+
+Note: You may wish to prepend commands to clear existing highlights before
+      continuing.
+
+      See lush.lua, search for insert_force_clean for an example.
+
+Accepts the following options:
+
+  - exclude_keys: list of strings, where each string matches a lush spec key to
+                  exclude from the compiled command.
+
+                  Valid keys: fg bg sp gui blend
+>
+  local compiled = lush.compile(parsed, {exclude_keys = {"blend"})
+<
+
+Apply                                              *lush-manual-toolchain-apply*
+
+Acceps a list of vim commands to pass to the interpreter.
+
+Accepts no options.
+>
+  lush.apply(compiled)
+<
 
 --------------------------------------------------------------------------------
 Pitfalls, Beartraps, Dragons                                     *lush-pitfalls*
