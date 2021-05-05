@@ -29,7 +29,7 @@ end
 -- (n, n, n) -> hsl
 local function hsl_hsl_call_to_color(hsl_hsl_str)
   local h, s, l = string.match(hsl_hsl_str,
-                               "hsl%(?%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)?")
+                               "hsl%(%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)")
   return hsl(tonumber(h), tonumber(s), tonumber(l))
 end
 
@@ -72,7 +72,7 @@ end
 -- (string, number, table) -> table
 local function find_all_hsl_in_str(str, read_head, matches)
   -- setup
-  local hsl_pat = "(hsl%(?%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%)?)"
+  local hsl_pat = "(hsl%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
   local hex_chs = string.rep("[0-9abcdefABCDEF]", 6)
   local hex_pat = "(hsl%(?%s-[\"']#"..hex_chs.."[\"']%)?)"
 
