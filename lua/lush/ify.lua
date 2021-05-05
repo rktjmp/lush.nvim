@@ -57,7 +57,7 @@ end
 local function hsluv_hex_call_to_color(hsluv_hex_str)
   local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
   local hex = string.match(hsluv_hex_str,
-                          "hsluv%([\"'](#"..hex_pat..")[\"']%)")
+                          "hsluv%(?%s-[\"'](#"..hex_pat..")[\"']%)?")
   return hsluv(hex)
 end
 
@@ -141,7 +141,7 @@ local function find_all_hsluv_in_str(str, read_head, matches)
   -- setup
   local hsluv_pat = "(hsluv%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
   local hex_chs = string.rep("[0-9abcdefABCDEF]", 6)
-  local hex_pat = "(hsluv%([\"']#"..hex_chs.."[\"']%))"
+  local hex_pat = "(hsluv%(?%s-[\"']#"..hex_chs.."[\"']%)?)"
 
   -- check line for match with either colour type
   local hsluv_fs, hsl_fe = string.find(str, hsluv_pat)
