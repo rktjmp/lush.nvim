@@ -46,6 +46,20 @@ My personal One Dark port for Neovim with Treesitter and LSP support, dark/light
 
 ---
 
+### nord.nvim
+
+[kunzaatko/nord.nvim](https://github.com/kunzaatko/nord.nvim)
+
+Lua module: `require("nord-nvim")`
+
+Usage: `colorscheme nord`
+
+Port of the popular [nord-vim](https://github.com/arcticicestudio/nord-vim) theme to `lush`. The `trunk` branch is the group for group copy with all options from the original implemented and the `colourful` branch is my own tweaked version.
+
+![nord.nvim](kunzaatko_nord_nvim.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
