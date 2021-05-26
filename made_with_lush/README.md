@@ -60,6 +60,21 @@ Port of the popular [nord-vim](https://github.com/arcticicestudio/nord-vim) them
 
 ---
 
+### gruvbox.nvim
+
+[npxbr/gruvbox.nvim](https://github.com/npxbr/gruvbox.nvim)
+
+Lua module: `require("gruvbox")`
+
+Usage: `colorscheme gruvbox`
+
+A port of gruvbox community theme to lua with treesitter support!
+
+![](npxbr_gruvbox_nvim_1.png)
+![](npxbr_gruvbox_nvim_2.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
