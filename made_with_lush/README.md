@@ -12,6 +12,21 @@ Themes are sorted alphanumeric by theme name.
 Lush Community Themes
 ---------------------
 
+### darc.nvim
+
+[PyGamer0/darc.nvim](https://github.com/PyGamer0/darc.nvim)
+
+Lua module: `require 'lush_theme.darc'`
+
+Usage: `colorscheme darc`
+
+My colorscheme that I made when I got tired of all other colorschemes :P (Neovim-LSP support)
+
+![](pygamer0_darc_nvim_1.png)
+![](pygamer0_darc_nvim_2.png)
+
+---
+
 ### jellybeans-nvim
 
 [metalelf0/jellybeans-nvim](https://github.com/metalelf0/jellybeans-nvim)
