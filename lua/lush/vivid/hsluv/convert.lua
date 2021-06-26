@@ -20,16 +20,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -- small 5.2+ compat so we can require elsewhere
 local unpack = unpack or table.unpack
 
-hsluv = {}
+local hsluv = {}
 
-hexChars = "0123456789abcdef"
+local hexChars = "0123456789abcdef"
 
 
-distance_line_from_origin = function(line)
+local distance_line_from_origin = function(line)
     return math.abs(line.intercept) / math.sqrt((line.slope ^ 2) + 1)
 end
 
-length_of_ray_until_intersect = function(theta, line)
+local length_of_ray_until_intersect = function(theta, line)
     return line.intercept / (math.sin(theta) - line.slope * math.cos(theta))
 end
 
@@ -345,7 +345,7 @@ hsluv.kappa = 903.2962962
 hsluv.epsilon = 0.0088564516
 
 -- tiny wrapper to convert between library representation and our representation
-M = {
+local M = {
   hex_to_hsluv = function(hex)
     local h, s, l = unpack(hsluv.hex_to_hsluv(hex))
     return {h = h, s = s, l = l}
