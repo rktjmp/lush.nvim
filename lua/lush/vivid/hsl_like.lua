@@ -192,8 +192,7 @@ local function op_readable(color)
   end
 end
 
--- define as var for self-recursion in op application
-local function make_color(color, to_hex_fn)
+local function decorate_hsl_table(color, to_hex_fn)
   if not to_hex_fn then error("Must specify to_hex_fn") end
 
   -- make sure our color is valid
@@ -245,7 +244,7 @@ local function make_color(color, to_hex_fn)
       if op_fns[key_name] then
         return function(...)
           local altered_color = op_fns[key_name](color)(...)
-          return make_color(altered_color, to_hex_fn)
+          return decorate_hsl_table(altered_color, to_hex_fn)
         end
       else
         local ops = ""
@@ -280,8 +279,24 @@ local function make_color(color, to_hex_fn)
   })
 end
 
-local M = function(hsl, hex_fn)
-  return make_color(hsl, hex_fn)
+local M = function(h_or_hex, s, l, type_fns)
+  assert(h_or_hex, type_fns.name() .. " expects (number, number, number) or (string)")
+
+  local h, hex = h_or_hex, h_or_hex
+  local hsl
+
+  if type(hex) == "string" then
+     hsl = type_fns.from_hex(hex)
+  else
+    if type(h) ~= "number" or
+        type(s) ~= "number" or
+        type(l) ~= "number" then
+      error(type_fns.name() .. " expects (number, number, number) or (string)", 2)
+    end
+    hsl = {h = h, s = s, l = l}
+  end
+
+  return decorate_hsl_table(hsl, type_fns.to_hex)
 end
 
 return M
