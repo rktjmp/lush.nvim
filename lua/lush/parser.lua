@@ -1,4 +1,26 @@
+-- small compat so we can require lush into 5.2+ runtimes (awesomewm, etc)
+local unpack = unpack or table.unpack
+local setfenv = setfenv or function (fn, env)
+    local i = 1
+    while true do
+      local name = debug.getupvalue(fn, i)
+      if name == "_ENV" then
+        debug.upvaluejoin(fn, i, (function()
+          return env
+        end), 1)
+        break
+      elseif not name then
+        break
+      end
+
+      i = i + 1
+    end
+
+    return fn
+  end
+
 local parser_error = require('lush.errors').parser.generate_for_code
+
 
 local function allowed_option_keys()
   -- note, sometimes `1` is manually inserted into allowed options,
