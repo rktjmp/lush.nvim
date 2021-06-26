@@ -1,4 +1,3 @@
-
 -- RGB -> HSL and HSL -> RGB adapted from
 -- https://github.com/EmmanuelOga/columns/blob/master/utils/color.lua
 
@@ -62,19 +61,17 @@ local function rgb_to_hsl(rgb)
   return {h = h, s = s, l = l}
 end
 
-local M = {}
-
-M.hex_to_hsl = function(hex)
-  local rgb = rgb_convert.hex_to_rgb(hex)
-  local hsl = rgb_to_hsl(rgb)
-  return {
-    h = round(hsl.h * 360),
-    s = round(hsl.s * 100),
-    l = round(hsl.l * 100),
-  }
-end
-
-M.hsl_to_hex = function(hsl)
+local M = {
+  hex_to_hsl = function(hex)
+    local rgb = rgb_convert.hex_to_rgb(hex)
+    local hsl = rgb_to_hsl(rgb)
+    return {
+      h = round(hsl.h * 360),
+      s = round(hsl.s * 100),
+      l = round(hsl.l * 100),
+    }
+  end,
+  hsl_to_hex = function(hsl)
     -- normalise for convert fuction
     hsl = {
       h = hsl.h / 360,
@@ -83,6 +80,7 @@ M.hsl_to_hex = function(hsl)
     }
     local rgb = hsl_to_rgb(hsl)
     return rgb_convert.rgb_to_hex(rgb)
-end
+  end
+}
 
 return M
