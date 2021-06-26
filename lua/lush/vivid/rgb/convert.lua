@@ -21,7 +21,9 @@ local function hex_to_rgb(hex_str)
   return {r = r, g = g, b =  b}
 end
 
-return {
+local M = {
   rgb_to_hex = rgb_to_hex,
   hex_to_rgb = hex_to_rgb
 }
+
+return M

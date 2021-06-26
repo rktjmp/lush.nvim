@@ -13,6 +13,8 @@ local type_fns = {
   name = function() return "hsl()" end
 }
 
-return function(h_or_hex, s, l)
+local M = function(h_or_hex, s, l)
   return hsl_like(h_or_hex, s, l, type_fns)
 end
+
+return M
