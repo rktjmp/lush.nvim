@@ -1,6 +1,5 @@
--- RGB -> HSL and HSL -> RGB adapted from
--- https://github.com/EmmanuelOga/columns/blob/master/utils/color.lua
---
+-- Support module to convert between RGB and HEX
+
 local function rgb_to_hex(rgb)
   return string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
 end

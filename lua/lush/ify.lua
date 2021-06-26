@@ -1,7 +1,7 @@
 local api = vim.api
 local uv = vim.loop
-local hsl = require('lush.vivid.hsl')
-local hsluv = require('lush.vivid.hsluv')
+local hsl = require('lush.vivid.hsl.type')
+local hsluv = require('lush.vivid.hsluv.type')
 local lush = require('lush')
 
 local vt_group_ns = api.nvim_create_namespace("lushify_group")

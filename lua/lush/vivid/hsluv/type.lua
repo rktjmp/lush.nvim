@@ -8,8 +8,8 @@ local hsl_like = require('lush.vivid.hsl_like')
 --
 
 local type_fns = {
-  from_hex = hsluv_convert.hex_to_hsl,
-  to_hex = hsluv_convert.hsl_to_hex,
+  from_hex = hsluv_convert.hex_to_hsluv,
+  to_hex = hsluv_convert.hsluv_to_hex,
   name = function() return "hsluv()" end
 }
 

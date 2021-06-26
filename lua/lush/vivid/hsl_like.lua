@@ -282,6 +282,10 @@ end
 local M = function(h_or_hex, s, l, type_fns)
   assert(h_or_hex, type_fns.name() .. " expects (number, number, number) or (string)")
 
+  assert(type_fns.name, "must provide name() type_fn")
+  assert(type_fns.from_hex, type_fns.name() .. " must provide from_hex() type_fn")
+  assert(type_fns.to_hex, type_fns.name() .. " must provide to_hex() type_fn")
+
   local h, hex = h_or_hex, h_or_hex
   local hsl
 

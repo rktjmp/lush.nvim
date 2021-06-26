@@ -1,3 +1,5 @@
+-- Support module to convert between HSL and RGB_HEX values
+--
 -- RGB -> HSL and HSL -> RGB adapted from
 -- https://github.com/EmmanuelOga/columns/blob/master/utils/color.lua
 

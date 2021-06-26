@@ -1,5 +1,5 @@
-local hsl = require('lush.vivid.hsl')
-local hsluv = require('lush.vivid.hsluv')
+local hsl = require('lush.vivid.hsl.type')
+local hsluv = require('lush.vivid.hsluv.type')
 
 local parser = require('lush.parser')
 local compiler = require('lush.compiler')
