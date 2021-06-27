@@ -193,8 +193,6 @@ local function op_readable(color)
 end
 
 local function decorate_hsl_table(color, to_hex_fn)
-  if not to_hex_fn then error("Must specify to_hex_fn") end
-
   -- make sure our color is valid
   color = hsl_clamp(color)
 
@@ -280,17 +278,27 @@ local function decorate_hsl_table(color, to_hex_fn)
 end
 
 local M = function(h_or_hex, s, l, type_fns)
-  assert(h_or_hex, type_fns.name() .. " expects (number, number, number) or (string)")
-
+  assert(type_fns, "must provide type_fns")
   assert(type_fns.name, "must provide name() type_fn")
   assert(type_fns.from_hex, type_fns.name() .. " must provide from_hex() type_fn")
   assert(type_fns.to_hex, type_fns.name() .. " must provide to_hex() type_fn")
 
-  local h, hex = h_or_hex, h_or_hex
+  assert(h_or_hex, type_fns.name() .. " expects (number, number, number) or (string)")
+
+  local h, hex_str = h_or_hex, h_or_hex
   local hsl
 
-  if type(hex) == "string" then
-     hsl = type_fns.from_hex(hex)
+  if type(hex_str) == "string" then
+    -- normalise
+    local hex = "[abcdef0-9][abcdef0-9]"
+    local pat = "^#("..hex..")("..hex..")("..hex..")$"
+    hex_str = string.lower(hex_str)
+
+    -- smoke test
+    assert(string.find(hex_str, pat) ~= nil,
+           "hex_to_rgb: invalid hex_str: " .. tostring(hex_str))
+
+     hsl = type_fns.from_hex(hex_str)
   else
     if type(h) ~= "number" or
         type(s) ~= "number" or

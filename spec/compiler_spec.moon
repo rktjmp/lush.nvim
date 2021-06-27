@@ -6,7 +6,6 @@ index_of = (list, check) ->
 
 any = (list, check) -> index_of(list, check) ~= nil
 
-
 describe "compiler", ->
   parse = require('lush.parser')
   compile = require('lush.compiler')

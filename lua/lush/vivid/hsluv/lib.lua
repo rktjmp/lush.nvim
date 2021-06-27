@@ -268,7 +268,7 @@ hsluv.rgb_to_hex = function(tuple)
         h = h .. string.sub(hexChars, digit1 + 1, digit1 + 1)
         h = h .. string.sub(hexChars, digit2 + 1, digit2 + 1)
     end;
-    return h
+    return string.upper(h)
 end
 
 hsluv.hex_to_rgb = function(hex)
