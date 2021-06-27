@@ -24,12 +24,14 @@ data.
 CONTENTS                                                              *lush-toc*
 
 Lush Tutorials                                                  |lush-tutorials|
-HSL Colors                                                     |lush-hsl-colors|
+HSL & HSLUV Colors                         |lush-hsl-colors| |lush-hsluv-colors|
   Define a Color                                             |lush-define-color|
   Color Operations                                       |lush-color-operations|
   rotate, ro                                                 |lush-color-rotate|
   saturate, desaturate, sa, de     |lush-color-saturate| |lush-color-desaturate|
   lighten, darken, li, da               |lush-color-lighten| |lush-color-darken|
+  mix                                                           |lush-color-mix|
+  readable                                                 |lush-color-readable|
   abs_*                                         |lush-color-absolute-operations|
   hue, saturation, lightness, .h, .s, .l                     |lush-color-direct|
   .hex, tostring                                    |lush-color-string-coercion|
@@ -62,11 +64,34 @@ features. (Or view lush_quick_start.lua in the examples folder.)
 (Or view lush_tutorial.lua in the examples folder).
 
 --------------------------------------------------------------------------------
-HSL Colors                                                     *lush-hsl-colors*
+HSL & HSLUV Colors                          *lush-hsl-colors* *lush-hsluv-colors*
+
+Lush supports two color spaces:
+
+  - HSL which is defined by hue, saturation and lightness components and
+  - HSLUV, which functionally similar to HSL but maps better to
+    human perception.
+
+That is to say, increasing a hsluv colors lightness by 10% may be more likely
+to give you a color you would _perceive_ as "10% lighter" rather than what hsl
+would give you, a color which is mathematically "10% lighter".
+
+For more information on HSLUV see: https://www.hsluv.org/
+
+Both colorspaces can be accessed from the `lush` module and may be used
+interchangeably.
+
+For the rest of this document the term hsl can be taken to mean hsl or hsluv.
+>
+  hsl = lush.hsl
+  hsluv = lush.hsluv
+  hsl(100, 50, 50)
+  hsluv(100, 50, 50)
+<
 
 Define a color                                               *lush-define-color*
 
-You can create HSL colors by providing hue, saturation and lightness values,
+You can create HSL(UV) colors by providing hue, saturation and lightness values,
 or providing a hexadecimal string.
 >
   color = hsl(0, 100, 50) -- equivilent to rgb(255,0,0) elsewhere
@@ -130,6 +155,29 @@ they increase/decrease a percentage, not by adding a flat value
   color.darken(n)
   color.li(n)
   color.da(n)
+<
+
+mix                                                             *lush-color-mix*
+
+Mix one colour into another. Accepts a target color and strength, where the target
+is a hsl, hsluv type and strength is between 0-100.
+
+A strength of 0 effectively returns the original color, while 100 will return
+the target color.
+
+>
+  color.mix(target, 50)
+  color.mix(target, 0) == color
+  color.mix(target, 100) == target
+<
+
+readable                                                   *lush-color-readable*
+
+Given a color, return either white or black, which ever provides the better
+contrast. Most useful when setting a foreground color.
+
+>
+  color.readable()
 <
 
 abs_*                                           *lush-color-absolute-operations*
