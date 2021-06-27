@@ -238,18 +238,6 @@ describe "hsl_like", ->
       target = hsl(22, 44, 88, type_fns)
       assert.is_same(target.hsl, color.mix(target, 100).hsl)
 
-    it "accepts black and white", ->
-      color = hsl(123, 50, 100, type_fns)
-      assert.is_same({h: 123, l: 0, s: 50}, color.mix('black', 100).hsl)
-      assert.is_same({h: 123, l: 100, s: 50}, color.mix('white', 100).hsl)
-
-    -- 2021-04-16: undecided whether sass should be ref imp or not
-    -- it  "mixes the same as sass", ->
-    --   aqua = hsl(180, 100, 50, type_fns)
-    --   black = hsl(0, 100, 0, type_fns)
-    --   assert.is_same(black.hsl, aqua.mix(black, 100).hsl)
-    --   assert.is_same(hsl(180, 100, 40, type_fns).hsl, aqua.mix(black, 20).hsl)
-
   describe "modifier behaviour", ->
     it "can chain modifiers", ->
       color = hsl(120, 11, 34, type_fns)
