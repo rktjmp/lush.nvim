@@ -2,7 +2,7 @@ local hsluv_convert = require('lush.vivid.hsluv.convert')
 local hsl_like = require('lush.vivid.hsl_like')
 
 --
--- HSLUV Color
+-- HSLuv Color
 --
 -- expects to be called as hsluv(hue, sat, light) or hslulv("#RRGGBB")
 --

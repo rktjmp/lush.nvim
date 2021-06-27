@@ -24,7 +24,7 @@ data.
 CONTENTS                                                              *lush-toc*
 
 Lush Tutorials                                                  |lush-tutorials|
-HSL & HSLUV Colors                         |lush-hsl-colors| |lush-hsluv-colors|
+HSL & HSLuv Colors                         |lush-hsl-colors| |lush-hsluv-colors|
   Define a Color                                             |lush-define-color|
   Color Operations                                       |lush-color-operations|
   rotate, ro                                                 |lush-color-rotate|
@@ -64,19 +64,19 @@ features. (Or view lush_quick_start.lua in the examples folder.)
 (Or view lush_tutorial.lua in the examples folder).
 
 --------------------------------------------------------------------------------
-HSL & HSLUV Colors                          *lush-hsl-colors* *lush-hsluv-colors*
+HSL & HSLuv Colors                          *lush-hsl-colors* *lush-hsluv-colors*
 
 Lush supports two color spaces:
 
   - HSL which is defined by hue, saturation and lightness components and
-  - HSLUV, which functionally similar to HSL but maps better to
+  - HSLuv, which functionally similar to HSL but maps better to
     human perception.
 
 That is to say, increasing a hsluv colors lightness by 10% may be more likely
 to give you a color you would _perceive_ as "10% lighter" rather than what hsl
 would give you, a color which is mathematically "10% lighter".
 
-For more information on HSLUV see: https://www.hsluv.org/
+For more information on HSLuv see: https://www.hsluv.org/
 
 Both colorspaces can be accessed from the `lush` module and may be used
 interchangeably.

@@ -4,7 +4,7 @@ local round = require('lush.math').round
 --
 -- HSL-like colour functions
 --
--- Vivid supports both HSL and HSLUV colourspaces, which functionally
+-- Vivid supports both HSL and HSLuv colourspaces, which functionally
 -- behave the same except when they are converting out into RGB.
 --
 -- This module provides common operations on hsl-like colours.
