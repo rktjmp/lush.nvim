@@ -102,14 +102,12 @@ Color Operations                                         *lush-color-operations*
 
 All color operation functions are pure, they alway return new colors objects
 and leaving the originals unmodified.
-
 >
   c1 = hsl(0, 100, 50)
   c2 = c1.rotate(10) -- c2 != c1
 <
 
 Functions can be chained.
-
 >
   c.rotate(10).saturate(20).lighten(5)
 <
@@ -117,7 +115,6 @@ Functions can be chained.
 rotate, ro                                                   *lush-color-rotate*
 
 Rotate values are wrap around 0-360 degrees, `ro` is shorthand for `rotate`.
-
 >
   color.rotate(n)
   color.rotate(-n)
@@ -133,7 +130,6 @@ they increase/decrease a percentage, not by adding a flat value
 
 `sa` is shorthand for `saturate`.
 `de` is shorthand for `desaturate`.
-
 >
   color.saturate(n)
   color.desaturate(n)
@@ -149,7 +145,6 @@ they increase/decrease a percentage, not by adding a flat value
 
 `li` is shorthand for `lighten`.
 `da` is shorthand for `darken`.
-
 >
   color.lighten(n)
   color.darken(n)
@@ -164,7 +159,6 @@ is a hsl, hsluv type and strength is between 0-100.
 
 A strength of 0 effectively returns the original color, while 100 will return
 the target color.
-
 >
   color.mix(target, 50)
   color.mix(target, 0) == color
@@ -175,7 +169,6 @@ readable                                                   *lush-color-readable*
 
 Given a color, return either white or black, which ever provides the better
 contrast. Most useful when setting a foreground color.
-
 >
   color.readable()
 <
@@ -188,7 +181,6 @@ including shorthands, have absolute counterparts, prefixed by `abs_` which will
 add or subtract an absolute value.
 
 Rotate does not have an `abs_` prefixed function, it always operates absolutely.
-
 >
   color = hsl(0, 50, 50)
   color.saturate(10) -- saturates the color by 10%
@@ -198,7 +190,6 @@ Rotate does not have an `abs_` prefixed function, it always operates absolutely.
 hue, saturation, lightness, .h, .s, .l                       *lush-color-direct*
 
 You may also directly set a HSL value via:
-
 >
   hue(n)
   saturation(n)
@@ -206,7 +197,6 @@ You may also directly set a HSL value via:
 <
 
 And access members with,
-
 >
   color.h -- hue
   color.s -- saturation
@@ -220,7 +210,6 @@ with another string, passing to a function which will invoke tostring() or
 accessing the `.hex` accessor.
 
 Example                                                     *lush-color-example*
-
 >
   local hsl = require('lush').hsl                 -- include the module
   local red = hsl(0, 100, 50)                     -- define a color
