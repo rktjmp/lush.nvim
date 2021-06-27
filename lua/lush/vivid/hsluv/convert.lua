@@ -4,6 +4,9 @@
 
 local lib = require("lush.vivid.hsluv.lib")
 
+-- small 5.2+ compat so we can require elsewhere
+local unpack = unpack or table.unpack
+
 local M = {
   hex_to_hsluv = function(hex)
     local h, s, l = unpack(lib.hex_to_hsluv(hex))
