@@ -244,6 +244,21 @@ where the parsed lush spec is used to generate an Alacritty terminal theme. You
 could extend this concept into generating colors for your diff tool, css code
 blocks, etc.
 
+Or, using your nvim theme as a base for your AwesomeWM theme:
+
+```lua
+-- add lush lush and lush theme to lua path
+package.path = package.path .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?.lua"
+package.path = package.path .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?/?.lua"
+package.path = package.path .. ";/home/user/.local/share/nvim/site/plugged/lush-olive-tree/lua/lush_theme/?.lua"
+-- require lush theme
+local olive_tree = require("lush-olive-tree")
+
+-- use lush theme in awesomewm sheme
+theme.bg_normal     = olive_tree.SignColumn.bg.hex
+theme.bg_error      = olive_tree.Warning.bg.li(30).hex
+```
+
 Q/A
 ---
 
