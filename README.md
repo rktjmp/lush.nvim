@@ -7,6 +7,7 @@ Lush is a colorscheme creation aid, written in Lua, for Neovim.
 
 - [x] [Real time feedback!](#getting-started)
 - [x] [HSL color aids!](#2-create-your-theme)
+- [x] [HSLuv Support!](https://www.hsluv.org/)
 - [x] [Lua fast!](#is-lush-slow)
 - [x] Easily [extend](#advanced-example) other [themes!](made_with_lush/README.md#made-with-lush)
 - [x] Export to [Vim](#3-optional-export-your-theme-for-distribution-to-non-neovim-clients) or [other tools!](#using-lush-data-elsewhere)

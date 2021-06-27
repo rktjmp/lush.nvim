@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+### 2021-06-28
+
+- Lush now supports HSLuv colorspace.
+- Lush now supports mix() and readable() color operations.
+
 ### 2021-03-17
 
 - Lush now supports spec inheritance via extends({...}).with(...)
