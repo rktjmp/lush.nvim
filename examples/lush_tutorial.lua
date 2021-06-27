@@ -11,7 +11,7 @@
 --  "Y8P"  "Y888888P'"Y88P"`Y8P' "YY8P8P88P     `Y8
 --
 -- This is the Lush tutorial. It demostrates the functionality of Lush and how
--- to write a basic lush-spec. For more information, see the README.
+-- to write a basic lush-spec. For more information, see the README and :h lush.
 --
 -- A Lush theme starter template can be found in the examples folder.
 --
@@ -27,7 +27,7 @@
 -- (try putting your cursor inside the ` and typing yi`:@"<CR>)
 -- (make sure to enable termguicolors with `set termguicolors`)
 --
--- Calls to hsl() are now highlighted with the correct background colour
+-- Calls to hsl()/hsluv() are now highlighted with the correct background colour
 -- Highlight names groups will have the highlight style applied to them.
 
 -- Lets get started, first we have to require lush, and optionally bind
@@ -35,6 +35,10 @@
 
 local lush = require('lush')
 local hsl = lush.hsl
+
+-- You may also use the HSLuv colorspace, see http://www.hsluv.org/ and h: lush-hsluv-colors.
+-- Replace calls to hsl() with hsluv()
+-- local hsluv = lush.hsluv
 
 -- HSL stands for Hue        (0 - 360)
 --                Saturation (0 - 100)
@@ -77,9 +81,11 @@ local sea_gull = hsl("#c6c6c6") -- as as string, preceeded with a #
 --
 --   Relative adjustment (rotate(), saturate(), desaturate(), lighten(), darken())
 --   Absolute adjustment (prefix above with abs_)
+--   Combination         (mix())
 --   Overrides           (hue(), saturation(), lightness())
 --   Access              (.h, .s, .l)
 --   Coercion            (tostring(), "Concatination: " .. color)
+--   Helpers             (readable())
 --
 --   Adjustment functions have shortcut aliases, ro, sa, de, li, da
 --                                               abs_sa, abs_de, abs_li, abs_da
@@ -182,6 +188,9 @@ local theme = lush(function()
     -- search_base  { bg = hsl(52, 52, 52), fg = hsl(52, 10, 10) },
     -- Search       { search_base },
     -- IncSearch    { bg = search_base.bg.rotate(-20), fg = search_base.fg.darken(90) },
+
+    -- We can also mix colours together
+    -- Type         { fg = Normal.fg.mix(LineNr.fg, 30) }
 
     -- And that's the basics of using Lush!
     --

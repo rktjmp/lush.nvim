@@ -24,11 +24,14 @@
 --
 -- (try putting your cursor inside the ` and typing yi`:@"<CR>)
 --
--- Calls to hsl() are now highlighted with the correct background colour
+-- Calls to hsl()/hsluv() are now highlighted with the correct background colour
 -- Highlight names groups will have the highlight style applied to them.
 
 local lush = require('lush')
 local hsl = lush.hsl
+-- You may also use the HSLuv colorspace, see http://www.hsluv.org/ and h: lush-hsluv-colors.
+-- Replace calls to hsl() with hsluv()
+-- local hsluv = lush.hsluv
 
 -- HSL stands for Hue        (0 - 360)
 --                Saturation (0 - 100)
@@ -51,7 +54,7 @@ local sea_gull  = hsl("#c6c6c6")    -- Or use hex form, preceeded with a #.
 -- Lush.hsl provides a number of conveniece functions for:
 --
 --   Relative adjustment: rotate(), saturate(), desaturate(), lighten(), darken()
---                        aliased to ro(), sa() de(), li(), da()
+--                        aliased to ro(), sa() de(), li(), da(), mix(), readable()
 --   Overide:             hue(), saturation(), lightness()
 --   Access:              .h, .s, .l
 --   Coercion:            tostring(), "Concatenation: " .. color
@@ -130,9 +133,12 @@ local theme = lush(function()
     -- Search       { search_base },
     -- IncSearch    { bg = search_base.bg.ro(-20), fg = search_base.fg.da(90) },
 
+    -- We can also mix colours together
+    -- Type         { fg = Normal.fg.mix(LineNr.fg, 30) }
+
     -- And that's the basics of using Lush!
     --
-    -- For more information, see the README or run :LushRunTutorial
+    -- For more information, see the README and :h lush or run :LushRunTutorial
   }
 end)
 
