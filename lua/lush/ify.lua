@@ -4,60 +4,62 @@ local hsl = require('lush.vivid.hsl.type')
 local hsluv = require('lush.vivid.hsluv.type')
 local lush = require('lush')
 
-local vt_group_ns = api.nvim_create_namespace("lushify_group")
-local vt_hsl_ns = api.nvim_create_namespace("lushify_hsl")
-local vt_hsluv_ns = api.nvim_create_namespace("lushify_hsluv")
+local hl_group_ns = api.nvim_create_namespace("lushify_group")
+local hl_vivid_call_ns = api.nvim_create_namespace("lushify_vivid")
 
--- must define up here since named_hex_highlight_groups is used in a
--- non mod function TODO adjust named_hex_highlight_groups
-local M = {}
-M.named_hex_highlight_groups = {}
+local named_hex_highlight_groups_cache ={}
 
 -- Given a line, find any highlight group definitions and color them
 -- looks for "   Normal {..."
--- Has potential for false positives, but the negative effect is pretty low
+-- Note: This *does* match commented out lines, which is a good thing since
+--       it lets us show "default" highlights on groups. This does give the
+--       potential for false positives but the negative side effect is pretty
+--       low impact.
 local function set_highlight_groups_on_line(buf, line, line_num)
-  -- more generous, must match something like 'Group {'
   local group = string.match(line, "%s-(%a[%a%d_]-)%s-{")
   if group then
     -- technically, find matches the first occurance in line, but this should
     -- always be our group name, so it's ok
     local hs, he = string.find(line, group)
-    api.nvim_buf_add_highlight(buf, vt_group_ns, group, line_num, hs - 1, he)
+    api.nvim_buf_add_highlight(buf, hl_group_ns, group, line_num, hs - 1, he)
   end
 end
 
+-- build vaild hex chars x 6
+local re_hex_chars = string.rep("[0-9abcdefABCDEF]", 6)
+local re_hex_pat = "#"..re_hex_chars
+-- matches "#NNNNNN"
+local re_hex_arg_pat = "%s-[\"']("..re_hex_pat..")[\"']"
+-- mathes "h, s, l"
+local re_h_s_l_args_pat = "%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-"
+
+local re_hsl_h_s_l_call_pat = "hsl%("..re_h_s_l_args_pat.."%)"
+local re_hsl_hex_call_pat = "hsl%(?"..re_hex_arg_pat.."%)?"
+
+local re_hsluv_h_s_l_call_pat = "hsluv%("..re_h_s_l_args_pat.."%)"
+local re_hsluv_hex_call_pat = "hsluv%(?"..re_hex_arg_pat.."%)?"
+
 -- converts a "hsl(n, n, n)" string to a color
--- (n, n, n) -> hsl
-local function hsl_hsl_call_to_color(hsl_hsl_str)
-  local h, s, l = string.match(hsl_hsl_str,
-                               "hsl%(%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)")
+local function hsl_h_s_l_call_to_color(hsl_hsl_str)
+  local h, s, l = string.match(hsl_hsl_str,"hsl%("..re_h_s_l_args_pat.."%)")
   return hsl(tonumber(h), tonumber(s), tonumber(l))
 end
 
 -- converts a "hsl(hex_str)" string to a color
--- string -> hls
 local function hsl_hex_call_to_color(hsl_hex_str)
-  local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
-  local hex = string.match(hsl_hex_str,
-                          "hsl%(?%s-[\"'](#"..hex_pat..")[\"']%)?")
+  local hex = string.match(hsl_hex_str, "hsl%(?"..re_hex_arg_pat.."%)?")
   return hsl(hex)
 end
 
 -- converts a "hsluv(n, n, n)" string to a color
--- (n, n, n) -> hsluv
-local function hsluv_hsluv_call_to_color(hsluv_hsluv_str)
-  local h, s, l = string.match(hsluv_hsluv_str,
-                               "hsluv%(%s-(%d+)%s-,%s-(%d+)%s-,%s-(%d+)%s-%)")
+local function hsluv_h_s_l_call_to_color(hsluv_hsluv_str)
+  local h, s, l = string.match(hsluv_hsluv_str, "hsluv%("..re_h_s_l_args_pat.."%)")
   return hsluv(tonumber(h), tonumber(s), tonumber(l))
 end
 
 -- converts a "hsluv(hex_str)" string to a color
--- string -> hlsuv
 local function hsluv_hex_call_to_color(hsluv_hex_str)
-  local hex_pat = string.rep("[0-9abcdefABCDEF]", 6)
-  local hex = string.match(hsluv_hex_str,
-                          "hsluv%(?%s-[\"'](#"..hex_pat..")[\"']%)?")
+  local hex = string.match(hsluv_hex_str, "hsluv%(?"..re_hex_arg_pat.."%)?")
   return hsluv(hex)
 end
 
@@ -70,127 +72,74 @@ end
 -- given a color, greates a vim highlight group that has that color
 -- as the background, and an appropriately readable forground
 -- color -> nil
-local function create_highlight_group_for_color(color)
+local function create_highlight_group_for_color(color, cache)
   local group_name = create_highlght_group_name_for_color(color)
-  -- FIXME: M.named_hex_highlight_groups is a hack
-  -- FIXME: also not much error protection going on
-  if not M.named_hex_highlight_groups[group_name] then
-    M.named_hex_highlight_groups[group_name] = color
-    local bg, fg = color, color
-    -- make it readable
-    fg = bg.l > 50 and fg.lightness(0) or fg.lightness(100)
+  if not cache[group_name] then
+    cache[group_name] = color
     -- define the highlight group
     api.nvim_command("highlight! " ..
                       group_name ..
-                      " guibg=" .. bg ..
-                      " guifg=" .. fg)
+                      " guibg=" .. color ..
+                      " guifg=" .. color.readable())
   end
 end
 
--- reduce function, matches contains all matches found in str
--- (string, number, table) -> table
-local function find_all_hsl_in_str(str, read_head, matches)
-  -- setup
-  local hsl_pat = "(hsl%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
-  local hex_chs = string.rep("[0-9abcdefABCDEF]", 6)
-  local hex_pat = "(hsl%(?%s-[\"']#"..hex_chs.."[\"']%)?)"
-
-  -- check line for match with either colour type
-  local hsl_fs, hsl_fe = string.find(str, hsl_pat)
-  local hex_fs, hex_fe = string.find(str, hex_pat)
-  local fs, fe, type
-
-  -- set fs depending on match success (future ops are type independent)
-  if hsl_fs then
-    fs, fe = hsl_fs, hsl_fe
-    type = "hsl"
-  elseif hex_fs then
-    fs, fe = hex_fs, hex_fe
-    type = "hex"
+local function find_all(str, pat)
+  local read_head = 1
+  return function()
+    local substr = string.sub(str, read_head)
+    local results = {string.find(substr, pat)}
+    if #results > 0 then
+      local fs = read_head + table.remove(results, 1) - 1 -- index at 1 garbage
+      local fe = read_head + table.remove(results, 1)
+      local matches = results
+      read_head = fe + 1
+      return fs, fe, matches
+    end
+    return nil
   end
-
-  -- match'd either colour type, save the call and where it is in the line
-  if fs then
-    -- make color
-    local hsl_call = string.sub(str, fs, fe)
-    local color = type == "hsl" and
-                  hsl_hsl_call_to_color(hsl_call) or
-                  hsl_hex_call_to_color(hsl_call)
-
-    -- save color
-    local match = {
-      color = color,
-      from = read_head + fs,
-      to = read_head + fe,
-    }
-    table.insert(matches, match)
-
-    -- inspect rest of string
-    read_head = read_head + fe - 1
-    str = string.sub(str, fe)
-    find_all_hsl_in_str(str, read_head, matches)
-  end
-
-  -- no match ahead, return all matches, stop looking
-  return matches
-end
-
--- reduce function, matches contains all matches found in str
--- (string, number, table) -> table
-local function find_all_hsluv_in_str(str, read_head, matches)
-  -- setup
-  local hsluv_pat = "(hsluv%(%s-%d+%s-,%s-%d+%s-,%s-%d+%s-%))"
-  local hex_chs = string.rep("[0-9abcdefABCDEF]", 6)
-  local hex_pat = "(hsluv%(?%s-[\"']#"..hex_chs.."[\"']%)?)"
-
-  -- check line for match with either colour type
-  local hsluv_fs, hsl_fe = string.find(str, hsluv_pat)
-  local hex_fs, hex_fe = string.find(str, hex_pat)
-  local fs, fe, type
-
-  -- set fs depending on match success (future ops are type independent)
-  if hsluv_fs then
-    fs, fe = hsluv_fs, hsl_fe
-    type = "hsluv"
-  elseif hex_fs then
-    fs, fe = hex_fs, hex_fe
-    type = "hex"
-  end
-
-  -- match'd either colour type, save the call and where it is in the line
-  if fs then
-    -- make color
-    local hsluv_call = string.sub(str, fs, fe)
-    local color = type == "hsluv" and
-                  hsluv_hsluv_call_to_color(hsluv_call) or
-                  hsluv_hex_call_to_color(hsluv_call)
-
-    -- save color
-    local match = {
-      color = color,
-      from = read_head + fs,
-      to = read_head + fe,
-    }
-    table.insert(matches, match)
-
-    -- inspect rest of string
-    read_head = read_head + fe - 1
-    str = string.sub(str, fe)
-    find_all_hsluv_in_str(str, read_head, matches)
-  end
-
-  -- no match ahead, return all matches, stop looking
-  return matches
 end
 
 -- finds all hsl() calls on a line and applies suitable highlighting
 -- (number, string, number) -> nil
-local function set_highlight_hsl_on_line(buf, line, line_num)
-  local hsl_colors = find_all_hsl_in_str(line, 0, {})
-  local hsluv_colors = find_all_hsluv_in_str(line, 0, {})
-  local colors = hsl_colors
-  for _,v in ipairs(hsluv_colors) do
-    table.insert(colors, v)
+local function set_highlight_vivid_calls_on_line(buf, line, line_num)
+  -- find hsl(...) and hsluv(...) strings. These may not always be valid
+  -- calls (i.e it matches hsl(garbage)) but we act greedy at first
+  local calls = {}
+  local call_patterns = {
+    "(hsl%b())", "(hsl%s*%b'')", '(hsl%s*%b"")',
+    "(hsluv%b())", "(hsluv%s*%b'')", '(hsluv%s*%b"")'
+  }
+  for _, pattern in pairs(call_patterns) do
+    for s, e, m in find_all(line, pattern) do
+      m = m[1]
+      table.insert(calls, {s, e, m})
+    end
+  end
+
+  -- attempt to turn call strings into real colors by checking if it's
+  -- a vaild call, and calling the desired function if so
+  local call_pat_to_call_fn = {
+    {re_hsl_h_s_l_call_pat, hsl_h_s_l_call_to_color},
+    {re_hsl_hex_call_pat, hsl_hex_call_to_color},
+    {re_hsluv_h_s_l_call_pat, hsluv_h_s_l_call_to_color},
+    {re_hsluv_hex_call_pat, hsluv_hex_call_to_color}
+  }
+  local colors = {}
+  for _, call in pairs(calls) do
+    local s, e, call_string = unpack(call)
+    for _, pat_fn in ipairs(call_pat_to_call_fn) do
+      local pat = pat_fn[1]
+      local fn = pat_fn[2]
+      if string.match(call_string, pat) then
+        table.insert(colors, {
+          from = s,
+          to = e,
+          color = fn(call_string)
+        })
+        break
+      end
+    end
   end
 
   -- apply any colors we found
@@ -198,14 +147,14 @@ local function set_highlight_hsl_on_line(buf, line, line_num)
     for _, match in ipairs(colors) do
       local color = match.color
 
-      create_highlight_group_for_color(color)
+      create_highlight_group_for_color(color, named_hex_highlight_groups_cache)
 
       local group_name = create_highlght_group_name_for_color(color)
       local hi_s, hi_e = match.from, match.to
 
-      api.nvim_buf_add_highlight(buf, vt_hsl_ns,
+      api.nvim_buf_add_highlight(buf, hl_vivid_call_ns,
                                  group_name, line_num,
-                                 hi_s - 1, hi_e) -- -1 for api-indexing
+                                 hi_s - 1, hi_e -1) -- -1 for api-indexing
     end
   end
 end
@@ -214,7 +163,7 @@ end
 -- lush-space errors are things that are spec dependent, bad definitions,
 -- invalid groups, etc.
 -- lua-space errors can be anything, mis-spelt variables, nil indexing, *vim errors*.
--- Since they can happen in intermingled contexts, we have a unified handler that 
+-- Since they can happen in intermingled contexts, we have a unified handler that
 -- can be called from both stages (loadstring and apply).
 local print_error = function(err)
   -- table implies (hopefully!) it's a lush error
@@ -306,16 +255,18 @@ local function eval_buffer(buf)
   --
   -- even if the eval failed, we can still apply hsl() calls
   -- and GroupName highlighting to lines in the file.
-  M.named_hex_highlight_groups = {}
+  named_hex_highlight_groups_cache = {}
   for i, line in ipairs(all_buf_lines) do
-    api.nvim_buf_clear_namespace(buf, vt_group_ns, i, i + 1)
-    api.nvim_buf_clear_namespace(buf, vt_hsl_ns, i, i + 1)
+    api.nvim_buf_clear_namespace(buf, hl_group_ns, i, i + 1)
+    api.nvim_buf_clear_namespace(buf, hl_vivid_call_ns, i, i + 1)
     set_highlight_groups_on_line(buf, line, i - 1)
-    set_highlight_hsl_on_line(buf, line, i - 1)
+    set_highlight_vivid_calls_on_line(buf, line, i - 1)
   end
 
   return did_apply
 end
+
+local M = {}
 
 M.setup_realtime_eval = function(buf, options)
   buf = buf or 0
@@ -329,7 +280,7 @@ M.setup_realtime_eval = function(buf, options)
   -- we will debounce with a larger window, this limits some over-eager
   -- error printing which may degrade performance depending on the term and
   -- machine.
-  -- 
+  --
   -- We allow for "last two" to provide minor grace if a user goes from
   -- `hsl(1` to `hsl(` which would error, but they are likley to repair the
   -- error in the next stroke.
@@ -431,11 +382,11 @@ setmetatable(M, {
     -- be watching for changes only inside the spec line range which while
     -- possible, just feels like a hack.
     --
-    -- 2020/11/22 - time for loadstring is 5ms, time for apply is between 
+    -- 2020/11/22 - time for loadstring is 5ms, time for apply is between
     --              very low 0-2ms and long 10ms?, seemingly depending on how
     --              vim feels. This difference is observed over the same spec
     --              with no changes. Having an in-memory spec is unlikely to
-    --              aid anything. the real bottle neck is vim itself.
+    --              aid anything. the real bottle neck is probably vim itself.
     --
     -- And all that seems like premature opitmisation anyway, since the
     -- performance cost is so low.
