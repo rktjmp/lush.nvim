@@ -248,9 +248,10 @@ Or, using your nvim theme as a base for your AwesomeWM theme:
 
 ```lua
 -- add lush lush and lush theme to lua path
-package.path = package.path .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?.lua"
-package.path = package.path .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?/?.lua"
-package.path = package.path .. ";/home/user/.local/share/nvim/site/plugged/lush-olive-tree/lua/?/?.lua"
+package.path = package.path
+                .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?.lua"
+                .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?/?.lua"
+                .. ";/home/user/.local/share/nvim/site/plugged/lush-olive-tree/lua/?/?.lua"
 -- require lush theme
 local olive_tree = require("lush_theme.olive_tree")
 
