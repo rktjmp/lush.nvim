@@ -12,6 +12,20 @@ Themes are sorted alphanumeric by theme name.
 Lush Community Themes
 ---------------------
 
+### codeschool.nvim
+
+[adisen99/codeschool.nvim](https://github.com/adisen99/codeschool.nvim)
+
+Lua module: `require("codeschool").setup()`
+
+Usage: `require('codeschool').setup()`
+
+A pretty colorscheme for neovim written in `Lua` based on the [codeschool.vim](https://github.com/flazz/vim-colorschemes/blob/master/colors/codeschool.vim) color pattete with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/codeschool.nvim/tree/master#usage))
+![dark theme](adisen99_codeschool_nvim_1.png)
+![light theme](adisen99_codeschool_nvim_2.png)
+
+---
+
 ### darc.nvim
 
 [PyGamer0/darc.nvim](https://github.com/PyGamer0/darc.nvim)
@@ -24,54 +38,6 @@ My colorscheme that I made when I got tired of all other colorschemes :P (Neovim
 
 ![](pygamer0_darc_nvim_1.png)
 ![](pygamer0_darc_nvim_2.png)
-
----
-
-### jellybeans-nvim
-
-[metalelf0/jellybeans-nvim](https://github.com/metalelf0/jellybeans-nvim)
-
-Lua module: `require('lush_theme.jellybeans-nvim')`
-
-Usage: `colorscheme jellybeans-nvim`
-
-A port of the jellybeans theme.
-
-![first screenshot](metalelf0_jellybeans-nvim_1.png)
-
----
-### onedark.nvim
-
-[olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
-
-Lua module: `require('lush_theme.onedark_nvim')`
-
-Usage:
-
-```lua
-vim.o.background = 'dark'
-vim.g.colors_name = 'onedark_nvim'
-```
-
-My personal One Dark port for Neovim with Treesitter and LSP support, dark/light versions and lots of plugins.
-
-![Dark](olimorris_onedark-nvim_dark.png)
-
-![Light](olimorris_onedark-nvim_light.png)
-
----
-
-### nord.nvim
-
-[kunzaatko/nord.nvim](https://github.com/kunzaatko/nord.nvim)
-
-Lua module: `require("nord-nvim")`
-
-Usage: `colorscheme nord`
-
-Port of the popular [nord-vim](https://github.com/arcticicestudio/nord-vim) theme to `lush`. The `trunk` branch is the group for group copy with all options from the original implemented and the `colourful` branch is my own tweaked version.
-
-![nord.nvim](kunzaatko_nord_nvim.png)
 
 ---
 
@@ -90,17 +56,52 @@ A port of gruvbox community theme to lua with treesitter support!
 
 ---
 
-### codeschool.nvim
+### jellybeans-nvim
 
-[adisen99/codeschool.nvim](https://github.com/adisen99/codeschool.nvim)
+[metalelf0/jellybeans-nvim](https://github.com/metalelf0/jellybeans-nvim)
 
-Lua module: `require("codeschool").setup()`
+Lua module: `require('lush_theme.jellybeans-nvim')`
 
-Usage: `require('codeschool').setup()`
+Usage: `colorscheme jellybeans-nvim`
 
-A pretty colorscheme for neovim written in `Lua` based on the [codeschool.vim](https://github.com/flazz/vim-colorschemes/blob/master/colors/codeschool.vim) color pattete with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/codeschool.nvim/tree/master#usage))
-![dark theme](adisen99_codeschool_nvim_1.png)
-![light theme](adisen99_codeschool_nvim_2.png)
+A port of the jellybeans theme.
+
+![first screenshot](metalelf0_jellybeans-nvim_1.png)
+
+---
+
+### nord.nvim
+
+[kunzaatko/nord.nvim](https://github.com/kunzaatko/nord.nvim)
+
+Lua module: `require("nord-nvim")`
+
+Usage: `colorscheme nord`
+
+Port of the popular [nord-vim](https://github.com/arcticicestudio/nord-vim) theme to `lush`. The `trunk` branch is the group for group copy with all options from the original implemented and the `colourful` branch is my own tweaked version.
+
+![nord.nvim](kunzaatko_nord_nvim.png)
+
+---
+
+### onedark.nvim
+
+[olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
+
+Lua module: `require('lush_theme.onedark_nvim')`
+
+Usage:
+
+```lua
+vim.o.background = 'dark'
+vim.g.colors_name = 'onedark_nvim'
+```
+
+My personal One Dark port for Neovim with Treesitter and LSP support, dark/light versions and lots of plugins.
+
+![Dark](olimorris_onedark-nvim_dark.png)
+
+![Light](olimorris_onedark-nvim_light.png)
 
 ---
 
