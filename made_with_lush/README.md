@@ -90,6 +90,20 @@ A port of gruvbox community theme to lua with treesitter support!
 
 ---
 
+### codeschool.nvim
+
+[adisen99/codeschool.nvim](https://github.com/adisen99/codeschool.nvim)
+
+Lua module: `require("codeschool").setup()`
+
+Usage: `require('codeschool').setup()`
+
+A pretty colorscheme for neovim written in `Lua` based on the [codeschool.vim](https://github.com/flazz/vim-colorschemes/blob/master/colors/codeschool.vim) color pattete with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/codeschool.nvim/tree/master#usage))
+![dark theme](adisen99_codeschool_nvim_1.png)
+![light theme](adisen99_codeschool_nvim_2.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
