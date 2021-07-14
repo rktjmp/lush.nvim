@@ -10,7 +10,7 @@ Lush is a colorscheme creation aid, written in Lua, for Neovim.
 - [x] [HSLuv Support!](https://www.hsluv.org/)
 - [x] [Lua fast!](#is-lush-slow)
 - [x] Easily [extend](#advanced-example) other [themes!](made_with_lush/README.md#made-with-lush)
-- [x] Export to [Vim](#3-optional-export-your-theme-for-distribution-to-non-neovim-clients) or [other tools!](#using-lush-data-elsewhere)
+- [x] Export to [Vim](#4-optional-export-your-theme-for-distribution-to-non-neovim-clients) or [other tools!](#using-lush-data-elsewhere)
 
 See some themes [**Made with Lush**](made_with_lush/README.md#made-with-lush).
 
@@ -51,7 +51,8 @@ To create a Vim colorscheme in Lush,
 
 1. Copy the lush-template
 2. Create your theme
-3. (optional) Export your theme for distribution to non-Neovim clients.
+3. Add your theme to nvim
+4. (optional) Export your theme for distribution to non-Neovim clients.
 
 The `:Lushify` command can be used during development for real time feedback on
 the appearance of your colorscheme.
@@ -152,7 +153,31 @@ return lush(function()
 end)
 ```
 
-### 3. (optional) Export your theme for distribution to non-Neovim clients.
+### 3. Add your theme to nvim
+
+Lush themes (like most vim colorschemes) act as plugins, so we have to add our
+theme to neovim's runtime before we can load it. Most people will do this via
+a package manager.
+
+Assuming your theme is in `~/projects/cool_name`:
+
+```lua
+-- when using packer-nvim
+use '~/projects/cool_name'
+```
+
+```viml
+" when using vim-plug
+Plug '~/projects/cool_name'
+```
+
+Afterwards we can apply the theme like any other:
+
+```viml
+colorscheme cool_name
+```
+
+### 4. (optional) Export your theme for distribution to non-Neovim clients.
 
 If you want to, you can also compile your completed theme to VimL. This is only
 required if you want your theme to be compatible with Vim.
