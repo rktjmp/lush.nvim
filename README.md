@@ -27,7 +27,7 @@ Installation
 Install via any package management system, for example, paq:
 
 ```vim
-paq 'rktjmp/lush.nvim'
+require paq { 'rktjmp/lush.nvim' }
 ```
 
 
