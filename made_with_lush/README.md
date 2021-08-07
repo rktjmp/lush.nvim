@@ -21,8 +21,8 @@ Lua module: `require("codeschool").setup()`
 Usage: `require('codeschool').setup()`
 
 A pretty colorscheme for neovim written in `Lua` based on the [codeschool.vim](https://github.com/flazz/vim-colorschemes/blob/master/colors/codeschool.vim) color pattete with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/codeschool.nvim/tree/master#usage))
-![dark theme](adisen99_codeschool_nvim_1.png)
-![light theme](adisen99_codeschool_nvim_2.png)
+![dark theme](../../assets/made_with_lush/adisen99_codeschool_nvim_1.png)
+![light theme](../../assets/made_with_lush/adisen99_codeschool_nvim_2.png)
 
 ---
 
@@ -36,8 +36,8 @@ Usage: `colorscheme darc`
 
 My colorscheme that I made when I got tired of all other colorschemes :P (Neovim-LSP support)
 
-![](pygamer0_darc_nvim_1.png)
-![](pygamer0_darc_nvim_2.png)
+![](../../assets/made_with_lush/pygamer0_darc_nvim_1.png)
+![](../../assets/made_with_lush/pygamer0_darc_nvim_2.png)
 
 ---
 
@@ -51,8 +51,8 @@ Usage: `colorscheme gruvbox`
 
 A port of gruvbox community theme to lua with treesitter support!
 
-![](npxbr_gruvbox_nvim_1.png)
-![](npxbr_gruvbox_nvim_2.png)
+![](../../assets/made_with_lush/npxbr_gruvbox_nvim_1.png)
+![](../../assets/made_with_lush/npxbr_gruvbox_nvim_2.png)
 
 ---
 
@@ -66,7 +66,7 @@ Usage: `colorscheme jellybeans-nvim`
 
 A port of the jellybeans theme.
 
-![first screenshot](metalelf0_jellybeans-nvim_1.png)
+![first screenshot](../../assets/made_with_lush/metalelf0_jellybeans-nvim_1.png)
 
 ---
 
@@ -80,7 +80,7 @@ Usage: `colorscheme nord`
 
 Port of the popular [nord-vim](https://github.com/arcticicestudio/nord-vim) theme to `lush`. The `trunk` branch is the group for group copy with all options from the original implemented and the `colourful` branch is my own tweaked version.
 
-![nord.nvim](kunzaatko_nord_nvim.png)
+![nord.nvim](../../assets/made_with_lush/kunzaatko_nord_nvim.png)
 
 ---
 
@@ -99,9 +99,8 @@ vim.g.colors_name = 'onedark_nvim'
 
 My personal One Dark port for Neovim with Treesitter and LSP support, dark/light versions and lots of plugins.
 
-![Dark](olimorris_onedark-nvim_dark.png)
-
-![Light](olimorris_onedark-nvim_light.png)
+![Dark](../../assets/made_with_lush/olimorris_onedark-nvim_dark.png)
+![Light](../../assets/made_with_lush/olimorris_onedark-nvim_light.png)
 
 ---
 

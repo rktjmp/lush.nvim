@@ -1,4 +1,4 @@
-![Lush Header](images/header.gif)
+![Lush Header](../assets/images/header.gif)
 
 Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 ====
@@ -34,7 +34,7 @@ require paq { 'rktjmp/lush.nvim' }
 Getting Started
 ---------------
 
-![Lush Demo](images/demo.gif)
+![Lush Demo](../assets/images/demo.gif)
 
 There are two interactive tutorials provided,
 
