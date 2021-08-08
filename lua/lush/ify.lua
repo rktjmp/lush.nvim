@@ -301,7 +301,6 @@ M.setup_realtime_eval = function(buf, options)
      error("lush.ify natural_timeout and error_timeout must be positive numbers", 0)
    end
 
-  -- the uv timer
   local defer_timer = nil
 
   -- tracks last N runs on a N-size stack,
@@ -325,7 +324,7 @@ M.setup_realtime_eval = function(buf, options)
   }
 
   -- bang the buffer on first call
-  eval_buffer(0)
+  eval_buffer(buf)
   -- then setup a re-eval on any changes
   api.nvim_buf_attach(buf, true, {
     on_lines = function()
