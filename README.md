@@ -120,8 +120,17 @@ Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
 or see the [docs (:h lush)](doc/lush.txt) more details.
 
 You may prefer to disable LSP/Linters while editing your lush spec, as they can
-have trouble parsing the meta programming. The examples folder contains various
-examples for topics like Lightline or dependency injection.
+have trouble parsing the meta programming, or disable `undefined global` warninngs
+if your LSP supports annotations. For example, sumneko's lua-language-server accepts:
+
+```lua
+---@diagnostic disable: undefined-global
+local theme = lush(function()
+-- your theme here...
+```
+
+The examples folder contains various examples for topics like Lightline or
+dependency injection.
 
 A simple lush-spec would look like this:
 
