@@ -104,6 +104,20 @@ My personal One Dark port for Neovim with Treesitter and LSP support, dark/light
 
 ---
 
+### Zenbones
+
+[mcchrish/zenbones.nvim](https://github.com/mcchrish/zenbones.nvim)
+
+Lua module: `require('zenbones')`
+
+Usage: `colorscheme zenbones`
+
+A simple contrast-focused vim/nvim colorscheme.
+
+![](https://user-images.githubusercontent.com/7200153/131045472-05c76909-0071-4c24-bd30-f15da3ae4e82.jpg)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
