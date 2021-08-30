@@ -77,7 +77,7 @@ local sea_deep  = hsl(208, 90, 10)  -- the integers used here.
 
 local sea_gull = hsl("#c6c6c6") -- as as string, preceeded with a #
 
--- Lush.hsl provides a number of conveniece functions for:
+-- Lush.hsl provides a number of convenience functions for:
 --
 --   Relative adjustment (rotate(), saturate(), desaturate(), lighten(), darken())
 --   Absolute adjustment (prefix above with abs_)
