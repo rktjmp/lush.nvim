@@ -51,7 +51,7 @@ local sea_gull  = hsl("#c6c6c6")    -- Or use hex form, preceeded with a #.
 --
 --       `setlocal nocursorline`
 
--- Lush.hsl provides a number of conveniece functions for:
+-- Lush.hsl provides a number of convenience functions for:
 --
 --   Relative adjustment: rotate(), saturate(), desaturate(), lighten(), darken()
 --                        aliased to ro(), sa() de(), li(), da(), mix(), readable()
