@@ -50,7 +50,7 @@ end
 
 -- table -> table
 M.compile = function(ast, options)
-  local compiled = compiler(ast)
+  local compiled = compiler(ast, options)
 
   if options and options.force_clean then
     compiled = insert_force_clean(compiled)
