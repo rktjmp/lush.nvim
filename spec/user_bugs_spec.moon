@@ -43,3 +43,16 @@ describe "user bugs", ->
       -- compiler converts to none
       compiled = compile(parsed)
       assert.matches("guibg=NONE", compiled[1])
+
+  describe "key exclusion in compile", ->
+    -- https://github.com/rktjmp/lush.nvim/pull/65
+    it "can exclude keys", ->
+        ast = parse -> {
+        A { gui: "italic", blend: 40 }
+        }
+        compiled = compile(ast, {
+        exclude_keys: {"blend"}
+        })
+        assert.is_not_nil(compiled)
+        assert.matches("italic", compiled[1])
+        assert.not.matches("blend", compiled[1])
