@@ -47,12 +47,12 @@ describe "user bugs", ->
   describe "key exclusion in compile", ->
     -- https://github.com/rktjmp/lush.nvim/pull/65
     it "can exclude keys", ->
-        ast = parse -> {
+      ast = parse -> {
         A { gui: "italic", blend: 40 }
-        }
-        compiled = compile(ast, {
+      }
+      compiled = compile(ast, {
         exclude_keys: {"blend"}
-        })
-        assert.is_not_nil(compiled)
-        assert.matches("italic", compiled[1])
-        assert.not.matches("blend", compiled[1])
+      })
+      assert.is_not_nil(compiled)
+      assert.matches("italic", compiled[1])
+      assert.not.matches("blend", compiled[1])
