@@ -118,6 +118,20 @@ A simple contrast-focused vim/nvim colorscheme.
 
 ---
 
+### doubletrouble
+
+[muchzill4/doubletrouble](https://github.com/muchzill4/doubletrouble)
+
+Lua module: `require('doubletrouble.lush_theme')`
+
+Usage: `colorscheme doubletrouble`
+
+Yet another dark vim colorscheme.
+
+![](https://github.com/muchzill4/doubletrouble/raw/assets/nvim.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
