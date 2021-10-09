@@ -132,6 +132,26 @@ Yet another dark vim colorscheme.
 
 ---
 
+### walh
+
+[casonadams/walh](https://github.com/casonadams/walh)
+
+#### walh-default
+
+<img width="766" alt="walh-default" src="https://user-images.githubusercontent.com/17597548/136674716-6af142c2-83ef-456e-a595-b9115d1f3b8b.png">
+
+#### walh-eighties
+
+<img width="766" alt="walh-eighties" src="https://user-images.githubusercontent.com/17597548/136674722-8bf30220-10e2-4b92-a1c8-2a9042130c8d.png">
+
+#### walh-ocean
+
+<img width="766" alt="walh-ocean" src="https://user-images.githubusercontent.com/17597548/136674737-d9de1ee1-8a87-4f0d-9273-ba239f3f3deb.png">
+
+#### walh-ocean-warm
+
+<img width="766" alt="walh-ocean-warm" src="https://user-images.githubusercontent.com/17597548/136674741-55ab890e-70f2-4568-b0be-0e251c51d8ee.png">
+
 Adding your theme to the list
 -----------------------------
 
