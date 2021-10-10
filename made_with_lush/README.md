@@ -136,6 +136,10 @@ Yet another dark vim colorscheme.
 
 [casonadams/walh](https://github.com/casonadams/walh)
 
+Lua module: `require("walh")`
+
+Usage: `colorscheme walh-default`
+
 #### walh-default
 
 <img width="766" alt="walh-default" src="https://user-images.githubusercontent.com/17597548/136674716-6af142c2-83ef-456e-a595-b9115d1f3b8b.png">
