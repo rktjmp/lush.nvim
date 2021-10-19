@@ -85,7 +85,7 @@ describe "lush", ->
     parsed = lush(lush_spec)
     text = lush.stringify(parsed)
     assert.is_string(text)
-    assert.is_equal(7, select(2, string.gsub(text, '\n', '\n')))
+    assert.is_equal(6, select(2, string.gsub(text, '\n', '\n')))
     -- options
     parsed = lush(lush_spec)
     text = lush.stringify(parsed, {force_clean: false})

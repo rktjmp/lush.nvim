@@ -17,7 +17,6 @@ end
 local insert_force_clean = function(compiled_ast)
     local clean = {
       "hi clear",
-      "syntax reset",
       "set t_Co=256",
     }
     if vim.g.colors_name then
