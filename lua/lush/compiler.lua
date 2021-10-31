@@ -61,6 +61,10 @@ local function make_group(name, values, options)
     table.insert(builder, translator[key] .. "=" .. value_or_NONE(values[key]))
   end
 
+  if options.copy_cterm_from_gui then
+    table.insert(builder, "cterm=" .. value_or_NONE(values.gui))
+  end
+
   if #builder == 0 then
     return ""
   else

@@ -76,3 +76,25 @@ describe "key exclusion", ->
     })
     assert.is_not_nil(compiled)
     assert.is(0, #compiled)
+
+describe "copy cterm from gui", ->
+  parse = require('lush.parser')
+  compile = require('lush.compiler')
+
+  it "can copy cterm from gui", ->
+    ast = parse -> {
+      A { gui: "italic" }
+    }
+    compiled = compile(ast, {
+      copy_cterm_from_gui: true
+    })
+    assert.is_not_nil(compiled)
+    assert.matches("cterm=italic", compiled[1])
+
+  it "do not copy cterm from gui", ->
+    ast = parse -> {
+      A { gui: "italic" }
+    }
+    compiled = compile(ast, {})
+    assert.is_not_nil(compiled)
+    assert.not.matches("cterm=italic", compiled[1])
