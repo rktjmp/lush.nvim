@@ -15,7 +15,7 @@ local function compile(ast, options)
   -- we always start with the lush_core plugin, then progressively pass through
   -- the options.plugins table
   local plugins = {
-    require("lush.compiler_plugins.lush_core"),
+    require("lush.compiler.plugin.lush_core"),
   }
   for _, plug in ipairs(options.plugins) do
     table.insert(plugins, plug)

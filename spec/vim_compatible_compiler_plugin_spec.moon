@@ -6,7 +6,7 @@ describe "vim-compatile compiler plugin", ->
       A { gui: "italic", blend: 40 }
     }
     compiled = compile(ast, {
-      plugins: {require("lush.compiler_plugins.vim_compatible")}
+      plugins: {require("lush.compiler.plugin.vim_compatible")}
     })
     assert.is_not_nil(compiled)
     assert.matches("italic", compiled[1])

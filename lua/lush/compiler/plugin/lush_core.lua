@@ -1,4 +1,4 @@
-local value_or_NONE = require("lush.compiler_plugins.utils").value_or_NONE
+local value_or_NONE = require("lush.compiler.plugin.utils").value_or_NONE
 
 local lush_core = {
   -- used for error reporting, you should provide a nice name

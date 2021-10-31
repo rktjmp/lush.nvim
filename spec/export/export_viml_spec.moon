@@ -26,6 +26,6 @@ describe "export.viml", ->
 
   it "accepts options", ->
     viml = require("lush.exporter.viml")
-    value = exp("theme", {viml, {plugins: require("lush.compiler_plugins.vim_compatible")}})
+    value = exp("theme", {viml, {plugins: require("lush.compiler.plugin.vim_compatible")}})
     assert.is.table(value)
     assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
