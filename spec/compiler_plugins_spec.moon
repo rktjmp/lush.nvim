@@ -1,4 +1,4 @@
-append_hello_plugin = -> {
+append_hello_plugin = {
   name: "hello plugin",
   make_group: (group_name, group_table, current_rule, entire_spec) ->
     current_rule .. " hello"
@@ -6,7 +6,7 @@ append_hello_plugin = -> {
     current_rule .. " hello"
 }
 
-halting_plugin = -> {
+halting_plugin = {
   name: "halting plugin",
   make_group: (group_name, group_table, current_rule, entire_spec) ->
     current_rule .. " halt", true
@@ -14,11 +14,11 @@ halting_plugin = -> {
     current_rule .. " halt", true
 }
 
-configurable_plugin = -> {
+configurable_plugin = (config) -> {
   name: "halting plugin",
-  make_group: (group_name, group_table, current_rule, entire_spec, config) ->
+  make_group: (group_name, group_table, current_rule, entire_spec) ->
     current_rule .. " " .. config.append, true
-  make_link: (group_name, target_group_name, current_rule, entire_spec, config) ->
+  make_link: (group_name, target_group_name, current_rule, entire_spec) ->
     current_rule .. " " .. config.append, true
 }
 
@@ -52,7 +52,7 @@ describe "compiler plugins", ->
     }
     compiled = compile(ast, {
       plugins: {
-        {configurable_plugin, {append: "bart"}}
+        configurable_plugin({append: "bart"})
       }
     })
     assert.is_not_nil(compiled)
@@ -60,7 +60,7 @@ describe "compiler plugins", ->
 
     compiled = compile(ast, {
       plugins: {
-        {configurable_plugin, {append: "bort"}}
+        configurable_plugin({append: "bort"})
       }
     })
     assert.is_not_nil(compiled)
