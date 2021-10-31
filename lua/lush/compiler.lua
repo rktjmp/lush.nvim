@@ -1,11 +1,3 @@
--- check if value is_in list
-local function is_in(list, value)
-  for _, v in ipairs(list) do
-    if v == value then return true end
-  end
-  return false
-end
-
 -- make sure options is usable
 local function normalise_options(options)
   if options == nil then options = {} end
@@ -13,12 +5,10 @@ local function normalise_options(options)
   return options
 end
 
-
-
 local function compile(ast, options)
   assert(type(ast) == "table" and ast.__lush.type == "parsed_lush_spec",
          "can't compile, incorrect argument type", 4)
-         
+
   local commands = {}
   options = normalise_options(options)
 
