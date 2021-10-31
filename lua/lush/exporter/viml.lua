@@ -3,7 +3,5 @@
 local compiler = require("lush.compiler")
 
 return function(ast, config)
-  -- we always enforce force_clean = false?
-  -- maybe not...
-  compiler(ast, config)
+  return compiler(ast, config)
 end
