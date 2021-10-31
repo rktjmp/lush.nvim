@@ -1,6 +1,7 @@
 describe "user bugs", ->
   parse = require('lush').parse
   compile = require('lush').compile
+  apply = require('lush').apply
 
 
   describe "better warnings if inherit isn't a table", ->
@@ -44,15 +45,26 @@ describe "user bugs", ->
       compiled = compile(parsed)
       assert.matches("guibg=NONE", compiled[1])
 
-  describe "key exclusion in compile", ->
-    -- https://github.com/rktjmp/lush.nvim/pull/65
-    it "can exclude keys", ->
-      ast = parse -> {
-        A { gui: "italic", blend: 40 }
+  -- deprecated by vim-compatible compiler plugin?
+  -- describe "key exclusion in compile", ->
+  --   -- https://github.com/rktjmp/lush.nvim/pull/65
+  --   it "can exclude keys", ->
+  --     ast = parse -> {
+  --       A { gui: "italic", blend: 40 }
+  --     }
+  --     compiled = compile(ast, {
+  --       exclude_keys: {"blend"}
+  --     })
+  --     assert.is_not_nil(compiled)
+  --     assert.matches("italic", compiled[1])
+  --     assert.not.matches("blend", compiled[1])
+
+  describe "#69", ->
+    it "errors", ->
+      base = parse -> {
+        A { fg: "#00FF00", gui: "italic" }
       }
-      compiled = compile(ast, {
-        exclude_keys: {"blend"}
-      })
-      assert.is_not_nil(compiled)
-      assert.matches("italic", compiled[1])
-      assert.not.matches("blend", compiled[1])
+      spec = parse -> {
+        A { base.A, gui: "" }
+      }
+
