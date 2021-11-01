@@ -1,6 +1,7 @@
 describe "export", ->
   -- note, "export" is a protected keyword in moonscript
-  exp = require("lush.export")
+  exporter = require("lush.exporter")
+  exp = exporter.export
 
   setup ->
     parse = require('lush.parser')

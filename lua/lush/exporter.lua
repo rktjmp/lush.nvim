@@ -43,4 +43,26 @@ local function export(lush_module, ...)
   return value
 end
 
-return export
+-- Create an environment to run the build file in. This should expose all the built in
+-- transformers, as well as lush itself.
+local function make_env()
+  local env = {
+    vim = vim,
+    lush = require("lush"),
+    export = require("lush.exporter").export,
+    viml = require("lush.transformer.viml"),
+    overwrite = require("lush.transformer.overwrite"),
+    patch = require("lush.transformer.patch"),
+  }
+  return setmetatable(env, {
+    __index = function(_, name)
+      -- proxy out to the real env when needed
+      return _G[name]
+    end
+  })
+end
+
+return {
+  export = export,
+  make_env = make_env
+}

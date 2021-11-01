@@ -120,3 +120,6 @@ describe "lush", ->
     lush.export_to_buffer(parsed)
     assert.spy(vim.api.nvim_create_buf).was_called()
     assert.spy(vim.api.nvim_buf_set_lines).was_called()
+
+  it "exposes a build interface", ->
+    assert.is_function(lush.build)

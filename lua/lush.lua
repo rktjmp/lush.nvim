@@ -88,6 +88,22 @@ M.export_to_buffer = function(parsed_spec)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
+M.build = function(build_file, opts)
+  assert(type(build_file) == "string",
+    "lush.build build_file must be a string")
+  local build_fn, errors = loadfile(build_file)
+  -- if the build_file alls assert(x) (with no message) we can get an error but
+  -- errors is nil, so we include a default message too.
+  assert(build_fn,
+    "Could not load buildfile: "
+    .. (errors or "lua reported no message but failed to load"))
+
+  local exporter = require('lush.exporter')
+  local env = exporter.make_env()
+  build_fn = setfenv(build_fn, env)
+  assert(pcall(build_fn))
+end
+
 -- given a spec function, generate a parsed spec
 -- (spec, table) -> table
 local easy_spec = function(spec, options)
