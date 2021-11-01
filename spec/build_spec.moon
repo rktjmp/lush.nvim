@@ -5,20 +5,6 @@ describe "lush", ->
 
   before_each ->
     vim = {
-      loop: {
-        fs_access: (path, mode) -> true
-      }
-      api: {
-        nvim_command: ->
-        nvim_create_buf: ->
-        nvim_buf_set_lines: ->
-        nvim_win_get_height: -> 30
-        nvim_win_get_width: -> 30
-        nvim_open_win: ->
-      },
-      g: {
-        colors_name: "a_theme"
-      }
     }
     _G.vim = mock(vim)
     red = lush.hsl(0, 100, 50)

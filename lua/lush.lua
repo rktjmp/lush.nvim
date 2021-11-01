@@ -88,7 +88,7 @@ M.export_to_buffer = function(parsed_spec)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
-M.build = function(build_file, opts)
+M.build = function(build_file)
   assert(type(build_file) == "string",
     "lush.build build_file must be a string")
   local build_fn, errors = loadfile(build_file)

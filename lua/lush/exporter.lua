@@ -1,10 +1,10 @@
 -- Exporter core
 --
--- export accepts a lush module name to load, and any number of functions to chain
--- through as transformations. You must provide at least one function.
+-- export accepts a lush module name to load, and any number of functions to
+-- chain through as transformations. You must provide at least one function.
 --
--- The first fuction *must* accept a lush spec AST (from the given lush module).
--- Every other function should accept and return a table.
+-- The first fuction *must* accept a lush spec AST (from the given lush
+-- module). Every other function should accept and return a table.
 
 local function export(lush_module, ...)
   local pipeline = {...}
@@ -25,9 +25,10 @@ local function export(lush_module, ...)
       -- table, first element must be the transformer, the rest are assumed to
       -- be arguments for the transformer, excepting that the *first* argument
       -- should be the current value.
-      assert(#transform > 0, lush_module .. " transformation # " .. i .. " was table with length 0")
-      -- slice copies the table, we want to be non-destructive (no table.remove to shift)
-      -- because the config may be shared between other export calls
+      assert(#transform > 0,
+        lush_module .. " transformation # " .. i .. " was table with length 0")
+      -- slice copies the table, we want to be non-destructive (no table.remove
+      -- to shift) because the config may be shared between other export calls
       local func = transform[1]
       local args = vim.list_slice(transform, 2, #transform)
       value = func(value, unpack(args))
@@ -43,16 +44,15 @@ local function export(lush_module, ...)
   return value
 end
 
--- Create an environment to run the build file in. This should expose all the built in
--- transformers, as well as lush itself.
+-- Create an environment to run the build file in. This should expose all the
+-- built in transformers, as well as lush itself.
 local function make_env()
   local env = {
-    vim = vim,
     lush = require("lush"),
     export = require("lush.exporter").export,
     viml = require("lush.transformer.viml"),
     overwrite = require("lush.transformer.overwrite"),
-    patch = require("lush.transformer.patch"),
+    patchwrite = require("lush.transformer.patchwrite"),
   }
   return setmetatable(env, {
     __index = function(_, name)

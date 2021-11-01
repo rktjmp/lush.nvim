@@ -2,5 +2,7 @@
 assert(type(lush) == "table")
 assert(type(export) == "function")
 assert(type(overwrite) == "function")
-assert(type(patch) == "function")
+assert(type(patchwrite) == "function")
 assert(type(viml) == "function")
+-- can still access normal stuff
+assert(type(vim) == "table")
