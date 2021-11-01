@@ -23,21 +23,21 @@ local function compile(ast, options)
 
   for group_name, group_def in pairs(ast) do
     local command = ""
-    local maybe_halt = false
+    local continue_pipeline = nil -- anything but false will continue
 
     for _, plug in ipairs(plugins) do
       if group_def.link then
-        command, maybe_halt = plug.make_link(group_name, group_def.link, command, ast)
+        command, continue_pipeline = plug.make_link(group_name, group_def.link, command, ast)
         assert(type(command) == "string",
           "compiler plugin " .. plug.name
             .. " did not return string for make_link " .. group_name)
       else
-        command, maybe_halt = plug.make_group(group_name, group_def, command, ast)
+        command, continue_pipeline = plug.make_group(group_name, group_def, command, ast)
         assert(type(command) == "string",
           "compiler plugin " .. plug.name
             .. " did not return string for make_group " .. group_name)
       end
-      if maybe_halt == true then break end
+      if continue_pipeline == false then break end
     end
 
     if command ~= "" then

@@ -9,17 +9,17 @@ append_hello_plugin = {
 halting_plugin = {
   name: "halting plugin",
   make_group: (group_name, group_table, current_rule, entire_spec) ->
-    current_rule .. " halt", true
+    current_rule .. " halt", false
   make_link: (group_name, target_group_name, current_rule, entire_spec) ->
-    current_rule .. " halt", true
+    current_rule .. " halt", false
 }
 
 configurable_plugin = (config) -> {
   name: "halting plugin",
   make_group: (group_name, group_table, current_rule, entire_spec) ->
-    current_rule .. " " .. config.append, true
+    current_rule .. " " .. config.append, false
   make_link: (group_name, target_group_name, current_rule, entire_spec) ->
-    current_rule .. " " .. config.append, true
+    current_rule .. " " .. config.append, false
 }
 
 describe "compiler plugins", ->
