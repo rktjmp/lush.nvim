@@ -6,36 +6,49 @@
 -- The first fuction *must* accept a lush spec AST (from the given lush
 -- module). Every other function should accept and return a table.
 
-local function export(lush_module, ...)
-  local pipeline = {...}
-  assert(#pipeline > 0,
-    lush_module .. " export pipeline must have at least one function!")
-  assert(type(lush_module) == "string",
-    "first export argument must be a string, got " .. vim.inspect(lush_module))
+local function is_spec(spec)
+  if type(spec) == "table" or
+    spec.__lush and
+    spec.__lush.type == "parsed_lush_spec" then
+    return true
+  else
+    return false
+  end
+end
 
+local function export(parsed_lush_spec, ...)
   -- we always start with the ast
-  local value = require(lush_module)
+  local value = parsed_lush_spec
+  local continue_pipeline = nil -- anything but false will continue
+  local pipeline = {...}
+
+  assert(is_spec(value),
+    "first argument to export must be a parsed lush spec")
+  assert(#pipeline > 0,
+    "export pipeline must have at least one function!")
 
   -- pass through the pipeline
   for i, transform in ipairs(pipeline) do
     if type(transform) == "function" then
       -- raw function, just value -> value
-      value = transform(value)
+      value, continue_pipeline = transform(value)
     elseif type(transform) == "table" then
       -- table, first element must be the transformer, the rest are assumed to
       -- be arguments for the transformer, excepting that the *first* argument
       -- should be the current value.
       assert(#transform > 0,
-        lush_module .. " transformation # " .. i .. " was table with length 0")
+        " transformation # " .. i .. " was table with length 0")
       -- slice copies the table, we want to be non-destructive (no table.remove
       -- to shift) because the config may be shared between other export calls
       local func = transform[1]
       local args = vim.list_slice(transform, 2, #transform)
-      value = func(value, unpack(args))
+      value, continue_pipeline = func(value, unpack(args))
     end
 
     assert(type(value) == "table",
-      lush_module .. " transformation #" .. i .. " did not return a table")
+      " transformation #" .. i .. " did not return a table")
+
+    if continue_pipeline == false then break end
   end
 
   -- We will return the value, mostly for debugging purposes.
