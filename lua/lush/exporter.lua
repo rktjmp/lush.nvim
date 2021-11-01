@@ -66,10 +66,11 @@ local function make_env()
     lush = require("lush"),
     export = require("lush.exporter").export,
     viml = require("lush.transformer.viml"),
+    lua = require("lush.transformer.lua"),
     overwrite = require("lush.transformer.overwrite"),
     patchwrite = require("lush.transformer.patchwrite"),
-    prepend_lines = require("lush.transformer.prepend_lines"),
-    append_lines = require("lush.transformer.append_lines"),
+    prepend = require("lush.transformer.prepend"),
+    append = require("lush.transformer.append"),
   }
   return setmetatable(env, {
     __index = function(_, name)

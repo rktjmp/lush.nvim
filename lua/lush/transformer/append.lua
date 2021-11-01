@@ -1,7 +1,7 @@
--- middle transformer, prepends given lines to input
+-- middle transformer, appends given elements to input
 
-return function(lines, before)
-  assert(type(before) == "table",
+return function(before, after)
+  assert(type(after) == "table",
     "append transformer requires table as argument")
 
   -- build fresh cause mutability sucks
@@ -9,7 +9,7 @@ return function(lines, before)
   for _, line in ipairs(before) do
     table.insert(build, line)
   end
-  for _, line in ipairs(lines) do
+  for _, line in ipairs(after) do
     table.insert(build, line)
   end
 
