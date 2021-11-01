@@ -53,6 +53,8 @@ local function make_env()
     viml = require("lush.transformer.viml"),
     overwrite = require("lush.transformer.overwrite"),
     patchwrite = require("lush.transformer.patchwrite"),
+    prepend_lines = require("lush.transformer.prepend_lines"),
+    append_lines = require("lush.transformer.append_lines"),
   }
   return setmetatable(env, {
     __index = function(_, name)
