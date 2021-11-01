@@ -41,6 +41,8 @@ local function export(parsed_lush_spec, ...)
       -- slice copies the table, we want to be non-destructive (no table.remove
       -- to shift) because the config may be shared between other export calls
       local func = transform[1]
+      assert(func,
+       "given transform function was nil, did you mis-spell it?")
       local args = vim.list_slice(transform, 2, #transform)
       value, continue_pipeline = func(value, unpack(args))
     end
@@ -57,8 +59,8 @@ local function export(parsed_lush_spec, ...)
   return value
 end
 
--- Create an environment to run the build file in. This should expose all the
--- built in transformers, as well as lush itself.
+-- Create an environment to run the build file in.
+-- This should expose all the built in transformers, as well as lush itself.
 local function make_env()
   local env = {
     lush = require("lush"),
