@@ -6,7 +6,8 @@ describe "export.lua", ->
   setup ->
     parse = require('lush.parser')
     ast = parse -> {
-      A { gui: "italic", blend: 40 }
+      A { gui: "italic", blend: 40 },
+      B { gui: "italic", blend: 40 }
     }
     package.loaded["theme"] = ast
     _G.vim = {
@@ -20,13 +21,6 @@ describe "export.lua", ->
     package.loaded["theme"] = nil
 
   it "returns lua code", ->
-    viml = require("lush.transformer.lua")
-    value = exp(require("theme"), viml)
-    assert.is.table(value)
-
-  it "returns lua code", ->
-    viml = require("lush.transformer.lua")
-    overwrite = require("lush.transformer.overwrite")
-    patchwrite = require("lush.transformer.patchwrite")
-    value = exp(require("theme"), viml, {patchwrite, "abc.lua", "-- PATCH_OPEN", "-- PATCH_CLOSE"})
+    lua = require("lush.transformer.lua")
+    value = exp(require("theme"), lua)
     assert.is.table(value)

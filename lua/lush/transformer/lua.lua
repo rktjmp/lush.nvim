@@ -38,44 +38,44 @@ local build_function_code = [[
 -- {
 --   apply_fn = function(rules) ... end,
 --   before_apply_fn = function(rules) ... end,
---   generate_group_fn = function(group_name, group_type, group_data) .. end,
---   configure_group_fn = function(group_name, group_type, group_data) ... end,
+--   generate_group_fn = function(group) .. end,
+--   configure_group_fn = function(group) ... end,
 -- }
 --
 local build = function(opts)
   -- we may not always get given any options, so act safely
   local options = opts or {}
 
-  -- configure_group(group_name, group_type, group_data) -> group_data
+  -- configure_group(group) -> group
   --
-  -- Accepts a groups name, group type (link or group) and group data (table of
-  -- fg, bg, gui, sp and blend). Should return the group data with any desired
-  -- alterations.
+  -- Accepts a group table (group.name, group.type (link or group) and
+  -- group.data (table of fg, bg, gui, sp and blend)). Should return the group
+  -- data with any desired alterations.
   --
   -- By default we make no modifications.
   local configure_group = options.configure_group_fn or
-    function(group_name, group_type, group_data)
+    function(group)
       -- by default don't modify anything
-      return group_data
+      return group
     end
 
-  -- generate_group(group_name, group_type, group_data) -> any
+  -- generate_group(group) -> any
   --
-  -- Accepts a groups name, group type (link or group) and group data (table of
-  -- fg, bg, gui, sp and blend). Should return something which apply() knows
-  -- how to handle.
+  -- Accepts a group table (group.name, group.type (link or group) and
+  -- group.data (table of fg, bg, gui, sp and blend)). Should return something
+  -- which apply() knows how to handle.
   --
   -- By default we generate a viml highlight rule.
   local generate_group = options.generate_group_fn or
-    function(group_name, group_type, group_data)
-      if group_type == "link" then
-        return string.format("highlight! link %q %q", group_name, group_data.to)
-      elseif group_type == "group" then
-        return string.format("highlight %q fg=%q bg=%q gui=%q blend=%q sp=%q",
-          group_name,
-          group_data.fg, group_data.bg, group_data.gui, group_data.blend, group_data.sp)
+    function(group)
+      if group.type == "link" then
+        return string.format("highlight! link %s %s", group.name, group.data.to)
+      elseif group.type == "group" then
+        return string.format("highlight! %s guifg=%s guibg=%s guisp=%s gui=%s blend=%s",
+          group.name,
+          group.data.fg, group.data.bg, group.data.sp, group.data.gui, group.data.blend)
       else
-        error("unknown group type: " .. group_type .. " for group " .. group_name)
+        error("unknown group type: " .. group.type .. " for group " .. group.name)
       end
     end
 
@@ -89,7 +89,9 @@ local build = function(opts)
   local apply = options.apply_fn or
     function(rules)
       -- just send all the rules through to vim
-      vim.cmd(rules)
+      for _, cmd in ipairs(rules) do
+        vim.api.nvim_command(cmd)
+      end
     end
 
   -- before_apply(any) -> any
@@ -112,8 +114,8 @@ $LUSH_GROUPS
 
   local rules = {}
   for _, group in ipairs(groups) do
-    group = configure_group(group.name, group.type, group.opts)
-    table.insert(rules, generate_group(group.name, group.type, group.opts))
+    group = configure_group(group)
+    table.insert(rules, generate_group(group))
   end
 
   rules = before_apply(rules)
@@ -122,30 +124,8 @@ end
 ]]
 
 local group_to_string = function(group_name, group_data)
-  local link_str = [[
-    {
-      name = "$GROUP_NAME",
-      type = "link",
-      opts = {
-        to = "$GROUP_TO"
-      }
-    },
-  ]]
-
-  local group_str = [[
-    {
-      name = "$GROUP_NAME",
-      type = "group",
-      opts = {
-        fg = "$GROUP_FG",
-        bg = "$GROUP_BG",
-        sp = "$GROUP_SP",
-        gui = "$GROUP_GUI",
-        blend = "$GROUP_BLEND",
-      }
-    },
-  ]]
-
+  local link_str = [[    {name = "$GROUP_NAME",type = "link", data = {to = "$GROUP_TO"}},]]
+  local group_str = [[    {name = "$GROUP_NAME", type = "group", data = {fg = "$GROUP_FG", bg = "$GROUP_BG", sp = "$GROUP_SP", gui = "$GROUP_GUI", blend = "$GROUP_BLEND"}},]]
   local subbed = nil
   if group_data.link then
     subbed = string.gsub(link_str, "%$([%w_]+)", {
