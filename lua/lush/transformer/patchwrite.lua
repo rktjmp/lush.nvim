@@ -40,7 +40,7 @@ return function(lines, path, patch_open, patch_close)
   assert(#post_content > 0,
     "patchwrite failed for " .. path .. ", found no content after marker")
   assert(saw_marker,
-    "patchwrite never saw patch markers: " .. patch_open " & " .. patch_close)
+    "patchwrite never saw patch markers: " .. patch_open .. " & " .. patch_close)
 
   fd, e = io.open(path, "w")
   assert(fd, e)

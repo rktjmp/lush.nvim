@@ -89,11 +89,13 @@ M.export_to_buffer = function(parsed_spec)
 end
 
 M.build = function(build_file)
+  build_file = build_file or "lush_build.lua"
   assert(type(build_file) == "string",
     "lush.build build_file must be a string")
+
   local build_fn, errors = loadfile(build_file)
-  -- if the build_file alls assert(x) (with no message) we can get an error but
-  -- errors is nil, so we include a default message too.
+  -- it seems sometimes we can fail a loadfile without an error?
+  -- provide a default...
   assert(build_fn,
     "Could not load buildfile: "
     .. (errors or "lua reported no message but failed to load"))
@@ -182,7 +184,6 @@ M.merge = function(extends_list)
 
   return M.parse(empty_spec, options)
 end
-
 
 -- delegate __call to detect_easy for DX QOL.
 return setmetatable(M, {
