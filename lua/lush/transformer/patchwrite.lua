@@ -13,6 +13,7 @@ return function(lines, path, patch_open, patch_close)
   local mode = "pre-copy" -- or skip when inside patch
   local pre_content = {}
   local post_content = {}
+  local saw_marker = false
 
   -- get lines until we match the marker
   for line in fd:lines() do
@@ -20,6 +21,7 @@ return function(lines, path, patch_open, patch_close)
       -- copy the marker line
       table.insert(pre_content, line)
       mode = "skip"
+      saw_marker = true
     elseif string.match(line, patch_close) then
       mode = "post-copy"
       -- marker line will be copied in the if
@@ -33,10 +35,12 @@ return function(lines, path, patch_open, patch_close)
   fd:close()
 
   -- we may or may not want to guard against this
-  --   assert(#pre_content > 0,
-  --     "patchwrite failed for " .. path .. ", found no content before marker")
-  --   assert(#post_content > 0,
-  --     "patchwrite failed for " .. path .. ", found no content after marker")
+  assert(#pre_content > 0,
+    "patchwrite failed for " .. path .. ", found no content before marker")
+  assert(#post_content > 0,
+    "patchwrite failed for " .. path .. ", found no content after marker")
+  assert(saw_marker,
+    "patchwrite never saw patch markers: " .. patch_open " & " .. patch_close)
 
   fd, e = io.open(path, "w")
   assert(fd, e)
