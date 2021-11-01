@@ -36,13 +36,17 @@ local build_function_code = [[
 -- See each default handler below for guidance on writing your own.
 --
 -- {
---   apply_fn = function(rules) ... end,
---   before_apply_fn = function(rules) ... end,
---   generate_group_fn = function(group) .. end,
 --   configure_group_fn = function(group) ... end,
+--   generate_group_fn = function(group) .. end,
+--   before_apply_fn = function(rules) ... end,
+--   apply_fn = function(rules) ... end,
 -- }
---
-local build = function(opts)
+
+local lush_groups = {
+$LUSH_GROUPS
+}
+
+local lush_apply = function(groups, opts)
   -- we may not always get given any options, so act safely
   local options = opts or {}
 
@@ -107,10 +111,6 @@ local build = function(opts)
     -- by default we dont alter anything
     return rules
   end
-
-  local groups = {
-$LUSH_GROUPS
-  }
 
   local rules = {}
   for _, group in ipairs(groups) do
