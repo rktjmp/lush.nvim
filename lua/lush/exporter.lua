@@ -24,8 +24,17 @@ local function export(parsed_lush_spec, ...)
 
   assert(is_spec(value),
     "first argument to export must be a parsed lush spec")
-  assert(#pipeline > 0,
-    "export pipeline must have at least one function!")
+  -- because lua tables are garbage, you can do something like
+  -- {my_pip, my_pipe, my_pipe} and get {nil, fn, fn},
+  -- (and my_pip wont error, just silently nil out)
+  -- #pipeline = 3, but ipairs wont iterate at all because it hits a nil
+  -- so we will actually check that the pipeline has content we can iterate.
+  local check_count = 0
+  for _, _ in ipairs(pipeline) do
+    check_count = check_count + 1
+  end
+  assert(#pipeline == check_count,
+    "export pipeline reported length and actual length differ, you probably have a nil in it (mis-spelling?)")
 
   -- pass through the pipeline
   for i, transform in ipairs(pipeline) do
@@ -45,6 +54,8 @@ local function export(parsed_lush_spec, ...)
        "given transform function was nil, did you mis-spell it?")
       local args = vim.list_slice(transform, 2, #transform)
       value, continue_pipeline = func(value, unpack(args))
+    else
+      error("Invalid type in pipeline at index " .. i .. " ( " .. type(transform) .. ")")
     end
 
     assert(type(value) == "table",
