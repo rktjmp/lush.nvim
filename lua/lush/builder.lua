@@ -1,29 +1,8 @@
--- Exporter core
---
--- export accepts a lush module name to load, and any number of functions to
--- chain through as transformations. You must provide at least one function.
---
--- The first fuction *must* accept a lush spec AST (from the given lush
--- module). Every other function should accept and return a table.
-
-local function is_spec(spec)
-  if type(spec) == "table" or
-    spec.__lush and
-    spec.__lush.type == "parsed_lush_spec" then
-    return true
-  else
-    return false
-  end
-end
-
-local function run_pipeline(parsed_lush_spec, ...)
-  -- we always start with the ast
-  local value = parsed_lush_spec
+local function run_pipeline(value, ...)
   local continue_pipeline = nil -- anything but false will continue
   local pipeline = {...}
-
-  assert(is_spec(value),
-    "first argument to export must be a parsed lush spec")
+  assert(type(value) == "table",
+    "first argument to export must be a table")
   -- because lua tables are garbage, you can do something like
   -- {my_pip, my_pipe, my_pipe} and get {nil, fn, fn},
   -- (and my_pip wont error, just silently nil out)
