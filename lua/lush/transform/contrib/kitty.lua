@@ -64,7 +64,7 @@ color13 $bright_magenta
 color14 $bright_cyan
 color15 $bright_white]]
 
-local helpers = require("lush.transformer.helpers")
+local helpers = require("lush.transform.helpers")
 local check_keys = {
   "fg", "bg",
   "cursor_fg", "cursor_bg", "cursor_border",

@@ -26,7 +26,7 @@
 --   bright_white = "#000000",
 -- }
 
-local helpers = require("lush.transformer.helpers")
+local helpers = require("lush.transform.helpers")
 local check_keys = {
   "fg", "bg",
   "cursor_fg", "cursor_bg", "cursor_border",

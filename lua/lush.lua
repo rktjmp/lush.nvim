@@ -100,8 +100,8 @@ M.build = function(build_file)
     "Could not load buildfile: "
     .. (errors or "lua reported no message but failed to load"))
 
-  local exporter = require('lush.exporter')
-  local env = exporter.make_env()
+  local builder = require('lush.builder')
+  local env = builder.make_env()
   build_fn = setfenv(build_fn, env)
   assert(pcall(build_fn))
 end

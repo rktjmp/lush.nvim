@@ -1,7 +1,6 @@
 describe "export", ->
   -- note, "export" is a protected keyword in moonscript
-  exporter = require("lush.exporter")
-  exp = exporter.export
+  transform = require("lush.builder").transform
 
   setup ->
     parse = require('lush.parser')
@@ -21,9 +20,9 @@ describe "export", ->
 
   it "does some smoke tests", ->
     assert.has_error(->
-      exp("theme"))
+      transform("theme"))
     assert.has_error(->
-      exp(1))
+      transform(1))
 
   it "warns if a transformation doesn't return a table", ->
     ast = require("theme")
@@ -32,7 +31,7 @@ describe "export", ->
       "A.gui=#{ast.A.gui}"
 
     assert.has_error(->
-      exp(ast, to_string_transform))
+      transform(ast, to_string_transform))
 
   it "passes through 1 arity functions", ->
     ast = require("theme")
@@ -43,8 +42,8 @@ describe "export", ->
     to_uppercase = (lines) ->
       {string.upper(lines[1])}
 
-    assert.same(exp(ast, to_string), {"A.gui=italic"})
-    assert.same(exp(ast, to_string, to_uppercase), {"A.GUI=ITALIC"})
+    assert.same(transform(ast, to_string), {"A.gui=italic"})
+    assert.same(transform(ast, to_string, to_uppercase), {"A.GUI=ITALIC"})
 
   it "passes through 1 arity functions", ->
     ast = require("theme")
@@ -55,8 +54,8 @@ describe "export", ->
     to_uppercase = (lines) ->
       {string.upper(lines[1])}
 
-    assert.same(exp(ast, to_string), {"A.gui=italic"})
-    assert.same(exp(ast, to_string, to_uppercase), {"A.GUI=ITALIC"})
+    assert.same(transform(ast, to_string), {"A.gui=italic"})
+    assert.same(transform(ast, to_string, to_uppercase), {"A.GUI=ITALIC"})
 
   it "passes through multi arity functions", ->
     ast = require("theme")
@@ -67,5 +66,5 @@ describe "export", ->
     to_uppercase = (lines, s, e) ->
       {string.sub(string.upper(lines[1]), s, e)}
 
-    assert.same(exp(ast, {to_string, "bort"}), {"A.gui=italic+bort"})
-    assert.same(exp(ast, {to_string, "bort"}, {to_uppercase, -4, -1}), {"BORT"})
+    assert.same(transform(ast, {to_string, "bort"}), {"A.gui=italic+bort"})
+    assert.same(transform(ast, {to_string, "bort"}, {to_uppercase, -4, -1}), {"BORT"})

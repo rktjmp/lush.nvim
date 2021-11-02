@@ -16,7 +16,7 @@ local function is_spec(spec)
   end
 end
 
-local function export(parsed_lush_spec, ...)
+local function run_pipeline(parsed_lush_spec, ...)
   -- we always start with the ast
   local value = parsed_lush_spec
   local continue_pipeline = nil -- anything but false will continue
@@ -42,8 +42,8 @@ local function export(parsed_lush_spec, ...)
       -- raw function, just value -> value
       value, continue_pipeline = transform(value)
     elseif type(transform) == "table" then
-      -- table, first element must be the transformer, the rest are assumed to
-      -- be arguments for the transformer, excepting that the *first* argument
+      -- table, first element must be the transform, the rest are assumed to
+      -- be arguments for the transform, excepting that the *first* argument
       -- should be the current value.
       assert(#transform > 0,
         " transformation # " .. i .. " was table with length 0")
@@ -64,9 +64,6 @@ local function export(parsed_lush_spec, ...)
     if continue_pipeline == false then break end
   end
 
-  -- We will return the value, mostly for debugging purposes.
-  -- It's expected that one of the transformations has done something
-  -- useful with the work in terms of writing to disk or loading into memory.
   return value
 end
 
@@ -75,17 +72,17 @@ end
 local function make_env()
   local env = {
     lush = require("lush"),
-    export = require("lush.exporter").export,
-    viml = require("lush.transformer.viml"),
-    lua = require("lush.transformer.lua"),
-    overwrite = require("lush.transformer.overwrite"),
-    patchwrite = require("lush.transformer.patchwrite"),
-    prepend = require("lush.transformer.prepend"),
-    append = require("lush.transformer.append"),
+    transform = require("lush.builder").transform,
+    viml = require("lush.transform.viml"),
+    lua = require("lush.transform.lua"),
+    overwrite = require("lush.transform.overwrite"),
+    patchwrite = require("lush.transform.patchwrite"),
+    prepend = require("lush.transform.prepend"),
+    append = require("lush.transform.append"),
     contrib = {
-      alacritty = require("lush.transformer.contrib.alacritty"),
-      wezterm = require("lush.transformer.contrib.wezterm"),
-      kitty = require("lush.transformer.contrib.kitty"),
+      alacritty = require("lush.transform.contrib.alacritty"),
+      wezterm = require("lush.transform.contrib.wezterm"),
+      kitty = require("lush.transform.contrib.kitty"),
     }
   }
   return setmetatable(env, {
@@ -97,6 +94,6 @@ local function make_env()
 end
 
 return {
-  export = export,
+  transform = run_pipeline,
   make_env = make_env
 }

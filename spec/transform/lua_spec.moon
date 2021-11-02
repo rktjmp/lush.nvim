@@ -1,7 +1,5 @@
-describe "export.lua", ->
-  -- note, "export" is a protected keyword in moonscript
-  exporter = require("lush.exporter")
-  exp = exporter.export
+describe "transform.lua", ->
+  transform = require("lush.builder").transform
 
   setup ->
     parse = require('lush.parser')
@@ -21,6 +19,6 @@ describe "export.lua", ->
     package.loaded["theme"] = nil
 
   it "returns lua code", ->
-    lua = require("lush.transformer.lua")
-    value = exp(require("theme"), lua)
+    lua = require("lush.transform.lua")
+    value = transform(require("theme"), lua)
     assert.is.table(value)
