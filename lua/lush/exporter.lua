@@ -82,6 +82,11 @@ local function make_env()
     patchwrite = require("lush.transformer.patchwrite"),
     prepend = require("lush.transformer.prepend"),
     append = require("lush.transformer.append"),
+    contrib = {
+      alacritty = require("lush.transformer.contrib.alacritty"),
+      wezterm = require("lush.transformer.contrib.wezterm"),
+      kitty = require("lush.transformer.contrib.kitty"),
+    }
   }
   return setmetatable(env, {
     __index = function(_, name)
