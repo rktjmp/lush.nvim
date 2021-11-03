@@ -17,6 +17,14 @@ local function compile(ast, options)
   local plugins = {
     require("lush.compiler.plugin.lush_core"),
   }
+
+  -- deprecated, remove 1/12
+  if options.exclude_keys then
+    print("Warning: exclude_keys is deprecated, " ..
+          "please see :h lush-manual-toolchain-compile")
+    table.insert(plugins, require("lush.compiler.plugin.vim_compatible"))
+  end
+
   for _, plug in ipairs(options.plugins) do
     table.insert(plugins, plug)
   end
@@ -27,12 +35,18 @@ local function compile(ast, options)
 
     for _, plug in ipairs(plugins) do
       if group_def.link then
-        command, continue_pipeline = plug.make_link(group_name, group_def.link, command, ast)
+        command, continue_pipeline = plug.make_link(group_name,
+                                                    group_def.link,
+                                                    command,
+                                                    ast)
         assert(type(command) == "string",
           "compiler plugin " .. plug.name
             .. " did not return string for make_link " .. group_name)
       else
-        command, continue_pipeline = plug.make_group(group_name, group_def, command, ast)
+        command, continue_pipeline = plug.make_group(group_name,
+                                                     group_def,
+                                                     command,
+                                                     ast)
         assert(type(command) == "string",
           "compiler plugin " .. plug.name
             .. " did not return string for make_group " .. group_name)

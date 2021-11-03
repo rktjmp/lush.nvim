@@ -71,7 +71,7 @@ local lush_core = {
   --
   -- I.e: `return "highlight! link LuaStatement Statement", false` will set the
   -- highlight rule and prevent any other plugins from running.
-  make_link = function(group_name, target_group_name, current_rule, entire_spec) 
+  make_link = function(group_name, target_group_name, current_rule, entire_spec)
     return "highlight! link " .. group_name .. " " .. target_group_name
   end
 }
