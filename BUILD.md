@@ -9,13 +9,13 @@ run(theme,
   {overwrite, "colors/zenbones.vim"})
 ```
 
-- [What is Lush Build](#what_is_lush_build)
-- [Exporting a colorscheme to VimL](#exporting_a_colorscheme_to_viml)
-- [Exporting a colorscheme to configurable Lua](#exporting_a_colorscheme_to_configurable_lua)
-- [Converting a Lush colorscheme into an Alacritty theme](#converting_a_lush_colorscheme_into_an_alacritty_theme)
-- [Pipelines are composable](#pipelines_are_composable)
-- [Transform helpers](#transform_helpers)
-- [Transform list](#transform_list)
+- [What is Lush Build](#what-is-lush-build)
+- [Exporting a colorscheme to VimL](#exporting-a-colorscheme-to-viml)
+- [Exporting a colorscheme to configurable Lua](#exporting-a-colorscheme-to-configurable-lua)
+- [Converting a Lush colorscheme into an Alacritty theme](#converting-a-lush-colorscheme-into-an-alacritty-theme)
+- [Pipelines are composable](#pipelines-are-composable)
+- [Transform helpers](#transform-helpers)
+- [Transform list](#transform-list)
 
 ## What is Lush Build
 

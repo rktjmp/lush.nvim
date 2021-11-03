@@ -4,11 +4,11 @@ Extending a Lush Colorscheme
 Lush allows you access to your coloscheme in a formalised data structure. This
 lets us manipulate it easily by using lush itself or any lua code.
 
-- [Extend and merge](#extend_and_merge)
+- [Extend and merge](#extend-and-merge)
 - [Configuring a colorscheme as an end-user](#configuring-a-colorscheme-as-an-end-user)
-- [Adding support for a plugin](#adding_support_for_a_plugin)
-- [Combining specs to create a variation](#combining_specs_to_create_a_variation)
-- [Using Lush data anywhere](#using_lush_data_anywhere)
+- [Adding support for a plugin](#adding-support-for-a-plugin)
+- [Combining specs to create a variation](#combining-specs-to-create-a-variation)
+- [Using Lush data anywhere](#using-lush-data-anywhere)
 
 ## `extend` and `merge`
 
