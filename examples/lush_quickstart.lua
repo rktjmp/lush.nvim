@@ -67,6 +67,7 @@ local sea_gull  = hsl("#c6c6c6")    -- Or use hex form, preceeded with a #.
 -- We'll define our lush-spec below.
 
 -- Call lush with our lush-spec.
+---@diagnostic disable: undefined-global
 local theme = lush(function()
   return {
     -- It's recommended to disable wrapping with `setlocal nowrap`.  You may
@@ -76,7 +77,10 @@ local theme = lush(function()
 
     -- lush-spec statements are in the form:
     --
-    --   <HighlightGroupName> { bg = <hsl>, fg = <hsl>, sp = <hsl>, gui = <string>},
+    --   <HighlightGroupName> { bg = <hsl>|<string>,
+    --                          fg = <hsl>|<string>,
+    --                          sp = <hsl>|<string>,
+    --                          gui = <string> },
     --
     -- Any vim highlight group name is valid, and any unrecognized key is
     -- omitted.

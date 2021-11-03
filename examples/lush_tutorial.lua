@@ -115,6 +115,7 @@ local sea_foam_complement = sea_foam.rotate(180).darken(10).saturate(10)
 
 -- Call lush with our lush-spec.
 -- ignore the "theme" variable for now
+---@diagnostic disable: undefined-global
 local theme = lush(function()
   return {
     -- It's recommended to disable wrapping with `setlocal nowrap`, each
@@ -128,7 +129,10 @@ local theme = lush(function()
 
     -- lush-spec statements are in the form:
     --
-    --   <HighlightGroupName> { bg = <hsl>, fg = <hsl>, sp = <hsl>, gui = <string> },
+    --   <HighlightGroupName> { bg = <hsl>|<string>,
+    --                          fg = <hsl>|<string>,
+    --                          sp = <hsl>|<string>,
+    --                          gui = <string> },
     --
     -- Any vim highlight group name is valid, and any unrecognized key is
     -- omitted.
