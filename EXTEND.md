@@ -155,7 +155,7 @@ break your theme up for maintenance or configuration purposes.
 
 ## Using Lush Data anywhere
 
-Lush provides an extensible build system called [LushBuild](lush_build.md),
+Lush provides an extensible build system called [LushBuild](BUILD.md),
 which allows you to export your colorscheme to any format you want.
 
 In addition to LushBuild, every Lush colorscheme is a compiled down to a Lua

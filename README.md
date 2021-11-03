@@ -53,11 +53,11 @@ There are two interactive tutorials provided,
 Guides
 ------
 
-- [Create your new colorscheme with lush-template](create_theme.md)
-- [Extend an existing colorscheme, or how users can configure your
-  colorscheme](extend_theme.md)
-- [Export your theme to any format(s) with LushBuild](lush_build.md)
-- [Questions and Queries](faq.md)
+- [Create your new colorscheme with lush-template (and how to import a non-lush colorscheme)](CREATE.md)
+- [Extend an Lush existing colorscheme, or how users can configure your
+  colorscheme](EXTEND.md)
+- [Export your colorscheme to any format(s) with LushBuild](lush_build.md)
+- [FAQ](FAQ.md)
 
 See Also
 --------

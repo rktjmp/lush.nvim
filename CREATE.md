@@ -1,12 +1,13 @@
-Creating Your New Theme With Lush
+Creating Your New Colorscheme With Lush
 =================================
 
 To create a Vim colorscheme in Lush you will:
 
 1. Copy the lush-template
-2. Create your theme
-3. Add your theme to nvim
-4. (optional) Export your theme for distribution to non-Neovim clients.
+2. Create your colorscheme
+2.1 Import an existing non-lush colorscheme
+3. Add your colorscheme to nvim
+4. (optional) Export your colorscheme for distribution to non-Neovim clients.
 
 See also, Advanced Usage and `:h lush` for more detailed documentation.
 
@@ -17,7 +18,7 @@ Lush provides a starter structure that contains some boilerplate files and
 
 First, clone down a copy of the template from
 [rktjmp/lush-template](https://github.com/rktjmp/lush-template) while also
-picking a name for your theme; don't worry, it's easy to change this later.
+picking a name for your colorscheme; don't worry, it's easy to change this later.
 
 ```sh
 git clone git@github.com:rktjmp/lush-template.git <your_theme_name>
@@ -58,11 +59,11 @@ cool_name/
     |-lush_theme/
       |-cool_name.lua # contains your lush spec, this is what we'll edit next
   |-colors/
-    |-cool_name.vim   # used to load your theme into neovim
-  |-lush_build.lua    # used to export your theme, we'll look at this later
+    |-cool_name.vim   # used to load your colorscheme into neovim
+  |-lush_build.lua    # used to export your colorscheme, we'll look at this later
 ```
 
-## 2. Create your theme
+## 2. Create your colorscheme
 
 Open your `lua/lush_theme/*.lua` file and run `:Lushify`.
 
@@ -77,8 +78,8 @@ Open your `lua/lush_theme/*.lua` file and run `:Lushify`.
 >
 > ```lua
 > ---@diagnostic disable: undefined-global
-> local theme = lush(function()
-> -- your theme here...
+> local colorscheme = lush(function()
+> -- your colorscheme here...
 > ```
 
 A simple lush-spec would look like this, though lush-template comes with a more
@@ -113,26 +114,37 @@ return lush(function()
 end)
 ```
 
-## 3. Add your theme to nvim
+### 2.1 Import an existing non-lush colorscheme
+
+Lush includes a build in commnad to extract the currently loaded colorscheme,
+and generate a `lush_spec` for it. This generated spec will be "greedy", it
+will contain all currently applied highlight groups which will make it somewhat
+disorganised and loud, but it may be useful as a starting point.
+
+To import the curretly applied highlights, simply open a new file and run
+`:LushImport`. The generated spec will be placed in the `z` register which you
+can paste with `"zp`.
+
+## 3. Add your colorscheme to nvim
 
 Lush themes (like most vim colorschemes) act as plugins, so we have to add our
-theme to neovim's runtime before we can load it. Most people will do this via
+colorscheme to neovim's runtime before we can load it. Most people will do this via
 a package manager.
 
-Assuming your theme is in `~/projects/cool_name`:
+Assuming your colorscheme is in `~/projects/cool_name`:
 
 ```lua
 -- when using packer-nvim
 use '~/projects/cool_name'
 ```
 
-Afterwards we can apply the theme like any other:
+Afterwards we can apply the colorscheme like any other:
 
 ```viml
 colorscheme cool_name
 ```
 
-## 4. (optional) Export your theme for distribution to non-Neovim clients.
+## 4. (optional) Export your colorscheme for distribution to non-Neovim clients.
 
 Lush provides a highly extensible export system, called
 [LushBuild](lush_build.md). It provides some built in tools to export your
@@ -144,4 +156,4 @@ colorscheme to:
 
 Beyond these, you can easily extend LushBuild to export to any format you need.
 
-See the associated [LushBuild](lush_build.md) guide for more information.
+See the associated [LushBuild](BUILD.md) guide for more information.
