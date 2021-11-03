@@ -3,8 +3,8 @@ Lush Build
 
 ```lua
 -- lush_build.lua
-local theme = require("zenbones")
-run(theme,
+local colorscheme = require("zenbones")
+run(colorscheme,
   viml,
   {overwrite, "colors/zenbones.vim"})
 ```
@@ -12,7 +12,7 @@ run(theme,
 - [What is Lush Build](#what-is-lush-build)
 - [Exporting a colorscheme to VimL](#exporting-a-colorscheme-to-viml)
 - [Exporting a colorscheme to configurable Lua](#exporting-a-colorscheme-to-configurable-lua)
-- [Converting a Lush colorscheme into an Alacritty theme](#converting-a-lush-colorscheme-into-an-alacritty-theme)
+- [Converting a Lush colorscheme into an Alacritty colorscheme](#converting-a-lush-colorscheme-into-an-alacritty-colorscheme)
 - [Pipelines are composable](#pipelines-are-composable)
 - [Transform helpers](#transform-helpers)
 - [Transform list](#transform-list)
@@ -20,13 +20,14 @@ run(theme,
 ## What is Lush Build
 
 The Lush build system is designed to take a lush spec (i.e. the color and group
-data from your theme) and apply any number of transforms to that data. These
-transforms can include conversion to a vim theme, terminal emulator theme,
-writing to different files, etc.
+data from your colorscheme) and apply any number of transforms to that data.
+These transforms can include conversion to a vim colorscheme, terminal emulator
+colorscheme, writing to different files, etc.
 
 Each transform is a function that accepts a table and returns a table. The
 contents of these tables is not enforced, except for "head" transforms which
-must accept a `parsed_lush_spec` (i.e. what is returned by `require('theme')`).
+must accept a `parsed_lush_spec` (i.e. what is returned by
+`require('colorscheme')`).
 
 That is to say, a transform may accept a table of lines and return a table of
 functions, or it may accept a table of tables and return a table of lines, etc.
@@ -42,11 +43,12 @@ the build environment:
 - `append`, tail, append one or more items to the given table
 - `overwrite`, tail, overwrite a file with the given table
 - `patchwrite`, tail, selectively overwrite portions of a file with the given table
-- `contrib.alacritty`, tail, convert given table into an alacritty theme
-- `contrib.kitty`, tail, convert given table into a kitty theme
-- `contrib.wezterm`, tail, convert given table into a wezterm theme
+- `contrib.alacritty`, tail, convert given table into an alacritty colorscheme
+- `contrib.kitty`, tail, convert given table into a kitty colorscheme
+- `contrib.wezterm`, tail, convert given table into a wezterm colorscheme
 
-In addition to these transforms, the following are also injected into the build environment:
+In addition to these transforms, the following are also injected into the build
+environment:
 
 - `lush`, the Lush module
 - `run`, a function to start a pipeline
@@ -54,14 +56,15 @@ In addition to these transforms, the following are also injected into the build 
 You can provide any of your own transforms just by writing a function, either
 in the build file or in another module.
 
-We will discuss the simplest example, where you have a theme with no variations
-or configuration options and simply want to let non-lush users use your theme.
+We will discuss the simplest example, where you have a colorscheme with no
+variations or configuration options and simply want to let non-lush users use
+your colorscheme.
 
 ## Exporting a colorscheme to VimL
 
-To ship our theme as a viml file, we will need to:
+To ship our colorscheme as a viml file, we will need to:
 
-- load our theme.
+- load our colorscheme.
 - convert it to viml.
 - save the output to a file.
 
@@ -72,13 +75,13 @@ Our build file would look something like this:
 ```lua
 -- lush_build.lua
 
-local theme = require("my.lush.theme")
+local colorscheme = require("my.lush.colorscheme")
 
--- we start by calling run and giving it our theme as the first argument.
+-- we start by calling run and giving it our colorscheme as the first argument.
 -- any other arguments form the pipeline.
-run(theme,
+run(colorscheme,
 
-  -- now we will convert that theme to a list of viml highlight commands
+  -- now we will convert that colorscheme to a list of viml highlight commands
   viml,
 
   -- the viml commands alone are generally not enough for a colorscheme, we
@@ -89,12 +92,12 @@ run(theme,
   --
   -- append() accepts a table of values, or one value, so this call ends up being:
   -- append(last_pipe_value, {"set...",  "let..."})
-  {append {"set background=dark", "let g:colors_name=\"my_theme\""}},
+  {append {"set background=dark", "let g:colors_name=\"my_colorscheme\""}},
 
   -- now we are ready to write our colors file. note: there is no reason this has
   -- to be written to the relative "colors" dir, you could write the file to an
   -- entirely different vim plugin.
-  {overwrite, "colors/my_theme.vim"})
+  {overwrite, "colors/my_colorscheme.vim"})
 
 -- and that is the whole build file
 ```
@@ -113,9 +116,10 @@ It's important to remember:
 
 As a further example, we will write our own transform next.
 
-## Converting a Lush theme into an Alacritty theme
+## Converting a Lush colorscheme into an Alacritty colorscheme
 
-As an example, we will convert a theme into a (truncated) Alacritty theme.
+As an example, we will convert a colorscheme into a (truncated) Alacritty
+colorscheme.
 
 > Note: Lush provides an alacritty transform (`contrib.alacritty`), but it
 > makes a good example.
@@ -150,7 +154,7 @@ end
 
 local function alacritty(colors, name)
   return {
-    "# Colors: " .. name .. " theme",
+    "# Colors: " .. name,
     "colors:",
     "  primary:"
     "    background: '" .. hash_to_0x(colors.primary.bg) .. "'",
@@ -164,11 +168,11 @@ return alacritty
 ```lua
 -- lush_build.lua
 
-local theme = require("my_theme")
+local colorscheme = require("my_colorscheme")
 local alacritty = require("lush_community.transform.alacritty")
 
-run(theme,
-  -- we must process our theme to conform to the alacritty transforms format.
+run(colorscheme,
+  -- we must process our colorscheme to conform to the alacritty transforms format.
   -- we can do this with an inline transform.
   function (groups)
     return {
@@ -181,10 +185,10 @@ run(theme,
 
   -- now we can pass to alacritty, note that the transform accepts a name,
   -- so we use a table with the transform and it's argument.
-  {alacritty, "my_theme"},
+  {alacritty, "my_colorscheme"},
 
   -- and now we can write, either to share or to our local config
-  {overwrite, "~/.config/alacritty/theme.yaml"}
+  {overwrite, "~/.config/alacritty/colorscheme.yaml"}
 
   -- note, as overwrite is a transform, it *must* return a table, and infact
   -- overwrite returns the same lines it was given. we can pass these lines
@@ -197,9 +201,9 @@ run(theme,
 Exporting a colorscheme to configurable Lua
 -------------------------------------------
 
-The lua transform generates code you can call to load and apply a lush theme
-without lush. As Lua themes often have differing styles of configuration, it
-will require you to provide a support context around it.
+The lua transform generates code you can call to load and apply a lush
+colorscheme without lush. As Lua colorschemes often have differing styles of
+configuration, it will require you to provide a support context around it.
 
 By using the `patchwrite` transform, we can instruct the lush build system to
 only update its own code, leaving our support code intact.
@@ -211,13 +215,13 @@ First, lets create the build file:
 ```lua
 -- lush_build.lua
 
-run(require("theme"),
+run(require("colorscheme"),
   -- generate lua code
   lua,
   -- write the lua code into our destination.
   -- you must specify open and close markers yourself to account
   -- for differing comment styles, patchwrite isn't limited to lua files.
-  {patchwrite "colors/theme.lua", "-- PATCH_OPEN", "-- PATCH_CLOSE"})
+  {patchwrite "colors/colorscheme.lua", "-- PATCH_OPEN", "-- PATCH_CLOSE"})
 ```
 
 </details>
@@ -227,7 +231,7 @@ Before running this build file, we should prepare the destination for `patchwrit
 <details>
 
 ```lua
--- colors/theme.lua
+-- colors/colorscheme.lua
 
 -- content here will not be touched
 
@@ -242,9 +246,9 @@ Before running this build file, we should prepare the destination for `patchwrit
 
 After running `:LushBuild`, we will have a `lush_apply` function.
 
-By default, `lush_apply` will convert your theme (now compiled as a table) into
-viml highlight commands and apply them, but you can provide optional function
-hooks to `lush_apply` to alter data along the way.
+By default, `lush_apply` will convert your colorscheme (now compiled as a
+table) into viml highlight commands and apply them, but you can provide
+optional function hooks to `lush_apply` to alter data along the way.
 
 The following hooks are provided:
 
@@ -268,13 +272,13 @@ The following hooks are provided:
   - By default this passes the rules to `vim.cmd` but you could write your own
     handler to use `nvim_set_hl`, etc.
 
-Now that our theme has been exported, we can adjust our `theme.lua` file to use
-the generated loader.
+Now that our colorscheme has been exported, we can adjust our `colorscheme.lua`
+file to use the generated loader.
 
 <details>
 
 ```lua
--- colors/theme.lua
+-- colors/colorscheme.lua
 
 -- PATCH_OPEN
 -- Generated by lush builder on Mon Nov  1 22:20:06 2021
@@ -334,8 +338,8 @@ return {
 </details>
 
 Note, you don't have to run this exported lua directly, you could still have
-your "core theme file" that takes a config and requires which ever theme is
-appropriate.
+your "core colorscheme file" that takes a config and requires which ever
+colorscheme is appropriate.
 
 <details>
 
@@ -344,7 +348,7 @@ appropriate.
 return {
   setup = function(config)
     if config.light then
-      require("theme.lush_export.light").apply()
+      require("colorscheme.lush_export.light").apply()
     else
        -- ... etc etc
     end
@@ -386,7 +390,8 @@ Transform helpers
 -----------------
 
 A number of helpers are provided to cover common transform tasks. These are a
-available under `lush.transform.helpers`, see the module for an up to date list.
+available under `lush.transform.helpers`, see the module for an up to date
+list.
 
 ```lua
 return {
@@ -452,18 +457,18 @@ each string is a command".
 
 **`contrib.alacritty`**
 
-- Converts given table to an alacritty theme
+- Converts given table to an alacritty colorscheme
 - Accepts
   - a specifically shaped map, see transform for exact format.
 
 **`contrib.kitty`**
 
-- Converts given table to an kitty theme
+- Converts given table to an kitty colorscheme
 - Accepts
   - a specifically shaped map, see transform for exact format.
 
 **`contrib.wezterm`**
 
-- Converts given table to an wezterm theme
+- Converts given table to an wezterm colorscheme
 - Accepts
   - a specifically shaped map, see transform for exact format.

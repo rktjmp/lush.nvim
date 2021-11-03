@@ -21,11 +21,11 @@ First, clone down a copy of the template from
 picking a name for your colorscheme; don't worry, it's easy to change this later.
 
 ```sh
-git clone git@github.com:rktjmp/lush-template.git <your_theme_name>
-cd <your_theme_name>
+git clone git@github.com:rktjmp/lush-template.git <your_colorscheme_name>
+cd <your_colorscheme_name>
 ```
 
-Next we have to update some of the boilrplate files to match your new themes
+Next we have to update some of the boilerplate files to match your new colorschemes
 name. You can copy and paste the script below into a zsh/bash prompt or perform
 the steps manually.
 
@@ -38,7 +38,7 @@ sh << "EOF"
   GIT_NAME=$(git config user.name)
   YEAR=$(date +"%Y")
   mv colors/lush_template.vim colors/$LUSH_NAME.vim
-  mv lua/lush_theme/lush_template.lua lua/lush_theme/$LUSH_NAME.lua
+  mv lua/lush_colorscheme/lush_template.lua lua/lush_colorscheme/$LUSH_NAME.lua
   if command -v sed &> /dev/null; then
     sed -i "s/lush_template/$LUSH_NAME/g" colors/$LUSH_NAME.vim
     sed -i "s/COPYRIGHT_NAME/$GIT_NAME/g" LICENSE
@@ -56,7 +56,7 @@ Lets examine the provided structure:
 ```
 cool_name/
   |-lua/
-    |-lush_theme/
+    |-lush_colorscheme/
       |-cool_name.lua # contains your lush spec, this is what we'll edit next
   |-colors/
     |-cool_name.vim   # used to load your colorscheme into neovim
@@ -65,7 +65,7 @@ cool_name/
 
 ## 2. Create your colorscheme
 
-Open your `lua/lush_theme/*.lua` file and run `:Lushify`.
+Open your `lua/lush_colorscheme/*.lua` file and run `:Lushify`.
 
 > Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
 > or see the [docs (:h lush)](doc/lush.txt) more details. Also see the examples
@@ -86,7 +86,7 @@ A simple lush-spec would look like this, though lush-template comes with a more
 comprehesive list of groups.
 
 ```lua
--- In cool_name/lua/lush_theme/cool_name.lua
+-- In cool_name/lua/lush_colorscheme/cool_name.lua
 
 -- require lush
 local lush = require('lush')
@@ -127,9 +127,9 @@ can paste with `"zp`.
 
 ## 3. Add your colorscheme to nvim
 
-Lush themes (like most vim colorschemes) act as plugins, so we have to add our
-colorscheme to neovim's runtime before we can load it. Most people will do this via
-a package manager.
+Lush colorschemes (like most vim colorschemes) act as plugins, so we have to
+add our colorscheme to neovim's runtime before we can load it. Most people will
+do this via a package manager.
 
 Assuming your colorscheme is in `~/projects/cool_name`:
 

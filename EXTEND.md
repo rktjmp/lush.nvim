@@ -58,7 +58,7 @@ could.
 ```lua
 -- First we will need lush, and the colorscheme we wish to modify
 local lush = require('lush')
-local harbour = require('lush_theme.harbour')
+local harbour = require('lush_colorscheme.harbour')
 
 -- we can apply modifications ontop of the existing colorscheme
 local spec = lush.extends({harbour}).with(function()
@@ -99,7 +99,7 @@ could.
 ```lua
 -- First we will need lush, and the colorscheme we wish to modify
 local lush = require('lush')
-local harbour = require('lush_theme.harbour')
+local harbour = require('lush_colorscheme.harbour')
 
 -- Now we will extend the colorscheme
 local spec = lush.extends({harbour}).with(function()
@@ -124,10 +124,10 @@ autocmd VimEnter,ColorScheme * lua customise_colorscheme()
 
 ## Combining specs to create a variation
 
-You can apply the examples above to create theme variants as a developer, or
+You can apply the examples above to create colorscheme variants as a developer, or
 you can use `lush.merge`.
 
-Imaginging you had a base theme, and one which enhanced the brightness of
+Imaginging you had a base colorscheme, and one which enhanced the brightness of
 language statements and another, constants, you could apply `merge` like this:
 
 ```lua
@@ -165,7 +165,7 @@ return spec
 ```
 
 Merge is generally a less powerful `lush.extend().with()` but you may desire to
-break your theme up for maintenance or configuration purposes.
+break your colorscheme up for maintenance or configuration purposes.
 
 ## Using Lush Data anywhere
 
@@ -173,7 +173,7 @@ Lush provides an extensible build system called [LushBuild](BUILD.md),
 which allows you to export your colorscheme to any format you want.
 
 In addition to LushBuild, every Lush colorscheme is a compiled down to a Lua
-table. This lets you import it into other Lua modules, into other themes or
+table. This lets you import it into other Lua modules, into other colorschemes or
 even other lua runtimes.
 
 For example, you could configure your AwesomeWM theme by loading lush and your
@@ -186,7 +186,7 @@ package.path = package.path
                 .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?/?.lua"
                 .. ";/home/user/.local/share/nvim/site/plugged/lush-olive-tree/lua/?/?.lua"
 -- require lush colorscheme
-local olive_tree = require("lush_theme.olive_tree")
+local olive_tree = require("lush_colorscheme.olive_tree")
 
 -- use lush colorscheme in awesomewm sheme
 colorscheme.bg_normal     = olive_tree.SignColumn.bg.hex

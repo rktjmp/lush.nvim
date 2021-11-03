@@ -6,7 +6,7 @@ Change Log
 New:
 
 - Lush now supports LushBuild, an extensible export framework.
-- Lush now supports LushImport, an existing-theme importer.
+- Lush now supports LushImport, an existing-colorscheme importer.
 - Lush now supports user-providable compiler plugins.
 
 Breaking:
