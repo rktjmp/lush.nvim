@@ -56,7 +56,7 @@ Guides
 - [Create your new colorscheme with lush-template (and how to import a non-lush colorscheme)](CREATE.md)
 - [Extend an Lush existing colorscheme, or how users can configure your
   colorscheme](EXTEND.md)
-- [Export your colorscheme to any format(s) with LushBuild](lush_build.md)
+- [Export your colorscheme to any format(s) with LushBuild](BUILD.md)
 - [FAQ](FAQ.md)
 
 See Also
