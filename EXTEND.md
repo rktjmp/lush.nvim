@@ -70,8 +70,15 @@ local spec = lush.extends({harbour}).with(function()
   }
 end)
 
--- now we can apply the modified spec
-lush(spec)
+-- You may prefer to put this in its own module, shown on _G for brevity.
+_G.customise_colorscheme = function()
+  -- now we can apply the modified spec.
+  lush(spec)
+end
+```
+
+```viml
+autocmd VimEnter,ColorScheme * lua customise_colorscheme()
 ```
 
 ## Adding support for a plugin
@@ -105,7 +112,14 @@ local spec = lush.extends({harbour}).with(function()
   }
 end)
 
-lush(spec)
+-- You may prefer to put this in its own module, shown on _G for brevity.
+_G.customise_colorscheme = function()
+  lush(spec)
+end
+```
+
+```viml
+autocmd VimEnter,ColorScheme * lua customise_colorscheme()
 ```
 
 ## Combining specs to create a variation
