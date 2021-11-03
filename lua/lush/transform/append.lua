@@ -1,17 +1,21 @@
--- middle transformer, appends given elements to input
-
+--- Appends given argument to input table
+-- @param before table to append to
+-- @param after either a single item to append or a table of items to append
 return function(before, after)
-  assert(type(after) == "table",
-    "append transformer requires table as argument")
-
   -- build fresh cause mutability sucks
-  local build = {}
+  local collect = {}
+
   for _, line in ipairs(before) do
-    table.insert(build, line)
-  end
-  for _, line in ipairs(after) do
-    table.insert(build, line)
+    table.insert(collect, line)
   end
 
-  return build
+  if type(after) == table then
+    for _, line in ipairs(after) do
+      table.insert(collect, line)
+    end
+  else
+    table.insert(collect, after)
+  end
+
+  return collect
 end

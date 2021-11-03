@@ -1,17 +1,21 @@
--- middle transformer, prepends given elements to input
-
+--- Prepends given argument to input table
+-- @param after table to prepend to
+-- @param before either a single item to prepend or a table of items to prepend
 return function(after, before)
-  assert(type(before) == "table",
-    "append transformer requires table as argument")
-
   -- build fresh cause mutability sucks
-  local build = {}
-  for _, line in ipairs(before) do
-    table.insert(build, line)
-  end
-  for _, line in ipairs(after) do
-    table.insert(build, line)
+  local collect = {}
+
+  if type(after) == table then
+    for _, line in ipairs(before) do
+      table.insert(collect, line)
+    end
+  else
+    table.insert(collect, before)
   end
 
-  return build
+  for _, line in ipairs(after) do
+    table.insert(collect, line)
+  end
+
+  return collect
 end
