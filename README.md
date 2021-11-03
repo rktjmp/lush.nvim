@@ -5,15 +5,22 @@ Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 
 Lush is aims to make colorscheme creation as painless as possible.
 
-At its core, Lush presents your colorscheme as *structured data*, allowing
-you to manipulate it in any way you want.
+At its core, Lush presents your colorscheme as *structured data*, allowing you
+to manipulate it in any way you want.
 
-It comes with *as-you-edit feedback*, a selection of *color operation helpers*,
-the ability for end users to *extend and configure colorschemes*, as well an
-API to *export your colorscheme in any format*, including a configurable lua
-colorscheme.
+It comes with **as-you-edit feedback**, a selection of **color operation
+helpers**, the ability for end users to **extend and configure colorschemes**,
+as well an API to **export your colorscheme in any format**, including a
+configurable lua colorscheme.
 
 See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lush).
+
+- [Annoucements](#annoucements)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Interative Tutorials](#interactive-tutorials)
+- [Guides](#guides)
+- [See Also](#see-also)
 
 Annoucements
 ------------
