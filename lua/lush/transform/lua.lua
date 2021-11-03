@@ -1,30 +1,6 @@
 -- Head exporter, accepts an AST, returns a table of strings,
 --
 -- Exports the given theme as a lua-configurable function
---
--- config can take the shape:
---
---   {
---     options: {
---      __ALL__: { "gui" }
---      Comment: { "gui", "fg" }
---     }
---   }
---
--- Which should produce a function that accepts a table that configures those
--- options. This *does* require the theme developer to write a setup handler
--- which can tranform their options into the configuration options.
---
--- Thinking:
---
---  Should the function just expect the same form (options.__ALL__.gui) or
---  should it mangle the names (__ALL__gui)?
---
---  OR
---
---  We simply mark groups that can be configured, and those groups call
---  a fixed or configurable function that should apply the group configuration?
---
 local value_or_NONE = require("lush.compiler.plugin.utils").value_or_NONE
 local is_spec = require("lush.transform.helpers").is_lush_spec
 

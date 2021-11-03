@@ -1,3 +1,5 @@
+local rgb_convert = require ("lush.vivid.rgb.convert")
+
 --- Replace $values in a string from a table of {values = "string"}
 -- "my_color is $COLOR", {COLOR = "red"} -> "my_color is red"
 -- @param template A string
@@ -29,7 +31,14 @@ local function is_lush_spec(spec)
 end
 
 return {
+  -- is argument a lush spec
   is_lush_spec = is_lush_spec,
+  -- split string into table by new lines
   split_newlines = split_newlines,
-  apply_template = apply_template
+  -- apply "this is my $template", {template = "replacement"} templating
+  apply_template = apply_template,
+  -- {r = 255, g = 255, b = 255} -> "0xffffff"
+  rgb_to_hex = rgb_convert.rgb_to_hex,
+  -- "0xffffff" -> {r = 255, g = 255, b = 255}
+  hex_to_rgb = rgb_convert.hex_to_rgb
 }
