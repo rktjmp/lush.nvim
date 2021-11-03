@@ -1,5 +1,5 @@
-describe "transform.lua", ->
-  transform = require("lush.builder").transform
+describe "transforms run.lua", ->
+  run = require("lush.builder").run
 
   setup ->
     parse = require('lush.parser')
@@ -20,5 +20,5 @@ describe "transform.lua", ->
 
   it "returns lua code", ->
     lua = require("lush.transform.lua")
-    value = transform(require("theme"), lua)
+    value = run(require("theme"), lua)
     assert.is.table(value)

@@ -1,5 +1,5 @@
-describe "transform.viml", ->
-  transform = require("lush.builder").transform
+describe "run.viml", ->
+  run = require("lush.builder").run
 
   setup ->
     parse = require('lush.parser')
@@ -19,12 +19,12 @@ describe "transform.viml", ->
 
   it "returns viml", ->
     viml = require("lush.transform.viml")
-    value = transform(require("theme"), viml)
+    value = run(require("theme"), viml)
     assert.is.table(value)
     assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
 
   it "accepts options", ->
     viml = require("lush.transform.viml")
-    value = transform(require("theme"), {viml, {plugins: require("lush.compiler.plugin.vim_compatible")}})
+    value = run(require("theme"), {viml, {plugins: require("lush.compiler.plugin.vim_compatible")}})
     assert.is.table(value)
     assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])

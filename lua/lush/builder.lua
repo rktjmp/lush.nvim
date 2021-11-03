@@ -51,7 +51,7 @@ end
 local function make_env()
   local env = {
     lush = require("lush"),
-    transform = require("lush.builder").transform,
+    run = require("lush.builder").run,
     viml = require("lush.transform.viml"),
     lua = require("lush.transform.lua"),
     overwrite = require("lush.transform.overwrite"),
@@ -73,6 +73,6 @@ local function make_env()
 end
 
 return {
-  transform = run_pipeline,
+  run = run_pipeline,
   make_env = make_env
 }
