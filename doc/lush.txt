@@ -609,12 +609,9 @@ lush spec. See `lush/compiler/plugin/` for implementation details.
 Lush ships with the following plugins:
 
 - lush_core:      always included, base viml generator
-
-- vim_compatible: alters highlight rules to be vim compatible, at the cost of
-                  features
 >
   local compiled = lush.compile(parsed, {plugins = {
-    require("lush.compiler.plugin.vim_compatible")
+    require("my_compiler_plugin")
   })
 <
 

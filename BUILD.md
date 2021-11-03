@@ -13,7 +13,7 @@ run(colorscheme,
 - [Exporting a colorscheme to VimL](#exporting-a-colorscheme-to-viml)
 - [Exporting a colorscheme to configurable Lua](#exporting-a-colorscheme-to-configurable-lua)
 - [Converting a Lush colorscheme into an Alacritty colorscheme](#converting-a-lush-colorscheme-into-an-alacritty-colorscheme)
-- [Pipelines are composable](#pipelines-are-composable)
+- [Branch transform](#branch-transform)
 - [Transform helpers](#transform-helpers)
 - [Transform list](#transform-list)
 
@@ -39,8 +39,10 @@ the build environment:
 
 - `viml`, head, convert parsed spec into viml
 - `lua`, head, convert parsed spec into lua
+- `vim_compatible`, tail, remove vim-incompatible values from highlight rules
 - `prepend`, tail, prepend one or more items to the given table
 - `append`, tail, append one or more items to the given table
+- `branch`, tail, pass a value through a pipeline but return the original value
 - `overwrite`, tail, overwrite a file with the given table
 - `patchwrite`, tail, selectively overwrite portions of a file with the given table
 - `contrib.alacritty`, tail, convert given table into an alacritty colorscheme
@@ -83,6 +85,10 @@ run(colorscheme,
 
   -- now we will convert that colorscheme to a list of viml highlight commands
   viml,
+
+  -- we can pass the viml through a vim compatible transform if we want.
+  -- note: this strips blending
+  -- vim_compatible,
 
   -- the viml commands alone are generally not enough for a colorscheme, we
   -- will need to append a few housekeeping lines first.

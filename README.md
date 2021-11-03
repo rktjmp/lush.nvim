@@ -19,8 +19,9 @@ Annoucements
 ------------
 
 - 2021-10-31: Breaking change, the compiler `exclude_keys` option has been
-  removed in favour of the compiler plugin system,
-  - You should now pass `{plugins:  {require("lush.compiler.plugin.vim_compatible")}}` instead.
+  removed in favour of the build system,
+  - See [LushBuild](BUILD.md) for details.
+  - Pin your clone to `40d92a1` until you're ready to upgrade.
 
 Requirements
 ------------
