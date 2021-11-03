@@ -106,6 +106,11 @@ M.build = function(build_file)
   assert(pcall(build_fn))
 end
 
+M.import = function()
+  local importer = require("lush.importer")
+  return importer.import()
+end
+
 -- given a spec function, generate a parsed spec
 -- (spec, table) -> table
 local easy_spec = function(spec, options)
