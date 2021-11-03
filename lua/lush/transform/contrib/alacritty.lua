@@ -22,7 +22,7 @@
 --   bright_cyan = "#000000",
 --   bright_white = "#000000",
 --
---   Optionally also include:
+--   Optionally also all of:
 --
 --   dim_black = "#000000",
 --   dim_red = "#000000",

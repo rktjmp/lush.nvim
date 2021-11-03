@@ -29,12 +29,13 @@
 --   bright_magenta = "#000000",
 --   bright_cyan = "#000000",
 --   bright_white = "#000000",
---   Optionally:
+--
+--   Optionally any of:
+--
 --   url = "#000000",
 --   border_active = "#000000",
 --   border_inactive = "#000000",
 --   border_bell = "#000000",
---   titlebar = "#000000",
 --   titlebar = "#000000",
 --   tab_active_fg = "#000000",
 --   tab_active_bg = "#000000",
@@ -74,7 +75,7 @@ local template = [[
 # these will not work with using kitty @ set-colors with this theme. For a reference$
 # on what these settings do see https://sw.kovidgoyal.net/kitty/conf/$
 
-# The basic colors
+# The basic colors$
 foreground                      $fg
 background                      $bg
 selection_foreground            $selection_fg
@@ -85,7 +86,7 @@ cursor                          $cursor_bg
 cursor_text_color               $cursor_fg
 
 # URL underline color when hovering with mouse
-# url_color                       $url
+url_color                       $url
 
 # kitty window border colors
 active_border_color             $border_active
