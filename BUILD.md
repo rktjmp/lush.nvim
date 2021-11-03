@@ -15,6 +15,7 @@ run(theme,
 - [Converting a Lush colorscheme into an Alacritty theme](#converting_a_lush_colorscheme_into_an_alacritty_theme)
 - [Pipelines are composable](#pipelines_are_composable)
 - [Transform helpers](#transform_helpers)
+- [Transform list](#transform_list)
 
 ## What is Lush Build
 
@@ -401,3 +402,68 @@ return {
   hex_to_rgb = rgb_convert.hex_to_rgb
 }
 ```
+
+Transform list
+--------------
+
+Every transform accepts and returns a table, this is implied in the
+documentation, so "returns commands" means "returns a list of strings, where
+each string is a command".
+
+**`viml`**
+
+- Converts a parsed lush spec into highlight commands.
+- Accepts
+  - `config`: table passed to `lush.compile`
+
+**`lua`**
+
+- Converts a parsed lush spec into lua code.
+- Accepts
+  - none
+
+**`prepend`**
+
+- Prepends given arguments to given table.
+- Accepts
+  - a table of items to prepend, or a single item
+
+**`append`**
+
+- Appends given arguments to given table.
+- Accepts
+  - a table of items to append, or a single item
+
+**`overwrite`**
+
+- Writes the given table (assumes strings) to path, overwrites any existing
+  content.
+- Accepts
+  - a path to write to
+
+**`patchwrite`**
+
+- Writes the given table (assumes strings) to path, writes content only between
+  given start and stop markers.
+- Accepts
+  - a path to write to
+  - a string to match against, indicating where writing should start
+  - a string to match against, indicating where writing should stop
+
+**`contrib.alacritty`**
+
+- Converts given table to an alacritty theme
+- Accepts
+  - a specifically shaped map, see transform for exact format.
+
+**`contrib.kitty`**
+
+- Converts given table to an kitty theme
+- Accepts
+  - a specifically shaped map, see transform for exact format.
+
+**`contrib.wezterm`**
+
+- Converts given table to an wezterm theme
+- Accepts
+  - a specifically shaped map, see transform for exact format.

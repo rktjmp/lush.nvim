@@ -1,5 +1,7 @@
--- Head exporter, accepts an AST, returns a table of strings, each
--- corresponding to a highlight rule.
+--- Head exporter, accepts an AST, returns a table of strings, each
+--- corresponding to a highlight rule.
+--
+-- @param config config to pass to lush.compile
 local compiler = require("lush.compiler")
 local is_spec = require("lush.transform.helpers").is_lush_spec
 
