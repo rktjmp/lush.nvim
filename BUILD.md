@@ -358,32 +358,34 @@ return {
 
 </details>
 
-Pipelines are composable
-------------------------
+Branch transform
+----------------
 
-Since run itself is a transform, you can pipe any table value into it, along
-with a list of transforms to run in that context.
+The branch transform allows you to split a pipeline into independant streams.
 
 ```lua
 run(zenbones,
   viml,
-  {run, {
-    {prepend, [["see http://... for more details]]},
-    {patchwrite, "../dist/...", [[" M_OPEN]], [[" M_CLOSE]]}}}
-  {run, {
-    {patchwrite, "colors/", [[" M_OPEN]], [[" M_CLOSE]]}}})
+  {branch,
+    vim_compatible,
+    {prepend, [["vim-compatible, see http://... for more details]]},
+    {patchwrite, "../dist/...", [[" M_OPEN]], [[" M_CLOSE]]}},
+    -- though vim_compatible has altered the highlight rules, the original
+    -- unmodified rules are passed to the rest of the pipeline.
+  {branch,
+    {patchwrite, "colors/", [[" M_OPEN]], [[" M_CLOSE]]}})
 
 -- or
 run(zenbones,
   extract_term_colors, -- generic map of colors to use in terminals
-  {run, {
+  {branch,
     term_colors_to_kitty_map, -- translate generic map to kitty shaped map
     contrib.kitty,
-    {overwrite, "extra/kitty.conf"}}},
-  {run, {
+    {overwrite, "extra/kitty.conf"}},
+  {branch,
     term_colors_to_alacritty_map, -- translate generic map to alacritty shaped map
     contrib.alacritty,
-    {overwrite, "extra/alacritty.yaml"}}})
+    {overwrite, "extra/alacritty.yaml"}})
 ```
 
 Transform helpers
@@ -426,6 +428,19 @@ each string is a command".
 - Converts a parsed lush spec into lua code.
 - Accepts
   - none
+
+**`vim_compatible`**
+
+- Removes vim-incompatible attributes from highlight commands
+- Accepts
+  - none
+
+**`branch`**
+
+- Takes a given value and a pipeline, passes the value through the pipeline but
+  *returns the original value*.
+- Accepts
+  - any number of transforms
 
 **`prepend`**
 

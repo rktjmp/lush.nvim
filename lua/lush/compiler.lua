@@ -21,8 +21,7 @@ local function compile(ast, options)
   -- deprecated, remove 1/12
   if options.exclude_keys then
     print("Warning: exclude_keys is deprecated, " ..
-          "please see :h lush-manual-toolchain-compile")
-    table.insert(plugins, require("lush.compiler.plugin.vim_compatible"))
+          "please see BUILD.md")
   end
 
   for _, plug in ipairs(options.plugins) do

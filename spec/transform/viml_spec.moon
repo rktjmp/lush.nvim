@@ -23,8 +23,8 @@ describe "run.viml", ->
     assert.is.table(value)
     assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
 
-  it "accepts options", ->
-    viml = require("lush.transform.viml")
-    value = run(require("theme"), {viml, {plugins: require("lush.compiler.plugin.vim_compatible")}})
-    assert.is.table(value)
-    assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
+  -- it "accepts options", ->
+  --   viml = require("lush.transform.viml")
+  --   value = run(require("theme"), {viml, {plugins: require("lush.compiler.plugin.vim_compatible")}})
+  --   assert.is.table(value)
+  --   assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
