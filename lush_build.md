@@ -83,8 +83,8 @@ run(theme,
   -- the viml commands alone are generally not enough for a colorscheme, we
   -- will need to append a few housekeeping lines first.
   --
-  -- note how we are passing arguments to append by wrapping the transfor in a table.
-  -- {transform 1 2 3} will result in transform(last_pipe_value, 1, 2, 3)
+  -- note how we are passing arguments to append by wrapping the transform in a table.
+  -- {transform 1 2 3} ends up as transform(last_pipe_value, 1, 2, 3)
   --
   -- append() accepts a table of values, or one value, so this call ends up being:
   -- append(last_pipe_value, {"set...",  "let..."})
@@ -167,7 +167,7 @@ local theme = require("my_theme")
 local alacritty = require("lush_community.transform.alacritty")
 
 run(theme,
-  -- we must adjust our theme to conform to the alacritty transforms format.
+  -- we must process our theme to conform to the alacritty transforms format.
   -- we can do this with an inline transform.
   function (groups)
     return {
@@ -178,7 +178,8 @@ run(theme,
     }
   end,
 
-  -- now we can pass to alacritty, note that it needs a name
+  -- now we can pass to alacritty, note that the transform accepts a name,
+  -- so we use a table with the transform and it's argument.
   {alacritty, "my_theme"},
 
   -- and now we can write, either to share or to our local config
@@ -201,7 +202,6 @@ will require you to provide a support context around it.
 
 By using the `patchwrite` transform, we can instruct the lush build system to
 only update its own code, leaving our support code intact.
-
 
 First, lets create the build file:
 
@@ -292,7 +292,7 @@ the generated loader.
 --
 local lush_groups = { ... }
 local lush_apply = function(groups, opts)
-...
+-- code redacted for brevity
 end
 -- PATCH_CLOSE
 
