@@ -5,7 +5,7 @@ To create a Vim colorscheme in Lush you will:
 
 1. Copy the lush-template
 2. Create your colorscheme
-2.1 Import an existing non-lush colorscheme
+    1. Import an existing non-lush colorscheme
 3. Add your colorscheme to nvim
 4. (optional) Export your colorscheme for distribution to non-Neovim clients.
 
