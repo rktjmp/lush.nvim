@@ -38,7 +38,7 @@ sh << "EOF"
   GIT_NAME=$(git config user.name)
   YEAR=$(date +"%Y")
   mv colors/lush_template.vim colors/$LUSH_NAME.vim
-  mv lua/lush_colorscheme/lush_template.lua lua/lush_colorscheme/$LUSH_NAME.lua
+  mv lua/lush_theme/lush_template.lua lua/lush_theme/$LUSH_NAME.lua
   if command -v sed &> /dev/null; then
     sed -i "s/lush_template/$LUSH_NAME/g" colors/$LUSH_NAME.vim
     sed -i "s/COPYRIGHT_NAME/$GIT_NAME/g" LICENSE
@@ -56,7 +56,7 @@ Lets examine the provided structure:
 ```
 cool_name/
   |-lua/
-    |-lush_colorscheme/
+    |-lush_theme/
       |-cool_name.lua # contains your lush spec, this is what we'll edit next
   |-colors/
     |-cool_name.vim   # used to load your colorscheme into neovim
@@ -64,7 +64,7 @@ cool_name/
 
 ## 2. Create your colorscheme
 
-Open your `lua/lush_colorscheme/*.lua` file and run `:Lushify`.
+Open your `lua/lush_theme/*.lua` file and run `:Lushify`.
 
 > Be sure to check out the the tutorial if you haven't yet (`:LushRunTutorial`)
 > or see the [docs (:h lush)](doc/lush.txt) more details. Also see the examples
@@ -85,7 +85,7 @@ A simple lush-spec would look like this, though lush-template comes with a more
 comprehesive list of groups.
 
 ```lua
--- In cool_name/lua/lush_colorscheme/cool_name.lua
+-- In cool_name/lua/lush_theme/cool_name.lua
 
 -- require lush
 local lush = require('lush')
