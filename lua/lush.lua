@@ -88,24 +88,6 @@ M.export_to_buffer = function(parsed_spec)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
-M.build = function(build_file)
-  build_file = build_file or "lush_build.lua"
-  assert(type(build_file) == "string",
-    "lush.build build_file must be a string")
-
-  local build_fn, errors = loadfile(build_file)
-  -- it seems sometimes we can fail a loadfile without an error?
-  -- provide a default...
-  assert(build_fn,
-    "Could not load buildfile: "
-    .. (errors or "lua reported no message but failed to load"))
-
-  local builder = require('lush.builder')
-  local env = builder.make_env()
-  build_fn = setfenv(build_fn, env)
-  assert(pcall(build_fn))
-end
-
 M.import = function()
   local importer = require("lush.importer")
   return importer.import()
