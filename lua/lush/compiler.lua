@@ -21,7 +21,7 @@ local function compile(ast, options)
   -- deprecated, remove 1/12
   if options.exclude_keys then
     print("Warning: exclude_keys is deprecated, " ..
-          "please see BUILD.md")
+          "please see BUILD.md or pin your clone to sha:40d92a1")
   end
 
   for _, plug in ipairs(options.plugins) do
