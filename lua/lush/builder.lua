@@ -52,9 +52,9 @@ local function make_env()
   local env = {
     lush = require("lush"),
     run = require("lush.builder").run,
-    lush_to_viml = require("lush.transform.lush_to_viml"),
+    lush_to_vimscript = require("lush.transform.lush_to_vimscript"),
     lush_to_lua = require("lush.transform.lush_to_lua"),
-    vim_compatible_viml = require("lush.transform.vim_compatible_viml"),
+    vim_compatible_vimscript = require("lush.transform.vim_compatible_vimscript"),
     branch = require("lush.transform.branch"),
     overwrite = require("lush.transform.overwrite"),
     patchwrite = require("lush.transform.patchwrite"),

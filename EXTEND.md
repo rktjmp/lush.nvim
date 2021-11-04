@@ -77,7 +77,7 @@ _G.customise_colorscheme = function()
 end
 ```
 
-```viml
+```vimscript
 autocmd VimEnter,ColorScheme * lua customise_colorscheme()
 ```
 
@@ -118,7 +118,7 @@ _G.customise_colorscheme = function()
 end
 ```
 
-```viml
+```vimscript
 autocmd VimEnter,ColorScheme * lua customise_colorscheme()
 ```
 

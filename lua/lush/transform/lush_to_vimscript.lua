@@ -19,7 +19,7 @@ end
 
 return function(ast, config)
   assert(is_spec(ast),
-    "first argument to viml transform must be a parsed lush spec")
+    "first argument to vimscript transform must be a parsed lush spec")
 
   local rules = compiler(ast, config)
 

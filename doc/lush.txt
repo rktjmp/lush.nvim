@@ -16,8 +16,8 @@ Lush is a color scheme creation aid, written in Lua, for Neovim.
 Lush lets you define your scheme as a mini-dsl, provides HSL colour
 manipulation aids, and gives you real time feedback of your changes.
 
-Lush colorschemes can be exported to plain VimL for distribution (or escape),
-and they can also be imported to other Lua (or VimL) files to access color)
+Lush colorschemes can be exported to plain Vim Script for distribution (or escape),
+and they can also be imported to other Lua (or Vim Script) files to access color)
 data.
 
 ================================================================================
@@ -264,7 +264,7 @@ Here's a very simple lush-spec:
 And the corresponding colorscheme loading file for nvim:
 >
   " cool_name/colors/cool_name.vim
-  " yes, unfortunately you still have to write some VimL
+  " yes, unfortunately you still have to write some Vim Script
   set background=dark
   let g:colors_name="cool_name"
   " you could detect background == dark || light here and require
@@ -608,7 +608,7 @@ lush spec. See `lush/compiler/plugin/` for implementation details.
 
 Lush ships with the following plugins:
 
-- lush_core:      always included, base viml generator
+- lush_core:      always included, base vimscript generator
 >
   local compiled = lush.compile(parsed, {plugins = {
     require("my_compiler_plugin")
@@ -679,7 +679,7 @@ Live Search-Replace:
 Lightline
 
   While Lightline can be styled through Lush, real-time updating has some
-  caveats and performance may be less than optimal due to VimL performance.
+  caveats and performance may be less than optimal due to Vim Script performance.
 
   See `examples/lightline-one-file` and `examples/lightline-two-files` for
   guidance. Generally, if real time performance with Lightline is problematic,

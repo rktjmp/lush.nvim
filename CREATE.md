@@ -140,7 +140,7 @@ use '~/projects/cool_name'
 
 Afterwards we can apply the colorscheme like any other:
 
-```viml
+```vimscript
 colorscheme cool_name
 ```
 
@@ -150,7 +150,7 @@ Lush provides a highly extensible export system, called
 [LushBuild](lush_build.md). It provides some built in tools to export your
 colorscheme to:
 
-- VimL (for use with Vim, or Neovim)
+- Vim Script (for use with Vim, or Neovim)
 - Lua, with extension hooks to provide end-user configuration
 - Various terminal emulators
 

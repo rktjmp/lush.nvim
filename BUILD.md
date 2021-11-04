@@ -5,12 +5,12 @@ Lush Build
 -- lush_build.lua
 local colorscheme = require("zenbones")
 run(colorscheme,
-  lush_to_viml,
+  lush_to_vimscript,
   {overwrite, "colors/zenbones.vim"})
 ```
 
 - [What is Lush Build](#what-is-lush-build)
-- [Exporting a colorscheme to VimL](#exporting-a-colorscheme-to-viml)
+- [Exporting a colorscheme to Vim Script](#exporting-a-colorscheme-to-vim-script)
 - [Exporting a colorscheme to configurable Lua](#exporting-a-colorscheme-to-configurable-lua)
 - [Converting a Lush colorscheme into an Alacritty colorscheme](#converting-a-lush-colorscheme-into-an-alacritty-colorscheme)
 - [Branch transform](#branch-transform)
@@ -37,9 +37,9 @@ Transforms can take any additional number of arguments after the table.
 Lush ships with some default transforms, which are automatically injected into
 the build environment:
 
-- `lush_to_viml`, head, convert parsed spec into viml
+- `lush_to_vimscript`, head, convert parsed spec into vimscript
 - `lush_to_lua`, head, convert parsed spec into lua
-- `vim_compatible_viml`, tail, remove vim-incompatible values from highlight rules
+- `vim_compatible_vimscript`, tail, remove vim-incompatible values from highlight rules
 - `prepend`, tail, prepend one or more items to the given table
 - `append`, tail, append one or more items to the given table
 - `branch`, tail, pass a value through a pipeline but return the original value
@@ -62,15 +62,15 @@ We will discuss the simplest example, where you have a colorscheme with no
 variations or configuration options and simply want to let non-lush users use
 your colorscheme.
 
-## Exporting a colorscheme to VimL
+## Exporting a colorscheme to Vim Script
 
-To ship our colorscheme as a viml file, we will need to:
+To ship our colorscheme as a vimscript file, we will need to:
 
 - load our colorscheme.
-- convert it to viml.
+- convert it to vimscript.
 - save the output to a file.
 
-We will use the `lush_to_viml` and `overwrite` transforms.
+We will use the `lush_to_vimscript` and `overwrite` transforms.
 
 Our build file would look something like this:
 
@@ -83,14 +83,14 @@ local colorscheme = require("my.lush.colorscheme")
 -- any other arguments form the pipeline.
 run(colorscheme,
 
-  -- now we will convert that colorscheme to a list of viml highlight commands
-  lush_to_viml,
+  -- now we will convert that colorscheme to a list of vimscript highlight commands
+  lush_to_vimscript,
 
-  -- we can pass the viml through a vim compatible transform if we want.
+  -- we can pass the vimscript through a vim compatible transform if we want.
   -- note: this strips blending
-  -- vim_compatible_viml,
+  -- vim_compatible_vimscript,
 
-  -- the viml commands alone are generally not enough for a colorscheme, we
+  -- the vimscript commands alone are generally not enough for a colorscheme, we
   -- will need to append a few housekeeping lines first.
   --
   -- note how we are passing arguments to append by wrapping the transform in a table.
@@ -253,7 +253,7 @@ Before running this build file, we should prepare the destination for `patchwrit
 After running `:LushBuild`, we will have a `lush_apply` function.
 
 By default, `lush_apply` will convert your colorscheme (now compiled as a
-table) into viml highlight commands and apply them, but you can provide
+table) into vimscript highlight commands and apply them, but you can provide
 optional function hooks to `lush_apply` to alter data along the way.
 
 The following hooks are provided:
@@ -265,7 +265,7 @@ The following hooks are provided:
 - `generate_group_fn = function(group) .. end`
   - Accepts a group and generate *something* that `apply` will understand.
   - By default this is a `highlight ...` vim command but you could return other
-    viml, raw lua, different tables, etc.
+    vimscript, raw lua, different tables, etc.
   - The results of this function is collected into a table of "rules", one per
     group.
 - `before_apply_fn = function(rules) ... end`
@@ -371,12 +371,12 @@ The branch transform allows you to split a pipeline into independant streams.
 
 ```lua
 run(zenbones,
-  lush_to_viml,
+  lush_to_vimscript,
   {branch,
-    vim_compatible_viml,
+    vim_compatible_vimscript,
     {prepend, [["vim-compatible, see http://... for more details]]},
     {patchwrite, "../dist/...", [[" M_OPEN]], [[" M_CLOSE]]}},
-    -- though vim_compatible_viml has altered the highlight rules, the original
+    -- though vim_compatible_vimscript has altered the highlight rules, the original
     -- unmodified rules are passed to the rest of the pipeline.
   {branch,
     {patchwrite, "colors/", [[" M_OPEN]], [[" M_CLOSE]]}})
@@ -423,7 +423,7 @@ Every transform accepts and returns a table, this is implied in the
 documentation, so "returns commands" means "returns a list of strings, where
 each string is a command".
 
-**`lusn_to_viml`**
+**`lusn_to_vimscript`**
 
 - Converts a parsed lush spec into highlight commands.
 - Accepts
@@ -435,7 +435,7 @@ each string is a command".
 - Accepts
   - none
 
-**`vim_compatible_viml`**
+**`vim_compatible_vimscript`**
 
 - Removes vim-incompatible attributes from highlight commands
 - Accepts

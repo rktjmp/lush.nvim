@@ -99,24 +99,24 @@ Short answer: no.
 
 Long answer:
 
-There isn't a noticeable performance impact in using Lush over a raw VimL
+There isn't a noticeable performance impact in using Lush over a raw Vim Script
 colorscheme.  The parse and compile stage is generally around 1ms on a quite
 aged core i5 and is comparatively dwarfed by the 3ms spent waiting Vim's
-interpreter to apply the commands, a penalty which raw VimL schemes would
+interpreter to apply the commands, a penalty which raw Vim Script schemes would
 share.
 
 If you noticed a poor performance, you can always export your theme to
-VimL after using Lush to aid the development process.
+Vim Script after using Lush to aid the development process.
 
 *Times measured with libuv's hrtime(), specifically around the parse, compile
 and apply calls. There may be a few extra nanoseconds not recorded between
 calling in and out of functions, as well as the initial file load time
-(which VimL would also incur).*
+(which Vim Script would also incur).*
 
 ```
 Parse:   286300  ns  0.2863 ms -- resolve lush-spec into concrete values
-Compile: 671900  ns  0.6719 ms -- convert concrete spec into viml commands
-Apply:   3134300 ns  3.1343 ms -- pass to VimL interpreter (iterate array and call "nvim_command", "nvim_exec" performance is identical)
+Compile: 671900  ns  0.6719 ms -- convert concrete spec into vimscript commands
+Apply:   3134300 ns  3.1343 ms -- pass to Vim Script interpreter (iterate array and call "nvim_command", "nvim_exec" performance is identical)
 Total:   4092500 ns  4.0925 ms
 
 Parse:   373500  ns  0.3735 ms
@@ -136,7 +136,7 @@ Total:   4179300 ns  4.1793 ms
 ```
 
 See also [issue #19](https://github.com/rktjmp/lush.nvim/issues/19), where
-1000, 2000 and 4000 rule specs were tested. VimL is stll consistently the
+1000, 2000 and 4000 rule specs were tested. Vim Script is stll consistently the
 bottleneck.
 
 Note that a 1000 rule spec is likely pretty unsual. There are only about 150
@@ -146,7 +146,7 @@ less).
 A 4k rule spec would probably mean you're loading an enourmous number of
 plugins, at which point your load times are probably also already enormous.
 
-Also as per the issue, since VimL is such a huge bottleneck, you may find
+Also as per the issue, since Vim Script is such a huge bottleneck, you may find
 similarly sized colorschemes actually load *faster* via Lush because any maths
 and manipulation is done via Lua instead.
 

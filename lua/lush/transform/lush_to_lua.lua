@@ -46,7 +46,7 @@ local lush_apply = function(groups, opts)
   -- group.data (table of fg, bg, gui, sp and blend)). Should return something
   -- which apply() knows how to handle.
   --
-  -- By default we generate a viml highlight rule.
+  -- By default we generate a vimscript highlight rule.
   local generate_group = options.generate_group_fn or
     function(group)
       if group.type == "link" then
@@ -80,7 +80,7 @@ local lush_apply = function(groups, opts)
   -- Accepts a list of each group's result from generate_group_fn. Should
   -- return something apply_fn can understand.
   --
-  -- By default, generate_group_fn returns a viml "highlight ..." command and
+  -- By default, generate_group_fn returns a vimscript "highlight ..." command and
   -- apply_fn assumes it's recieving a list of commands to pass to vim.cmd, but
   -- you could for example, return a table of functions here and the apply_fn
   -- could call those functions.

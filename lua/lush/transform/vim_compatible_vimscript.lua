@@ -1,4 +1,4 @@
---- Alters a list of viml highlight commands to be vim compatible
+--- Alters a list of vim script highlight commands to be vim compatible
 return function(rules)
   local collect = {}
   for _, rule in ipairs(rules) do
