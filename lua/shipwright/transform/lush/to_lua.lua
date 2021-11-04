@@ -60,6 +60,21 @@ local lush_apply = function(groups, opts)
       end
     end
 
+  -- before_apply(any) -> any
+  --
+  -- Accepts a list of each group's result from generate_group_fn. Should
+  -- return something apply_fn can understand.
+  --
+  -- By default, generate_group_fn returns a vimscript "highlight ..." command and
+  -- apply_fn assumes it's recieving a list of commands to pass to vim.cmd, but
+  -- you could for example, return a table of functions here and the apply_fn
+  -- could call those functions.
+  local before_apply = options.before_apply_fn or function(rules)
+    -- just add the hi clear call
+    table.insert(rules, 1, "highlight clear")
+    return rules
+  end
+
   -- apply(any) -> any
   --
   -- Accepts a list of something and does something with it.
@@ -74,20 +89,6 @@ local lush_apply = function(groups, opts)
         vim.api.nvim_command(cmd)
       end
     end
-
-  -- before_apply(any) -> any
-  --
-  -- Accepts a list of each group's result from generate_group_fn. Should
-  -- return something apply_fn can understand.
-  --
-  -- By default, generate_group_fn returns a vimscript "highlight ..." command and
-  -- apply_fn assumes it's recieving a list of commands to pass to vim.cmd, but
-  -- you could for example, return a table of functions here and the apply_fn
-  -- could call those functions.
-  local before_apply = options.before_apply_fn or function(rules)
-    -- by default we dont alter anything
-    return rules
-  end
 
   local rules = {}
   for _, group in ipairs(groups) do
