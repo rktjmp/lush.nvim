@@ -60,7 +60,6 @@ cool_name/
       |-cool_name.lua # contains your lush spec, this is what we'll edit next
   |-colors/
     |-cool_name.vim   # used to load your colorscheme into neovim
-  |-lush_build.lua    # used to export your colorscheme, we'll look at this later
 ```
 
 ## 2. Create your colorscheme
@@ -146,14 +145,10 @@ colorscheme cool_name
 
 ## 4. (optional) Export your colorscheme for distribution to non-Neovim clients.
 
-Lush provides a highly extensible export system, called
-[LushBuild](lush_build.md). It provides some built in tools to export your
-colorscheme to:
+Lush uses [Shipwright](https://github.com/rktjmp/shipwright.nvim) as its build
+system. See the [build guide](BUILD.md) for more details.
+
+Lush provides tools for use with Shipwright to export your colorscheme as:
 
 - Vim Script (for use with Vim, or Neovim)
 - Lua, with extension hooks to provide end-user configuration
-- Various terminal emulators
-
-Beyond these, you can easily extend LushBuild to export to any format you need.
-
-See the associated [LushBuild](BUILD.md) guide for more information.
