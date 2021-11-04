@@ -25,7 +25,7 @@ local lush_core = {
   --
   -- I.e: `return "highlight! LuaStatement fg=red", false` will set the
   -- highlight rule and prevent any other plugins from running.
-  make_group = function(group_name, group_spec, current_rule, entire_spec)
+  make_group = function(group_name, group_spec, current_rule, entire_spec, exclude_keys)
     -- We define groups "greedily", meaning we set any un-set options to NONE
     -- This allows for Group {} to actually clear highlighting, which was
     -- personally preferable to me who uses very few highlights.
@@ -39,9 +39,29 @@ local lush_core = {
       blend = "blend"
     }
 
+    -- TODO deprecated, remove 1/12
+    local keys = {"fg", "bg", "sp", "gui", "blend"}
+    if exclude_keys then
+      -- check if value is_in list
+      local function contains(list, value)
+        for _, v in ipairs(list) do
+          if v == value then return true end
+        end
+        return false
+      end
+      local filtered = {}
+      for _, key in ipairs(keys) do
+        if not contains(exclude_keys, key) then
+          table.insert(filtered, key)
+        end
+      end
+       keys = filtered
+    end
+
     -- pair lush keys to vim keys
     local builder = {}
-    for _, key in ipairs({"fg", "bg", "sp", "gui", "blend"}) do
+
+    for _, key in ipairs(keys) do
       table.insert(builder, translator[key] .. "=" .. value_or_NONE(group_spec[key]))
     end
 

@@ -18,10 +18,9 @@ local function compile(ast, options)
     require("lush.compiler.plugin.lush_core"),
   }
 
-  -- deprecated, remove 1/12
+  -- TODO deprecated, remove 1/12
   if options.exclude_keys then
-    print("Warning: exclude_keys is deprecated, " ..
-          "please see BUILD.md or pin your clone to sha:40d92a1")
+    print("Warning: exclude_keys is deprecated, please see BUILD.md")
   end
 
   for _, plug in ipairs(options.plugins) do
@@ -45,7 +44,9 @@ local function compile(ast, options)
         command, continue_pipeline = plug.make_group(group_name,
                                                      group_def,
                                                      command,
-                                                     ast)
+                                                     ast,
+                                                     -- deprecated, remove 1/12
+                                                     options.exclude_keys)
         assert(type(command) == "string",
           "compiler plugin " .. plug.name
             .. " did not return string for make_group " .. group_name)

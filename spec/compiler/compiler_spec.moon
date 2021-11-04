@@ -41,3 +41,18 @@ describe "compiler", ->
     assert.is_not_nil(compiled)
     assert.matches("bold,italic", compiled[1])
 
+-- TODO remove 1/12
+describe "key exclusion", ->
+  parse = require('lush.parser')
+  compile = require('lush.compiler')
+  it "can exclude keys", ->
+    ast = parse -> {
+      A { gui: "italic", blend: 40 }
+    }
+    compiled = compile(ast, {
+      exclude_keys: {"blend"}
+    })
+    assert.is_not_nil(compiled)
+    assert.matches("italic", compiled[1])
+    assert.not.matches("blend", compiled[1])
+
