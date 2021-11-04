@@ -1,15 +1,16 @@
-Lush Build
-==========
+Lush without Lush
+=================
 
 ```lua
--- lush_build.lua
+-- shipwright_build.lua
 local colorscheme = require("zenbones")
+local lushwright = require("shipwright.transform.lush")
 run(colorscheme,
-  lush_to_vimscript,
+  lushwright.to_vimscript,
   {overwrite, "colors/zenbones.vim"})
 ```
 
-- [What is Lush Build](#what-is-lush-build)
+- [What is Shipwright](#what-is-shipwright)
 - [Exporting a colorscheme to Vim Script](#exporting-a-colorscheme-to-vim-script)
 - [Exporting a colorscheme to configurable Lua](#exporting-a-colorscheme-to-configurable-lua)
 - [Converting a Lush colorscheme into an Alacritty colorscheme](#converting-a-lush-colorscheme-into-an-alacritty-colorscheme)
@@ -17,46 +18,30 @@ run(colorscheme,
 - [Transform helpers](#transform-helpers)
 - [Transform list](#transform-list)
 
-## What is Lush Build
+## What is Shipwright
 
-The Lush build system is designed to take a lush spec (i.e. the color and group
-data from your colorscheme) and apply any number of transforms to that data.
-These transforms can include conversion to a vim colorscheme, terminal emulator
-colorscheme, writing to different files, etc.
+[Shipwright](https://github.com/rktjmp/shipwright.nvim) is flexible build
+system, initially created for Lush but split into its own generic plugin.
 
-Each transform is a function that accepts a table and returns a table. The
-contents of these tables is not enforced, except for "head" transforms which
-must accept a `parsed_lush_spec` (i.e. what is returned by
-`require('colorscheme')`).
+To export your lush theme you will have to install Shipwright with your package
+manager first:
 
-That is to say, a transform may accept a table of lines and return a table of
-functions, or it may accept a table of tables and return a table of lines, etc.
+```lua
+use "rktjmp/shipwright.nvim"
+```
 
-Transforms can take any additional number of arguments after the table.
+It is recommended you read the Shipwright readme before continuing as this
+guide will build apon the concepts explained there.
 
-Lush ships with some default transforms, which are automatically injected into
-the build environment:
+Lush provides some aditional Shipwright transforms for use with parsed lush
+specs:
 
-- `lush_to_vimscript`, head, convert parsed spec into vimscript
-- `lush_to_lua`, head, convert parsed spec into lua
+- `to_vimscript`, head, convert parsed spec into vimscript
+- `to_lua`, head, convert parsed spec into lua
 - `vim_compatible_vimscript`, tail, remove vim-incompatible values from highlight rules
-- `prepend`, tail, prepend one or more items to the given table
-- `append`, tail, append one or more items to the given table
-- `branch`, tail, pass a value through a pipeline but return the original value
-- `overwrite`, tail, overwrite a file with the given table
-- `patchwrite`, tail, selectively overwrite portions of a file with the given table
-- `contrib.alacritty`, tail, convert given table into an alacritty colorscheme
-- `contrib.kitty`, tail, convert given table into a kitty colorscheme
-- `contrib.wezterm`, tail, convert given table into a wezterm colorscheme
 
-In addition to these transforms, the following are also injected into the build
-environment:
-
-- `lush`, the Lush module
-- `run`, a function to start a pipeline
-
-You can provide any of your own transforms just by writing a function, either
-in the build file or in another module.
+You must `require("shipwright.transform.lush")` in your `shipwright_build.lua`
+to access these transforms.
 
 We will discuss the simplest example, where you have a colorscheme with no
 variations or configuration options and simply want to let non-lush users use
@@ -75,20 +60,21 @@ We will use the `lush_to_vimscript` and `overwrite` transforms.
 Our build file would look something like this:
 
 ```lua
--- lush_build.lua
+-- shipwright_build.lua
 
 local colorscheme = require("my.lush.colorscheme")
+local lushwright = require("shipwright.transform.lush")
 
 -- we start by calling run and giving it our colorscheme as the first argument.
 -- any other arguments form the pipeline.
 run(colorscheme,
 
   -- now we will convert that colorscheme to a list of vimscript highlight commands
-  lush_to_vimscript,
+  lushwright.to_vimscript,
 
   -- we can pass the vimscript through a vim compatible transform if we want.
   -- note: this strips blending
-  -- vim_compatible_vimscript,
+  -- lushwright.vim_compatible_vimscript,
 
   -- the vimscript commands alone are generally not enough for a colorscheme, we
   -- will need to append a few housekeeping lines first.
@@ -108,101 +94,9 @@ run(colorscheme,
 -- and that is the whole build file
 ```
 
-You can run `:LushBuild <build_file>` which will load and execute the given
-build file, or if no buildfile is specified, Lush will look for
-`lush_build.lua` in the current working directory.
-
-It's important to remember:
-
-- The build file is "just lua", you can use any normal lua inside it, including
-  loops, other modules, etc. You can even define, extend or merge Lush specs
-  inside the build file.
-- Transformers are "just functions", so it's very simple to write your own
-  extensions to the provided transforms.
-
-As a further example, we will write our own transform next.
-
-## Converting a Lush colorscheme into an Alacritty colorscheme
-
-As an example, we will convert a colorscheme into a (truncated) Alacritty
-colorscheme.
-
-> Note: Lush provides an alacritty transform (`contrib.alacritty`), but it
-> makes a good example.
-
-To do this we will need to:
-
-- collect a subset of groups to export.
-- convert `#000000` hex values to `0x000000`.
-- downcase our hex values.
-- generate a yaml file for use with Alacritty.
-
-<details>
-
-```lua
--- As an example, we will imagine we are developing a lush transform
--- for release into the community.
---
--- We will say this transform expects to get a table shaped as:
---
--- {
---   primary = {
---     bg = color
---     fg = color
---   }
--- }
---
--- along with a name.
-
-local function hash_to_0x(color)
-  return string.lower(string.gsub(color, "^#", "0x"))
-end
-
-local function alacritty(colors, name)
-  return {
-    "# Colors: " .. name,
-    "colors:",
-    "  primary:"
-    "    background: '" .. hash_to_0x(colors.primary.bg) .. "'",
-    "    foreground: '" .. hash_to_0x(colors.primary.fg) .. "'",
-  }
-end
-
-return alacritty
-```
-
-```lua
--- lush_build.lua
-
-local colorscheme = require("my_colorscheme")
-local alacritty = require("lush_community.transform.alacritty")
-
-run(colorscheme,
-  -- we must process our colorscheme to conform to the alacritty transforms format.
-  -- we can do this with an inline transform.
-  function (groups)
-    return {
-      primary = {
-        bg = groups.Normal.bg,
-        fg = groups.Normal.fg
-      }
-    }
-  end,
-
-  -- now we can pass to alacritty, note that the transform accepts a name,
-  -- so we use a table with the transform and it's argument.
-  {alacritty, "my_colorscheme"},
-
-  -- and now we can write, either to share or to our local config
-  {overwrite, "~/.config/alacritty/colorscheme.yaml"}
-
-  -- note, as overwrite is a transform, it *must* return a table, and infact
-  -- overwrite returns the same lines it was given. we can pass these lines
-  -- another transform.
-  {overwrite, "extra/terms/alacritty.yaml"})
-```
-
-</details>
+You can run `:Shipwright <build_file>` which will load and execute the given
+build file, or if no buildfile is specified, Shipwright will look for
+`shipwright_build.lua` in the current working directory.
 
 Exporting a colorscheme to configurable Lua
 -------------------------------------------
@@ -211,19 +105,20 @@ The lua transform generates code you can call to load and apply a lush
 colorscheme without lush. As Lua colorschemes often have differing styles of
 configuration, it will require you to provide a support context around it.
 
-By using the `patchwrite` transform, we can instruct the lush build system to
-only update its own code, leaving our support code intact.
+By using the `patchwrite` transform, we can instruct Shipwright to only update
+its own code, leaving our support code intact.
 
 First, lets create the build file:
 
 <details>
 
 ```lua
--- lush_build.lua
+-- shipwright_build.lua
 
+local lushwright = require("shipwright.transform.lush")
 run(require("colorscheme"),
   -- generate lua code
-  lush_to_lua,
+  lushwright.to_lua,
   -- write the lua code into our destination.
   -- you must specify open and close markers yourself to account
   -- for differing comment styles, patchwrite isn't limited to lua files.
@@ -232,7 +127,8 @@ run(require("colorscheme"),
 
 </details>
 
-Before running this build file, we should prepare the destination for `patchwrite`:
+Before running this build file, we should prepare the destination for
+`patchwrite`:
 
 <details>
 
@@ -250,7 +146,7 @@ Before running this build file, we should prepare the destination for `patchwrit
 
 </details>
 
-After running `:LushBuild`, we will have a `lush_apply` function.
+After running `:Shipwright`, we will have a `lush_apply` function.
 
 By default, `lush_apply` will convert your colorscheme (now compiled as a
 table) into vimscript highlight commands and apply them, but you can provide
@@ -364,55 +260,17 @@ return {
 
 </details>
 
-Branch transform
-----------------
-
-The branch transform allows you to split a pipeline into independant streams.
-
-```lua
-run(zenbones,
-  lush_to_vimscript,
-  {branch,
-    vim_compatible_vimscript,
-    {prepend, [["vim-compatible, see http://... for more details]]},
-    {patchwrite, "../dist/...", [[" M_OPEN]], [[" M_CLOSE]]}},
-    -- though vim_compatible_vimscript has altered the highlight rules, the original
-    -- unmodified rules are passed to the rest of the pipeline.
-  {branch,
-    {patchwrite, "colors/", [[" M_OPEN]], [[" M_CLOSE]]}})
-
--- or
-run(zenbones,
-  extract_term_colors, -- generic map of colors to use in terminals
-  {branch,
-    term_colors_to_kitty_map, -- translate generic map to kitty shaped map
-    contrib.kitty,
-    {overwrite, "extra/kitty.conf"}},
-  {branch,
-    term_colors_to_alacritty_map, -- translate generic map to alacritty shaped map
-    contrib.alacritty,
-    {overwrite, "extra/alacritty.yaml"}})
-```
-
 Transform helpers
 -----------------
 
-A number of helpers are provided to cover common transform tasks. These are a
-available under `lush.transform.helpers`, see the module for an up to date
-list.
+Some helpers are provided to cover common transform tasks. These are a
+available under `shipwright.transform.lush.helpers`, see the module for an up
+to date list.
 
 ```lua
 return {
   -- is argument a lush spec
   is_lush_spec = is_lush_spec,
-  -- split string into table by new lines
-  split_newlines = split_newlines,
-  -- apply "this is my $template", {template = "replacement"} templating
-  apply_template = apply_template,
-  -- {r = 255, g = 255, b = 255} -> "0xffffff"
-  rgb_to_hex = rgb_convert.rgb_to_hex,
-  -- "0xffffff" -> {r = 255, g = 255, b = 255}
-  hex_to_rgb = rgb_convert.hex_to_rgb
 }
 ```
 
@@ -423,13 +281,13 @@ Every transform accepts and returns a table, this is implied in the
 documentation, so "returns commands" means "returns a list of strings, where
 each string is a command".
 
-**`lusn_to_vimscript`**
+**`to_vimscript`**
 
 - Converts a parsed lush spec into highlight commands.
 - Accepts
   - `config`: table passed to `lush.compile`
 
-**`lush_to_lua`**
+**`to_lua`**
 
 - Converts a parsed lush spec into lua code.
 - Accepts
@@ -440,56 +298,3 @@ each string is a command".
 - Removes vim-incompatible attributes from highlight commands
 - Accepts
   - none
-
-**`branch`**
-
-- Takes a given value and a pipeline, passes the value through the pipeline but
-  *returns the original value*.
-- Accepts
-  - any number of transforms
-
-**`prepend`**
-
-- Prepends given arguments to given table.
-- Accepts
-  - a table of items to prepend, or a single item
-
-**`append`**
-
-- Appends given arguments to given table.
-- Accepts
-  - a table of items to append, or a single item
-
-**`overwrite`**
-
-- Writes the given table (assumes strings) to path, overwrites any existing
-  content.
-- Accepts
-  - a path to write to
-
-**`patchwrite`**
-
-- Writes the given table (assumes strings) to path, writes content only between
-  given start and stop markers.
-- Accepts
-  - a path to write to
-  - a string to match against, indicating where writing should start
-  - a string to match against, indicating where writing should stop
-
-**`contrib.alacritty`**
-
-- Converts given table to an alacritty colorscheme
-- Accepts
-  - a specifically shaped map, see transform for exact format.
-
-**`contrib.kitty`**
-
-- Converts given table to an kitty colorscheme
-- Accepts
-  - a specifically shaped map, see transform for exact format.
-
-**`contrib.wezterm`**
-
-- Converts given table to an wezterm colorscheme
-- Accepts
-  - a specifically shaped map, see transform for exact format.

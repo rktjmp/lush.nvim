@@ -1,8 +1,5 @@
 describe "transforms run.lua", ->
-  run = require("lush.builder").run
-
   setup ->
-    lua = require("lush.transform.lush_to_lua")
     parse = require('lush.parser')
     ast = parse -> {
       A { gui: "italic", blend: 40 },
@@ -20,5 +17,6 @@ describe "transforms run.lua", ->
     package.loaded["theme"] = nil
 
   it "returns lua code", ->
-    value = run(require("theme"), lua)
+    to_lua = require("shipwright.transform.lush.to_lua")
+    value = to_lua(require("theme"))
     assert.is.table(value)

@@ -27,7 +27,7 @@ Annoucements
 
 - 2021-10-31: Breaking change, the compiler `exclude_keys` option has been
   removed in favour of the build system,
-  - See [LushBuild](BUILD.md) for details.
+  - See [build guide](BUILD.md) for details.
   - Pin your clone to `40d92a1` until you're ready to upgrade.
 
 Requirements
@@ -64,7 +64,7 @@ Guides
 - [Create your new colorscheme with lush-template (and how to import a non-lush colorscheme)](CREATE.md)
 - [Extend an Lush existing colorscheme, or how users can configure your
   colorscheme](EXTEND.md)
-- [Export your colorscheme to any format(s) with LushBuild](BUILD.md)
+- [Export your colorscheme to any format(s) with Shipwright](BUILD.md)
 - [FAQ](FAQ.md)
 
 See Also

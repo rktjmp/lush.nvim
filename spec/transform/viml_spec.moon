@@ -1,6 +1,4 @@
 describe "run.vimscript", ->
-  run = require("lush.builder").run
-
   setup ->
     parse = require('lush.parser')
     ast = parse -> {
@@ -18,13 +16,13 @@ describe "run.vimscript", ->
     package.loaded["theme"] = nil
 
   it "returns vimscript", ->
-    vimscript = require("lush.transform.lush_to_vimscript")
-    value = run(require("theme"), vimscript)
+    vimscript = require("shipwright.transform.lush.to_vimscript")
+    value = vimscript(require("theme"))
     assert.is.table(value)
     assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
 
   it "orders the vimscript", ->
-    vimscript = require("lush.transform.lush_to_vimscript")
+    vimscript = require("shipwright.transform.lush.to_vimscript")
     parse = require('lush.parser')
     ast = parse -> {
       Apple { gui: "italic", blend: 40 }, -- first
@@ -32,14 +30,8 @@ describe "run.vimscript", ->
       Cat { Apple } -- link, so after apple, after bandana
       Bandana { Apple } -- link, so after apple
     }
-    value = run(ast, vimscript)
+    value = vimscript(ast)
     assert.match("highlight Apple", value[1])
     assert.match("link Bandana Apple", value[2])
     assert.match("link Cat Apple", value[3])
     assert.match("highlight Bananna", value[4])
-
-  -- it "accepts options", ->
-  --   vimscript = require("lush.transform.vimscript")
-  --   value = run(require("theme"), {vimscript, {plugins: require("lush.compiler.plugin.vim_compatible")}})
-  --   assert.is.table(value)
-  --   assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
