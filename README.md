@@ -25,7 +25,7 @@ See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lu
 Annoucements
 ------------
 
-- 2021-10-31: Deprecation warning, the compiler `exclude_keys` option has been
+- 2021-11-05: Deprecation warning, the compiler `exclude_keys` option has been
   deprecated in favour of the build system,
   - See [build guide](BUILD.md) for details.
 
