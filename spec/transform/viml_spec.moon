@@ -18,13 +18,13 @@ describe "run.viml", ->
     package.loaded["theme"] = nil
 
   it "returns viml", ->
-    viml = require("lush.transform.viml")
+    viml = require("lush.transform.lush_to_viml")
     value = run(require("theme"), viml)
     assert.is.table(value)
     assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
 
   it "orders the viml", ->
-    viml = require("lush.transform.viml")
+    viml = require("lush.transform.lush_to_viml")
     parse = require('lush.parser')
     ast = parse -> {
       Apple { gui: "italic", blend: 40 }, -- first

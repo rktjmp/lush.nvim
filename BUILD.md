@@ -5,7 +5,7 @@ Lush Build
 -- lush_build.lua
 local colorscheme = require("zenbones")
 run(colorscheme,
-  viml,
+  lush_to_viml,
   {overwrite, "colors/zenbones.vim"})
 ```
 
@@ -37,9 +37,9 @@ Transforms can take any additional number of arguments after the table.
 Lush ships with some default transforms, which are automatically injected into
 the build environment:
 
-- `viml`, head, convert parsed spec into viml
-- `lua`, head, convert parsed spec into lua
-- `vim_compatible`, tail, remove vim-incompatible values from highlight rules
+- `lush_to_viml`, head, convert parsed spec into viml
+- `lush_to_lua`, head, convert parsed spec into lua
+- `vim_compatible_viml`, tail, remove vim-incompatible values from highlight rules
 - `prepend`, tail, prepend one or more items to the given table
 - `append`, tail, append one or more items to the given table
 - `branch`, tail, pass a value through a pipeline but return the original value
@@ -70,7 +70,7 @@ To ship our colorscheme as a viml file, we will need to:
 - convert it to viml.
 - save the output to a file.
 
-We will use the `viml` and `overwrite` transforms.
+We will use the `lush_to_viml` and `overwrite` transforms.
 
 Our build file would look something like this:
 
@@ -84,11 +84,11 @@ local colorscheme = require("my.lush.colorscheme")
 run(colorscheme,
 
   -- now we will convert that colorscheme to a list of viml highlight commands
-  viml,
+  lush_to_viml,
 
   -- we can pass the viml through a vim compatible transform if we want.
   -- note: this strips blending
-  -- vim_compatible,
+  -- vim_compatible_viml,
 
   -- the viml commands alone are generally not enough for a colorscheme, we
   -- will need to append a few housekeeping lines first.
@@ -223,7 +223,7 @@ First, lets create the build file:
 
 run(require("colorscheme"),
   -- generate lua code
-  lua,
+  lush_to_lua,
   -- write the lua code into our destination.
   -- you must specify open and close markers yourself to account
   -- for differing comment styles, patchwrite isn't limited to lua files.
@@ -371,12 +371,12 @@ The branch transform allows you to split a pipeline into independant streams.
 
 ```lua
 run(zenbones,
-  viml,
+  lush_to_viml,
   {branch,
-    vim_compatible,
+    vim_compatible_viml,
     {prepend, [["vim-compatible, see http://... for more details]]},
     {patchwrite, "../dist/...", [[" M_OPEN]], [[" M_CLOSE]]}},
-    -- though vim_compatible has altered the highlight rules, the original
+    -- though vim_compatible_viml has altered the highlight rules, the original
     -- unmodified rules are passed to the rest of the pipeline.
   {branch,
     {patchwrite, "colors/", [[" M_OPEN]], [[" M_CLOSE]]}})
@@ -423,19 +423,19 @@ Every transform accepts and returns a table, this is implied in the
 documentation, so "returns commands" means "returns a list of strings, where
 each string is a command".
 
-**`viml`**
+**`lusn_to_viml`**
 
 - Converts a parsed lush spec into highlight commands.
 - Accepts
   - `config`: table passed to `lush.compile`
 
-**`lua`**
+**`lush_to_lua`**
 
 - Converts a parsed lush spec into lua code.
 - Accepts
   - none
 
-**`vim_compatible`**
+**`vim_compatible_viml`**
 
 - Removes vim-incompatible attributes from highlight commands
 - Accepts
