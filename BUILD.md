@@ -31,7 +31,9 @@ use "rktjmp/shipwright.nvim"
 ```
 
 It is recommended you read the Shipwright readme before continuing as this
-guide will build apon the concepts explained there.
+guide will build apon the concepts explained there. Shipwright can help you
+prepare your colorscheme for use with common terminal emulators and other
+tools.
 
 Lush provides some aditional Shipwright transforms for use with parsed lush
 specs:
