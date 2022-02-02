@@ -12,6 +12,20 @@ Themes are sorted alphanumeric by theme name.
 Lush Community Themes
 ---------------------
 
+### apprentice.nvim
+
+[adisen99/apprentice.nvim](https://github.com/adisen99/apprentice.nvim)
+
+Lua module: `require("apprentice").setup()`
+
+Usage: `require('apprentice').setup()`
+
+A pretty colorscheme for neovim written in `Lua` based on the [Apprentice](https://github.com/romainl/Apprentice) color palette with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/apprentice.nvim/tree/main#usage))
+![dark theme](./adisen99_apprentice_nvim_1.png)
+![light theme](./adisen99_apprentice_nvim_2.png)
+
+---
+
 ### codeschool.nvim
 
 [adisen99/codeschool.nvim](https://github.com/adisen99/codeschool.nvim)
@@ -20,7 +34,7 @@ Lua module: `require("codeschool").setup()`
 
 Usage: `require('codeschool').setup()`
 
-A pretty colorscheme for neovim written in `Lua` based on the [codeschool.vim](https://github.com/flazz/vim-colorschemes/blob/master/colors/codeschool.vim) color pattete with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/codeschool.nvim/tree/master#usage))
+A pretty colorscheme for neovim written in `Lua` based on the [codeschool.vim](https://github.com/flazz/vim-colorschemes/blob/master/colors/codeschool.vim) color palette with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/codeschool.nvim/tree/master#usage))
 ![dark theme](../../assets/made_with_lush/adisen99_codeschool_nvim_1.png)
 ![light theme](../../assets/made_with_lush/adisen99_codeschool_nvim_2.png)
 
