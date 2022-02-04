@@ -115,12 +115,12 @@ end)
 
 ### 2.1 Import an existing non-lush colorscheme
 
-Lush includes a build in command to extract the currently loaded colorscheme,
+Lush includes a built in command to extract the currently loaded colorscheme,
 and generate a `lush_spec` for it. This generated spec will be "greedy", it
 will contain all currently applied highlight groups which will make it somewhat
 disorganised and loud, but it may be useful as a starting point.
 
-To import the curretly applied highlights, simply open a new file and run
+To import the currently applied highlights, simply open a new file and run
 `:LushImport`. The generated spec will be placed in the `z` register which you
 can paste with `"zp`.
 
