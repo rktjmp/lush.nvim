@@ -115,7 +115,7 @@ end)
 
 ### 2.1 Import an existing non-lush colorscheme
 
-Lush includes a build in commnad to extract the currently loaded colorscheme,
+Lush includes a build in command to extract the currently loaded colorscheme,
 and generate a `lush_spec` for it. This generated spec will be "greedy", it
 will contain all currently applied highlight groups which will make it somewhat
 disorganised and loud, but it may be useful as a starting point.
