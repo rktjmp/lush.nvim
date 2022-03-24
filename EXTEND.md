@@ -4,19 +4,19 @@ Extending a Lush Colorscheme
 Lush allows you access to your coloscheme in a formalised data structure. This
 lets us manipulate it easily by using lush itself or any lua code.
 
-- [Extend and merge](#extend-and-merge)
+- [Extends and merge](#extends-and-merge)
 - [Configuring a colorscheme as an end-user](#configuring-a-colorscheme-as-an-end-user)
 - [Adding support for a plugin](#adding-support-for-a-plugin)
 - [Combining specs to create a variation](#combining-specs-to-create-a-variation)
 - [Using Lush data anywhere](#using-lush-data-anywhere)
 
-## `extend` and `merge`
+## `extends` and `merge`
 
 Lush provides two methods to easly extend existing Lush coloschemes:
 
-- `lush.extend({parsed_spec, ...}).with(spec)` is mostly directed at end-users
+- `lush.extends({parsed_spec, ...}).with(spec)` is mostly directed at end-users
 who wish to modify an existing colorscheme, though it can be used in a similar style
-to `lush.merge()`. `lush.extend().with()` also allows developers to provide
+to `lush.merge()`. `lush.extends().with()` also allows developers to provide
 "configuration" of their colorscheme without any extra effort as *everything* is user
 configurable.
 
@@ -164,7 +164,7 @@ local spec = lush.merge({base, constant, statement})
 return spec
 ```
 
-Merge is generally a less powerful `lush.extend().with()` but you may desire to
+Merge is generally a less powerful `lush.extends().with()` but you may desire to
 break your colorscheme up for maintenance or configuration purposes.
 
 ## Using Lush Data anywhere
