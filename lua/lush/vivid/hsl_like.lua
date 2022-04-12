@@ -227,8 +227,13 @@ local function decorate_hsl_table(color, to_hex_fn)
       if key_name == "h" then return color.h end
       if key_name == "s" then return color.s end
       if key_name == "l" then return color.l end
-      if key_name == "hex" then return to_hex_fn(color) end
       if key_name == "hsl" then return {h = color.h, s = color.s, l = color.l} end
+      if key_name == "hex" then return to_hex_fn(color) end
+      if key_name == "rgb" then
+        local hex = to_hex_fn(color)
+        local cnv = require("lush.vivid.rgb.convert")
+        return cnv.hex_to_rgb(hex)
+      end
 
       -- look up requested key in operations table and call out
       -- if it exists, else try to show a nice warning.

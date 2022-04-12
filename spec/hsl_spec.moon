@@ -51,6 +51,13 @@ describe "hsl", ->
     assert.is_equal(hsl(0,0,0) .. " color", "#000000 color")
     assert.is_equal("color " .. hsl(0,0,0), "color #000000")
 
+  it "can convert to rgb", ->
+    color = hsl(100, 50, 50)
+    rgb = color.rgb
+    assert.is_equal(106, rgb.r)
+    assert.is_equal(191, rgb.g)
+    assert.is_equal(64, rgb.b)
+
   describe "modification", ->
     color = hsl(120, 11, 34)
 
