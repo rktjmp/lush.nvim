@@ -58,10 +58,53 @@ M.compile = function(ast, options)
   return compiled
 end
 
--- accepts list of highlight commands from compile() to apply
-M.apply = function(compiled)
-  for _, cmd in ipairs(compiled) do
-    vim.api.nvim_command(cmd)
+-- keys as seen from:
+-- https://github.com/neovim/neovim/blob/6d4180a0d20d0b730b6e64acdac39261f52a9277/src/nvim/highlight.c#L813
+-- docs say "like synIDattr" but we don't use "fg#" and we can also send in "link"
+M.apply = function(parsed_spec, options)
+  -- a parsed spec is actually pretty close to what nvim_set_hl wants, apart
+  -- from gui = "bold,..." which is stuck in legacy format. it would be nice to
+  -- basically drop that key and just accept anything given in the spec table
+  -- (excluding "lush" namespace) and pass that on to nvim_set_hl but that would
+  -- be a pretty big breaking change.
+  -- We may support both, I guess?
+  for group, def in pairs(parsed_spec) do
+    if def.link then
+      -- links are just links and need no extra work
+      vim.api.nvim_set_hl(0, group, {link = def.link})
+    else
+      -- most keys can be copied 1:1, if present
+      local attrs = {
+        -- color values
+        fg = (def.fg and def.fg.hex),
+        bg = (def.bg and def.bg.hex),
+        sp = (def.sp and def.sp.hex),
+        -- blend is an int value
+        blend = def.blend
+      }
+
+      -- if gui key is present, split it out to component flags, ideally
+      -- we will deprecate this in favour of users simply setting the
+      -- keys themeselves.
+      if def.gui then
+        local gui = string.lower(def.gui)
+        attrs.bold = (string.match(gui, "[^%w]?bold[^%w]?") ~= nil)
+        attrs.italic = (string.match(gui, "[^%w]?italic[^%w]?") ~= nil)
+        attrs.underline = (string.match(gui, "[^%w]?underline[^%w]?") ~= nil)
+        attrs.underlineline = (string.match(gui, "[^%w]?underlineline[^%w]?") ~= nil)
+        attrs.undercurl = (string.match(gui, "[^%w]?undercurl[^%w]?") ~= nil)
+        attrs.underdot = (string.match(gui, "[^%w]?underdot[^%w]?") ~= nil)
+        attrs.underdash = (string.match(gui, "[^%w]?underdash[^%w]?") ~= nil)
+        attrs.strikethrough = (string.match(gui, "[^%w]?strikethrough[^%w]?") ~= nil)
+        attrs.reverse = (string.match(gui, "[^%w]?reverse[^%w]?") ~= nil)
+        -- not supported in highlight.c
+        -- attrs.inverse = (string.match(gui, "[^%w]?inverse[^%w]?") ~= nil)
+        attrs.standout = (string.match(gui, "[^%w]?standout[^%w]?") ~= nil)
+        attrs.nocombine = (string.match(gui, "[^%w]?nocombine[^%w]?") ~= nil)
+      end
+      print(vim.inspect({group, attrs}))
+      vim.api.nvim_set_hl(0, group, attrs)
+    end
   end
 end
 
@@ -104,11 +147,7 @@ end
 -- given a parsed spec, apply the spec
 local easy_parsed = function(parsed_spec, options)
   options = merge_default_options(options)
-
-  local compiled = M.compile(parsed_spec, options)
-  -- run automatically
-  M.apply(compiled)
-
+  M.apply(parsed_spec, options)
   -- return parsed spec for use with externals
   -- TODO: Should easy_parsed return parsed_spec or a different identifier?
   return parsed_spec
