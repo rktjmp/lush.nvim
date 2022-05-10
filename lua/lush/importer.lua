@@ -128,6 +128,4 @@ local function capture_current()
   print("Saved current theme to 'z' register, use \"zp to paste into new file and run :Lushify")
 end
 
-return {
-  import = capture_current
-}
+return capture_current

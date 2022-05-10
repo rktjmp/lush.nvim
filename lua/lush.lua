@@ -1,7 +1,6 @@
 local hsl = require('lush.vivid.hsl.type')
 local hsluv = require('lush.vivid.hsluv.type')
 
-local parser = require('lush.parser')
 local compiler = require('lush.compiler')
 
 local function merge_default_options(options)
@@ -15,6 +14,7 @@ local function merge_default_options(options)
 end
 
 local insert_force_clean = function(compiled_ast)
+  -- TODO still need this for nvim_set_hl??
     local clean = {
       "hi clear",
       "set t_Co=256",
@@ -44,76 +44,29 @@ end
 
 -- spec -> table
 M.parse = function(spec, options)
-  return parser(spec, options)
+  return require('lush.parser')(spec, options)
 end
 
 -- table -> table
 M.compile = function(ast, options)
-  local compiled = compiler(ast, options)
-
-  if options and options.force_clean then
-    compiled = insert_force_clean(compiled)
-  end
-
-  return compiled
+  return require("lush.compiler")(ast, options)
 end
 
--- keys as seen from:
--- https://github.com/neovim/neovim/blob/6d4180a0d20d0b730b6e64acdac39261f52a9277/src/nvim/highlight.c#L813
--- docs say "like synIDattr" but we don't use "fg#" and we can also send in "link"
 M.apply = function(parsed_spec, options)
-  -- a parsed spec is actually pretty close to what nvim_set_hl wants, apart
-  -- from gui = "bold,..." which is stuck in legacy format. it would be nice to
-  -- basically drop that key and just accept anything given in the spec table
-  -- (excluding "lush" namespace) and pass that on to nvim_set_hl but that would
-  -- be a pretty big breaking change.
-  -- We may support both, I guess?
-  for group, def in pairs(parsed_spec) do
-    if def.link then
-      -- links are just links and need no extra work
-      vim.api.nvim_set_hl(0, group, {link = def.link})
-    else
-      -- most keys can be copied 1:1, if present
-      local attrs = {
-        -- color values
-        fg = (def.fg and def.fg.hex),
-        bg = (def.bg and def.bg.hex),
-        sp = (def.sp and def.sp.hex),
-        -- blend is an int value
-        blend = def.blend
-      }
-
-      -- if gui key is present, split it out to component flags, ideally
-      -- we will deprecate this in favour of users simply setting the
-      -- keys themeselves.
-      if def.gui then
-        local gui = string.lower(def.gui)
-        attrs.bold = (string.match(gui, "[^%w]?bold[^%w]?") ~= nil)
-        attrs.italic = (string.match(gui, "[^%w]?italic[^%w]?") ~= nil)
-        attrs.underline = (string.match(gui, "[^%w]?underline[^%w]?") ~= nil)
-        attrs.underlineline = (string.match(gui, "[^%w]?underlineline[^%w]?") ~= nil)
-        attrs.undercurl = (string.match(gui, "[^%w]?undercurl[^%w]?") ~= nil)
-        attrs.underdot = (string.match(gui, "[^%w]?underdot[^%w]?") ~= nil)
-        attrs.underdash = (string.match(gui, "[^%w]?underdash[^%w]?") ~= nil)
-        attrs.strikethrough = (string.match(gui, "[^%w]?strikethrough[^%w]?") ~= nil)
-        attrs.reverse = (string.match(gui, "[^%w]?reverse[^%w]?") ~= nil)
-        -- not supported in highlight.c
-        -- attrs.inverse = (string.match(gui, "[^%w]?inverse[^%w]?") ~= nil)
-        attrs.standout = (string.match(gui, "[^%w]?standout[^%w]?") ~= nil)
-        attrs.nocombine = (string.match(gui, "[^%w]?nocombine[^%w]?") ~= nil)
-      end
-      print(vim.inspect({group, attrs}))
-      vim.api.nvim_set_hl(0, group, attrs)
-    end
+  local compiled = M.compile(parsed_spec, options)
+  for group, attrs in pairs(compiled) do
+    vim.api.nvim_set_hl(0, group, attrs)
   end
 end
 
+-- @deprecated, use proper exporter
 M.stringify = function(parsed_spec, options)
   options = merge_default_options(options)
   local compiled = M.compile(parsed_spec, options)
   return table.concat(compiled, '\n')
 end
 
+-- @deprecated, use proper exporter
 M.export_to_buffer = function(parsed_spec)
   local lines = M.compile(parsed_spec)
 
@@ -132,8 +85,7 @@ M.export_to_buffer = function(parsed_spec)
 end
 
 M.import = function()
-  local importer = require("lush.importer")
-  return importer.import()
+  return require("lush.importer")()
 end
 
 -- given a spec function, generate a parsed spec
@@ -149,7 +101,6 @@ local easy_parsed = function(parsed_spec, options)
   options = merge_default_options(options)
   M.apply(parsed_spec, options)
   -- return parsed spec for use with externals
-  -- TODO: Should easy_parsed return parsed_spec or a different identifier?
   return parsed_spec
 end
 
