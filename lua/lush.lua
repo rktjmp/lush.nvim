@@ -56,31 +56,6 @@ M.apply = function(parsed_spec, options)
   end
 end
 
--- @deprecated, use proper exporter
-M.stringify = function(parsed_spec, options)
-  options = merge_default_options(options)
-  local compiled = M.compile(parsed_spec, options)
-  return table.concat(compiled, '\n')
-end
-
--- @deprecated, use proper exporter
-M.export_to_buffer = function(parsed_spec)
-  local lines = M.compile(parsed_spec)
-
-  table.insert(lines, 1, "\"Theme built with Lush.nvim, exported at " .. os.date())
-
-  local buf = vim.api.nvim_create_buf(false, true)
-  local win = vim.api.nvim_open_win(buf, true, {
-    relative = "editor",
-    width = vim.api.nvim_win_get_width(0) - 2 ,
-    height = vim.api.nvim_win_get_height(0) - 2,
-    row = 1,
-    col = 1,
-    style = "minimal",
-  })
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-end
-
 M.import = function()
   return require("lush.importer")()
 end
