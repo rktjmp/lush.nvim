@@ -13,24 +13,6 @@ local function merge_default_options(options)
   return options
 end
 
-local insert_force_clean = function(compiled_ast)
-  -- TODO still need this for nvim_set_hl??
-    local clean = {
-      "hi clear",
-      "set t_Co=256",
-    }
-    if vim.g.colors_name then
-      -- 'hi clear' will clear g:colors_name, so restore if it existed
-      table.insert(clean, "let g:colors_name='" .. vim.g.colors_name.."'")
-    end
-
-    for i, c in ipairs(clean) do
-      table.insert(compiled_ast, i, c)
-    end
-
-    return compiled_ast
-end
-
 local M = {}
 
 -- usability binds
@@ -53,6 +35,21 @@ M.compile = function(ast, options)
 end
 
 M.apply = function(parsed_spec, options)
+  options = options or {}
+
+  -- we may have to clear current highlights
+  if options.force_clean then
+    local cmds = {}
+    table.insert(cmds, "hi clear")
+    table.insert(cmds, "set t_Co=256")
+    if vim.g.colors_name then
+      -- 'hi clear' will clear g:colors_name, so restore if it existed
+      table.insert(cmds, "let g:colors_name='" .. vim.g.colors_name.."'")
+    end
+    vim.cmd(table.concat(cmds, "\n"))
+  end
+
+  -- apply group
   local compiled = M.compile(parsed_spec, options)
   for group, attrs in pairs(compiled) do
     vim.api.nvim_set_hl(0, group, attrs)
