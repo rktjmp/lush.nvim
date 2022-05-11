@@ -25,8 +25,9 @@ describe "run.vimscript", ->
     vimscript = require("shipwright.transform.lush.to_vimscript")
     parse = require('lush.parser')
     ast = parse -> {
-      Apple { gui: "italic", blend: 40 }, -- first
+      Apple { fg: "red", gui: "italic", blend: 40 }, -- first
       Bananna { gui: "italic", blend: 40 }, -- after apple and links
+      Strawberry { Apple, gui: "bold"},
       Cat { Apple } -- link, so after apple, after bandana
       Bandana { Apple } -- link, so after apple
     }
@@ -35,3 +36,4 @@ describe "run.vimscript", ->
     assert.match("link Bandana Apple", value[2])
     assert.match("link Cat Apple", value[3])
     assert.match("highlight Bananna", value[4])
+    assert.match("highlight Strawberry guifg=red", value[5])
