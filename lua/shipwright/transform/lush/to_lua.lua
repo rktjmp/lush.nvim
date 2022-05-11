@@ -2,7 +2,7 @@
 --
 -- Exports the given theme as a list of rules
 
-local transform = function(ast)
+return function(ast)
   -- smoke test
   local is_spec = require("shipwright.transform.lush.helpers").is_lush_spec
   assert(is_spec(ast),
@@ -49,5 +49,3 @@ local transform = function(ast)
 
   return lines
 end
-
-return transform
