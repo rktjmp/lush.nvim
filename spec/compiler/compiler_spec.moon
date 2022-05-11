@@ -78,6 +78,18 @@ describe "compiler", ->
     assert.is_equal(nil, compiled.B.italic)
     assert.is_equal(true, compiled.B.underline)
 
+  it "inherited format modifiers behave as expected", ->
+    ast = parse -> {
+      A { bold: true, italic: false},
+      B { A, italic: true, underline: true}
+    }
+    compiled = compile(ast)
+    assert.is_equal(true, compiled.A.bold)
+    assert.is_equal(nil, compiled.A.italic)
+    assert.is_equal(true, compiled.B.bold)
+    assert.is_equal(true, compiled.B.italic)
+    assert.is_equal(true, compiled.B.underline)
+
   it "non-present gui flags are nil, not false", ->
     ast = parse -> {
       A { gui: "bold" },
