@@ -8,9 +8,6 @@ end
 
 -- attrs for a regular highlight group
 local function normal_group_to_attrs(group_def)
-  -- We copy over most keys given, relying on the user to have used valid keys
-  -- but do manually tweak some.
-  --
   -- fg, bg and sp may be hsl values or at least anything that responds to
   -- tostring and must be intentionally converted to strings.
   --
@@ -21,22 +18,26 @@ local function normal_group_to_attrs(group_def)
   -- lush is a special lush-namespace key which should be discarded.
   --
   -- link is also discarded as we have our own syntax for linking groups.
+  --
+  -- ideally future lush versions will just accept any key given (requires
+  -- removing the whitelist in parser) and pass those on to nvim_set_hl but for
+  -- now we will keep changes minimal and only accept "classic" keys.
 
-  -- copy out extra keys, excluding our edge cases, we'll merge these later.
-  local extra_attrs = {}
-  local excluded = function(key)
-    for _, ex in ipairs({"fg", "bg", "sp", "link", "lush", "gui"}) do
-      if ex == key then
-        return true
-      end
-    end
-    return false
-  end
-  for key, value in pairs(group_def) do
-    if not excluded(key) then
-      extra_attrs[key] = value
-    end
-  end
+  -- -- copy out extra keys, excluding our edge cases, we'll merge these later.
+  -- local extra_attrs = {}
+  -- local excluded = function(key)
+  --   for _, ex in ipairs({"fg", "bg", "sp", "link", "lush", "gui"}) do
+  --     if ex == key then
+  --       return true
+  --     end
+  --   end
+  --   return false
+  -- end
+  -- for key, value in pairs(group_def) do
+  --   if not excluded(key) then
+  --     extra_attrs[key] = value
+  --   end
+  -- end
 
   -- start with basic colors and blending as they're uncomplicated
   local attrs = {
@@ -52,26 +53,33 @@ local function normal_group_to_attrs(group_def)
   if group_def.gui then
     -- gui strings may have mixed case, commas and spaces so we'll try
     -- to be pretty forgiving in terms of what we'll match.
-    local gui = string.lower(group_def.gui)
-    attrs.bold = (string.match(gui, "[^%w]?bold[^%w]?") ~= nil)
-    attrs.italic = (string.match(gui, "[^%w]?italic[^%w]?") ~= nil)
-    attrs.underline = (string.match(gui, "[^%w]?underline[^%w]?") ~= nil)
-    attrs.underlineline = (string.match(gui, "[^%w]?underlineline[^%w]?") ~= nil)
-    attrs.undercurl = (string.match(gui, "[^%w]?undercurl[^%w]?") ~= nil)
-    attrs.underdot = (string.match(gui, "[^%w]?underdot[^%w]?") ~= nil)
-    attrs.underdash = (string.match(gui, "[^%w]?underdash[^%w]?") ~= nil)
-    attrs.strikethrough = (string.match(gui, "[^%w]?strikethrough[^%w]?") ~= nil)
-    attrs.reverse = (string.match(gui, "[^%w]?reverse[^%w]?") ~= nil)
+    -- for a nicer pattern match, we wrap the gui string in spaces
+    -- so we can always match against a non-word char, otherwise
+    -- we can spuriously match "semibold" against "bold"
+    local gui = " " .. string.lower(group_def.gui) .. " "
+    local maybe_set = function(modifier)
+      local pat = string.format("[^%%w]%s[^%%w]", modifier)
+      return string.match(gui, pat) and true or nil
+    end
+    attrs.bold = maybe_set("bold")
+    attrs.italic = maybe_set("italic")
+    attrs.underline = maybe_set("underline")
+    attrs.underlineline = maybe_set("underlineline")
+    attrs.undercurl = maybe_set("undercurl")
+    attrs.underdot = maybe_set("underdot")
+    attrs.underdash = maybe_set("underdash")
+    attrs.strikethrough = maybe_set("strikethrough")
+    attrs.reverse = maybe_set("reverse")
     -- not supported in highlight.c
-    -- attrs.inverse = (string.match(gui, "[^%w]?inverse[^%w]?") ~= nil)
-    attrs.standout = (string.match(gui, "[^%w]?standout[^%w]?") ~= nil)
-    attrs.nocombine = (string.match(gui, "[^%w]?nocombine[^%w]?") ~= nil)
+    -- attrs.inverse = maybe_set("inverse")
+    attrs.standout = maybe_set("standout")
+    attrs.nocombine = maybe_set("nocombine")
   end
 
-  -- now re-merge any extra attrs which may override gui settings
-  for key, value in pairs(extra_attrs) do
-    attrs[key] = value
-  end
+  -- -- now re-merge any extra attrs which may override gui settings
+  -- for key, value in pairs(extra_attrs) do
+  --   attrs[key] = value
+  -- end
 
   return attrs
 end
