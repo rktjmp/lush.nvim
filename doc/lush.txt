@@ -591,12 +591,12 @@ for this system (sorry).
 Manual Toolchain                                         *lush-manual-toolchain*
 
 If desired, you can manually parse -> compile -> apply your lush-spec.
+Most usecases are probably better served by the build system, see
+BUILD.md.
 >
   local lush = require('lush')
   local parsed = lush.parse(function() return { ... } end)
   local compiled = lush.compile(parsed)
-  -- may want to manually insert clearing existing highlights here
-  -- see lush.lua, search for insert_force_clean for an example
   lush.apply(compiled)
 <
 
@@ -611,37 +611,24 @@ Accepts no options.
 
 Compile                                          *lush-manual-toolchain-compile*
 
-Accepts a parsed lush spec and returns a list of vim commands to apply the spec.
+Accepts a parsed lush spec and returns a table of group-attribute pairs
+which can be passed to `nvim_set_hl`.
 
-Note: You may wish to prepend commands to clear existing highlights before
-      continuing.
-
-      See lush.lua, search for insert_force_clean for an example.
-
-Accepts the following options:
-
-  - plugins: list of compiler plugins.
-
-Compiler plugins are functions which run in sequence. They are passed the
-current group name, group data, current highlight command and the entire parsed
-lush spec. See `lush/compiler/plugin/` for implementation details.
-
-Lush ships with the following plugins:
-
-- lush_core:      always included, base vimscript generator
 >
-  local compiled = lush.compile(parsed, {plugins = {
-    require("my_compiler_plugin")
-  })
+  local compiled = lush.compile(parsed)
 <
 
 Apply                                              *lush-manual-toolchain-apply*
 
-Acceps a list of vim commands to pass to the interpreter.
+Accepts a table of group-attribute pairs and passes them to nvim_set_hl.
 
-Accepts no options.
+Accepts an optional options table:
+
+- force_clean: boolean, clear existing highlight before applying given
+               highlights.
+
 >
-  lush.apply(compiled)
+  lush.apply(compiled, options)
 <
 
 --------------------------------------------------------------------------------
