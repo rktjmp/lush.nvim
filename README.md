@@ -3,15 +3,13 @@
 Lush ![CI](https://github.com/rktjmp/lush.nvim/workflows/CI/badge.svg)
 ====
 
-Lush is aims to make colorscheme creation as painless as possible.
+Lush is a colorscheme creation aid for Neovim. It gives you real time
+feedback as you edit, as well as color manipulation tools and some aids
+building a structured colorscheme.
 
-At its core, Lush presents your colorscheme as *structured data*, allowing you
-to manipulate it in any way you want.
-
-It comes with **as-you-edit feedback**, a selection of **color operation
-helpers**, the ability for end users to **extend and configure colorschemes**,
-as well an API to **export your colorscheme in any format**, including a
-configurable lua colorscheme.
+Lush colorschemes can easily be exported for use without Lush, either as
+a lua table, vimscript commands or any other format. They can also be
+imported into other Lua systems to access your color data.
 
 See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lush).
 
@@ -32,7 +30,7 @@ Annoucements
 Requirements
 ------------
 
-- Neovim 0.5 or greater required to use Lush as a development tool
+- Neovim 0.7 or greater required to use Lush as a development tool
 - `termguicolors` enabled for true color support
 
 Installation
@@ -63,7 +61,7 @@ Guides
 - [Create your new colorscheme with lush-template (and how to import a non-lush colorscheme)](CREATE.md)
 - [Extend an Lush existing colorscheme, or how users can configure your
   colorscheme](EXTEND.md)
-- [Export your colorscheme to any format(s) with Shipwright](BUILD.md)
+- [Export your colorscheme for use without Lush, or to any format with Shipwright](BUILD.md)
 - [FAQ](FAQ.md)
 
 See Also
