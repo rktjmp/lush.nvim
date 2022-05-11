@@ -12,7 +12,8 @@ describe "compiler", ->
 
   it "defines a highlight group", ->
     ast = parse -> {
-      A { bg: "a_bg", fg: "a_fg", gui: "italic", sp: "a_sp", blend: 10 }
+      A { bg: "a_bg", fg: "a_fg", gui: "italic", sp: "a_sp", blend: 10 },
+      B { bg: "b_bg", bold: true, italic: true}
     }
     compiled = compile(ast)
     assert.is_not_nil(compiled)
@@ -22,6 +23,9 @@ describe "compiler", ->
     assert.is_equal(true, compiled.A.italic)
     assert.is_equal("a_sp", compiled.A.sp)
     assert.is_equal(10, compiled.A.blend)
+    assert.is_equal("b_bg", compiled.B.bg)
+    assert.is_equal(true, compiled.B.bold)
+    assert.is_equal(true, compiled.B.italic)
 
   it "defines a link group", ->
     ast = parse -> {
