@@ -23,6 +23,8 @@ See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lu
 Annoucements
 ------------
 
+- 2022-05-12: Neovim 0.7 is now a requirement, the 1.0.1 tagged version
+  is the last 0.5 compatible release.
 - 2021-11-05: Deprecation warning, the compiler `exclude_keys` option has been
   deprecated in favour of the build system,
   - See [build guide](BUILD.md) for details.
