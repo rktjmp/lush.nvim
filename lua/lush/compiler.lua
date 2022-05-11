@@ -23,21 +23,21 @@ local function normal_group_to_attrs(group_def)
   -- removing the whitelist in parser) and pass those on to nvim_set_hl but for
   -- now we will keep changes minimal and only accept "classic" keys.
 
-  -- -- copy out extra keys, excluding our edge cases, we'll merge these later.
-  -- local extra_attrs = {}
-  -- local excluded = function(key)
-  --   for _, ex in ipairs({"fg", "bg", "sp", "link", "lush", "gui"}) do
-  --     if ex == key then
-  --       return true
-  --     end
-  --   end
-  --   return false
-  -- end
-  -- for key, value in pairs(group_def) do
-  --   if not excluded(key) then
-  --     extra_attrs[key] = value
-  --   end
-  -- end
+  -- copy out extra keys, excluding our edge cases, we'll merge these later.
+  local extra_attrs = {}
+  local excluded = function(key)
+    for _, ex in ipairs({"fg", "bg", "sp", "link", "lush", "gui"}) do
+      if ex == key then
+        return true
+      end
+    end
+    return false
+  end
+  for key, value in pairs(group_def) do
+    if not excluded(key) then
+      extra_attrs[key] = value
+    end
+  end
 
   -- start with basic colors and blending as they're uncomplicated
   local attrs = {
@@ -76,10 +76,10 @@ local function normal_group_to_attrs(group_def)
     attrs.nocombine = maybe_set("nocombine")
   end
 
-  -- -- now re-merge any extra attrs which may override gui settings
-  -- for key, value in pairs(extra_attrs) do
-  --   attrs[key] = value
-  -- end
+  -- now re-merge any extra attrs which may override gui settings
+  for key, value in pairs(extra_attrs) do
+    attrs[key] = value
+  end
 
   return attrs
 end
