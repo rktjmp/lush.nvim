@@ -21,11 +21,21 @@ local setfenv = setfenv or function (fn, env)
 
 local parser_error = require('lush.errors').parser.generate_for_code
 
-
 local function allowed_option_keys()
   -- note, sometimes `1` is manually inserted into allowed options,
   -- since it's OK in some edge cases (inheritance, links)
-  return {"fg", "bg", "sp", "gui", "lush", "blend"}
+  return {
+    -- could be any value
+    "fg", "bg", "sp",
+    "gui", -- should be a string
+    "blend", -- integer
+    -- booleans
+    "bold", "italic", "underline", "underunderline",
+    "undercurl", "underdot", "underdash", "strikethrough",
+    "reverse", "standout", "nocombine",
+    -- lush special namespace
+    "lush"
+  }
 end
 
 -- groups should define their error state "on resolve",
@@ -307,7 +317,6 @@ local create_group = function(group_type, group_name, group_options)
   if group_type == "link" then return create_link_group(group_name, group_options) end
   return nil, "unknown_group_type"
 end
-
 
 local infer_group_type = function(group_def)
   local is_direct = false
