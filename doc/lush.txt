@@ -308,18 +308,35 @@ Syntax:
 
 Supports the following keys:
 
-  fg:    sets the `guifg` property of a Vim highlight group.
+  fg:    sets the `fg` property of a highlight group.
+         value must be a string, or respond to tostring().
 
-  bg:    sets the `guibg` property of a Vim highlight group.
+  bg:    sets the `bg` property of a highlight group.
+         value must be a string, or respond to tostring().
 
-  gui:   sets the `gui` property of a Vim highlight group.
+  sp:    sets the `sp` property of a highlight group.
+         value must be a string, or respond to tostring().
 
-  sp:    sets the `guisp` property of a Vim highlight group.
-
-  blend: sets the `blend` property of a Vim highlight group.
+  blend: sets the `blend` property of a highlight group.
+         value must be an integer between 0 and 100.
 
          note: you must have enabled blending in neovim via
                `pumblend` or `winblend`!
+
+  gui:   a string containing any of the following format modifier
+         values, separated by space or comma.
+
+  bold:          boolean, enables or disables bold.
+  italic:        boolean, enables or disables italics.
+  underline:     boolean, enables or disables underline.
+  underlineline: boolean, enables or disables double underline.
+  undercurl:     boolean, enables or disables undercurl.
+  underdot:      boolean, enables or disables underdot.
+  underdash:     boolean, enables or disables underdash.
+  strikethrough: boolean, enables or disables strikethrough.
+  reverse:       boolean, enables or disables flipping fg and bg values.
+  standout:      boolean, enables or disables standout.
+  nocombine:     boolean, enables or disables nocombine.
 
   lush:  a namespace to save arbitrary data to a group. Is not
          exported to the final highlight but may be accessed in
