@@ -38,7 +38,7 @@ M.apply = function(parsed_spec, options)
       -- 'hi clear' will clear g:colors_name, so restore if it existed
       table.insert(cmds, "let g:colors_name='" .. vim.g.colors_name.."'")
     end
-    vim.cmd(table.concat(cmds, "\n"))
+    vim.api.nvim_exec(table.concat(cmds, "\n"), false)
   end
 
   -- apply group
