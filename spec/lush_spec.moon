@@ -1,17 +1,19 @@
 describe "lush", ->
   lush = require('lush')
-  nvim_command_spy, red, green, blue = nil
+  red, green, blue = nil
   lush_spec = nil
 
   before_each ->
     vim = {
+      cmd: ->
       api: {
-        nvim_command: ->
+        nvim_exec: ->
         nvim_create_buf: ->
         nvim_buf_set_lines: ->
         nvim_win_get_height: -> 30
         nvim_win_get_width: -> 30
         nvim_open_win: ->
+        nvim_set_hl: ->
       },
       g: {
         colors_name: "a_theme"
@@ -40,31 +42,29 @@ describe "lush", ->
   describe "() mode", ->
     it "creates scheme when called with spec", ->
       parsed = lush(lush_spec)
-      assert.spy(vim.api.nvim_command).was_not_called()
+      assert.spy(vim.api.nvim_exec).was_not_called()
+      assert.spy(vim.api.nvim_set_hl).was_not_called()
       assert.not_nil(parsed)
 
     it "applies scheme when called with parsed spec", ->
       parsed = lush(lush_spec)
-      assert.spy(vim.api.nvim_command).was_not_called()
+      assert.spy(vim.api.nvim_exec).was_not_called()
       lush(parsed)
-      assert.spy(vim.api.nvim_command).was_called()
-      assert.spy(vim.api.nvim_command).was_called_with(
-        "highlight Normal guifg=#0000FF guibg=#FF0000 guisp=NONE gui=NONE blend=NONE"
-      )
-      assert.spy(vim.api.nvim_command).was_called_with(
-        "highlight PmemuSel guifg=NONE guibg=NONE guisp=NONE gui=NONE blend=10"
-      )
+      assert.spy(vim.api.nvim_exec).was_called()
+      assert.spy(vim.api.nvim_set_hl).was_called_with(0, "Normal", {bg: "#FF0000", fg: "#0000FF"})
+      assert.spy(vim.api.nvim_set_hl).was_called_with(0, "NormalFloat", {link: "Normal"})
 
     it "applies scheme with default options", ->
       parsed = lush(lush_spec)
       lush(parsed)
-      assert.spy(vim.api.nvim_command).was_called_with("hi clear")
+      assert.spy(vim.api.nvim_exec).was_called_with(
+        "highlight clear\nset t_Co=256\nlet g:colors_name='a_theme'",
+        false)
 
     it "applies scheme with provided options", ->
       parsed = lush(lush_spec)
       lush(parsed,{force_clean: false})
-      assert.spy(vim.api.nvim_command).was_called()
-      assert.spy(vim.api.nvim_command).was_not_called_with("hi clear")
+      assert.spy(vim.api.nvim_exec).was_not_called()
 
     it "detects poor arguments", ->
       -- obviously wrong
@@ -80,18 +80,6 @@ describe "lush", ->
       e = assert.error(-> lush({}))
       assert.equal("lush() supplied incorrect arguments", e)
 
-  it "can output scheme as text", ->
-    -- no options
-    parsed = lush(lush_spec)
-    text = lush.stringify(parsed)
-    assert.is_string(text)
-    assert.is_equal(6, select(2, string.gsub(text, '\n', '\n')))
-    -- options
-    parsed = lush(lush_spec)
-    text = lush.stringify(parsed, {force_clean: false})
-    assert.is_string(text)
-    assert.is_equal(3, select(2, string.gsub(text, '\n', '\n')))
-  
   it "is a closure", ->
     math = math
     lush_spec = -> {
@@ -100,23 +88,9 @@ describe "lush", ->
     parsed = lush(lush_spec)
     assert.is_number(parsed.A.bg)
 
-  it "exposes a manual toolchain", ->
-    parsed = lush.parse(lush_spec)
-    assert.not_nil(parsed)
-    assert.same(parsed, lush(lush_spec))
-    compiled = lush.compile(parsed)
-    assert.not_nil(compiled)
-    assert.same(table.concat(compiled, '\n'), lush.stringify(parsed, {force_clean: false}))
-
   it "exposes a useful parsed object", ->
     parsed = lush.parse(lush_spec)
     assert.not_nil(parsed.Normal)
     assert.not_nil(parsed.Normal.bg)
     assert.equal(0, parsed.Normal.bg.h)
     assert.equal("#FF0000", tostring(parsed.Normal.bg))
-
-  it "exports to buffer", ->
-    parsed = lush.parse(lush_spec)
-    lush.export_to_buffer(parsed)
-    assert.spy(vim.api.nvim_create_buf).was_called()
-    assert.spy(vim.api.nvim_buf_set_lines).was_called()
