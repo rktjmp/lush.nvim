@@ -32,7 +32,7 @@ M.apply = function(parsed_spec, options)
   -- we may have to clear current highlights
   if options.force_clean then
     local cmds = {}
-    table.insert(cmds, "hi clear")
+    table.insert(cmds, "highlight clear")
     table.insert(cmds, "set t_Co=256")
     if vim.g.colors_name then
       -- 'hi clear' will clear g:colors_name, so restore if it existed
