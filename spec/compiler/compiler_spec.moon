@@ -16,12 +16,12 @@ describe "compiler", ->
     }
     compiled = compile(ast)
     assert.is_not_nil(compiled)
-    assert.is_equal(1, #compiled)
-    assert.is_not_nil(string.find(compiled[1], "guibg=a_bg"))
-    assert.is_not_nil(string.find(compiled[1], "guifg=a_fg"))
-    assert.is_not_nil(string.find(compiled[1], "gui=italic"))
-    assert.is_not_nil(string.find(compiled[1], "guisp=a_sp"))
-    assert.is_not_nil(string.find(compiled[1], "blend=10"))
+    assert.is_not_nil(compiled.A)
+    assert.is_equal("a_bg", compiled.A.bg)
+    assert.is_equal("a_fg", compiled.A.fg)
+    assert.is_equal(true, compiled.A.italic)
+    assert.is_equal("a_sp", compiled.A.sp)
+    assert.is_equal(10, compiled.A.blend)
 
   it "defines a link group", ->
     ast = parse -> {
@@ -30,29 +30,54 @@ describe "compiler", ->
     }
     compiled = compile(ast)
     assert.is_not_nil(compiled)
-    assert.is_equal(2, #compiled)
-    assert.is_true(any(compiled, (cmd) -> string.find(cmd, "highlight! link B A")))
+    assert.is_not_nil(compiled.B)
+    assert.is_equal("A", compiled.B.link)
 
-  it "corrects spaces in gui if present", ->
+  it "defines a inherit group", ->
     ast = parse -> {
-      A { gui: "bold, italic" },
+      A { bg: "a_bg", fg: "a_fg" }
+      B { A, fg: "b_fg" }
     }
     compiled = compile(ast)
     assert.is_not_nil(compiled)
-    assert.matches("bold,italic", compiled[1])
+    assert.is_not_nil(compiled.B)
+    assert.is_equal("a_bg", compiled.B.bg)
+    assert.is_equal("b_fg", compiled.B.fg)
 
--- TODO remove 1/12
-describe "key exclusion", ->
-  parse = require('lush.parser')
-  compile = require('lush.compiler')
-  it "can exclude keys", ->
+  it "correctly extracts format modifiers", ->
     ast = parse -> {
-      A { gui: "italic", blend: 40 }
+      A { gui: "bold" },
+      B { gui: "bold, italic" },
+      C { gui: "  bold italic  " },
+      D { gui: "  notbold italic  " },
     }
-    compiled = compile(ast, {
-      exclude_keys: {"blend"}
-    })
-    assert.is_not_nil(compiled)
-    assert.matches("italic", compiled[1])
-    assert.not.matches("blend", compiled[1])
+    compiled = compile(ast)
+    assert.is_equal(true, compiled.A.bold)
+    assert.is_equal(true, compiled.B.italic)
+    assert.is_equal(true, compiled.B.bold)
+    assert.is_equal(true, compiled.C.bold)
+    assert.is_equal(true, compiled.C.italic)
+    assert.is_equal(nil, compiled.D.bold)
+    assert.is_equal(true, compiled.D.italic)
 
+  it "inherited gui modifiers default to false if gui is set", ->
+    ast = parse -> {
+      A { bg: "a_bg", fg: "a_fg", gui: "italic bold" }
+      B { A, fg: "b_fg", gui: "underline" }
+    }
+    compiled = compile(ast)
+    assert.is_not_nil(compiled)
+    assert.is_not_nil(compiled.B)
+    assert.is_equal(true, compiled.A.bold)
+    assert.is_equal(true, compiled.A.italic)
+    assert.is_equal(nil, compiled.B.bold)
+    assert.is_equal(nil, compiled.B.italic)
+    assert.is_equal(true, compiled.B.underline)
+
+  it "non-present gui flags are nil, not false", ->
+    ast = parse -> {
+      A { gui: "bold" },
+    }
+    compiled = compile(ast)
+    assert.is_equal(nil, compiled.A.italic)
+    assert.is_equal(true, compiled.A.bold)
