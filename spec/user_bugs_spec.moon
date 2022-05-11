@@ -29,7 +29,7 @@ describe "user bugs", ->
 
       -- compiler converts to none
       compiled = compile(parsed)
-      assert.matches("gui=NONE", compiled[1])
+      assert.is_nil(compiled.A.bold)
 
     it "also handles nil", ->
       spec = -> {
@@ -41,25 +41,12 @@ describe "user bugs", ->
       -- technically not there, nil key-value are "natural" to lua
       assert.equal(nil, parsed.A.bg)
 
-      -- compiler converts to none
+      -- compiler converts to nil
       compiled = compile(parsed)
-      assert.matches("guibg=NONE", compiled[1])
-
-  -- deprecated by vim-compatible compiler plugin?
-  -- describe "key exclusion in compile", ->
-  --   -- https://github.com/rktjmp/lush.nvim/pull/65
-  --   it "can exclude keys", ->
-  --     ast = parse -> {
-  --       A { gui: "italic", blend: 40 }
-  --     }
-  --     compiled = compile(ast, {
-  --       exclude_keys: {"blend"}
-  --     })
-  --     assert.is_not_nil(compiled)
-  --     assert.matches("italic", compiled[1])
-  --     assert.not.matches("blend", compiled[1])
+      assert.is_nil(compiled.A.bg)
 
   describe "#69", ->
+    -- TODO Seems this test case is somewhat incomplete no?
     it "errors", ->
       base = parse -> {
         A { fg: "#00FF00", gui: "italic" }
