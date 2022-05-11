@@ -11,8 +11,8 @@ run(colorscheme,
 ```
 
 - [What is Shipwright](#what-is-shipwright)
+- [Exporting a colorscheme to Lua](#exporting-a-colorscheme-to-configurable-lua)
 - [Exporting a colorscheme to Vim Script](#exporting-a-colorscheme-to-vim-script)
-- [Exporting a colorscheme to configurable Lua](#exporting-a-colorscheme-to-configurable-lua)
 - [Converting a Lush colorscheme into an Alacritty colorscheme](#converting-a-lush-colorscheme-into-an-alacritty-colorscheme)
 - [Branch transform](#branch-transform)
 - [Transform helpers](#transform-helpers)
@@ -38,7 +38,7 @@ specs:
 
 - `to_vimscript`, head, convert parsed spec into vimscript
 - `to_lua`, head, convert parsed spec into a table containing `Group =
-  {attrs}` pairs.
+  {attrs}` strings.
 - `vim_compatible_vimscript`, tail, remove vim-incompatible values from highlight rules
 
 You must `require("shipwright.transform.lush")` in your `shipwright_build.lua`
@@ -51,10 +51,10 @@ your colorscheme.
 Exporting a colorscheme to Lua
 -------------------------------------------
 
-The lua transform converts your Lush colorscheme into a table of
-group-name group-attributes pairs. The generated code is intentionally
-slim, containing only the group data. Applying this data is simple but
-left to the colorscheme creator.
+The lua transform converts your Lush colorscheme into a table of `group-name =
+group-attributes` strings. The generated code is intentionally slim, containing
+only the group data. Applying this data is simple but left to the colorscheme
+creator.
 
 We will use the `patchwrite` transform so Shipwright will only update
 the group data when we run it, leaving our support code intact.
@@ -67,7 +67,7 @@ First, lets create the build file:
 -- shipwright_build.lua
 
 local lushwright = require("shipwright.transform.lush")
-run(require("colorscheme"),
+run(require("my.lush.colorscheme"),
   -- generate lua code
   lushwright.to_lua,
   -- write the lua code into our destination.
@@ -86,13 +86,13 @@ Before running this build file, we should prepare the destination for
 ```lua
 -- colors/colorscheme.lua
 
--- content here will not be touched
 local colors = {
+-- content here will not be touched
 -- PATCH_OPEN
 -- group data will be inserted here
 -- PATCH_CLOSE
-}
 -- content here will not be touched
+}
 
 -- colorschemes generally want to do this
 vim.cmd("highlight clear")
@@ -109,7 +109,7 @@ end
 
 After running `:Shipwright`, our `colors` variable will be populated
 with `group = attributes` pairs. The attribute tables are ready-made
-to pass to nvim_set_hl though you could modify as desired.
+to pass to `nvim_set_hl` though you could modify as desired.
 
 You could also incude different `patchwrite` markers to export multiple
 colorschemes (or parts of a colorscheme) to the same file. For example a
@@ -200,8 +200,9 @@ each string is a command".
 
 **`to_lua`**
 
-- Converts a parsed lush spec into group-attribute pairs for insertion
-  inside a lua table form.
+- Converts a parsed lush spec into `group =
+  group-attributes` strings for insertion inside a lua
+  table form.
 - Accepts
   - none
 
