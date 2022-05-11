@@ -1,16 +1,8 @@
 local hsl = require('lush.vivid.hsl.type')
 local hsluv = require('lush.vivid.hsluv.type')
 
-local compiler = require('lush.compiler')
-
 local function merge_default_options(options)
-  if not options then
-    options = {
-      -- default to clean
-      force_clean = true
-    }
-  end
-  return options
+  return options or {force_clean = true}
 end
 
 local M = {}
