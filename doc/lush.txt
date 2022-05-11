@@ -16,9 +16,9 @@ Lush is a color scheme creation aid, written in Lua, for Neovim.
 Lush lets you define your scheme as a mini-dsl, provides HSL colour
 manipulation aids, and gives you real time feedback of your changes.
 
-Lush colorschemes can be exported to plain Vim Script for distribution (or escape),
-and they can also be imported to other Lua (or Vim Script) files to access color)
-data.
+Lush colorschemes can be exported easily exported for distribution
+without Lush, in both lua and vimscript formats, or they can also be
+imported into other Lua systems to access color data.
 
 ================================================================================
 CONTENTS                                                              *lush-toc*
