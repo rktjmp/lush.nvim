@@ -2,9 +2,11 @@
 --
 -- Exports the given theme as a list of rules
 
+
 return function(ast)
   -- smoke test
   local is_spec = require("shipwright.transform.lush.helpers").is_lush_spec
+  local group_sort_value  = require("shipwright.transform.lush.helpers").group_sort_value
   assert(is_spec(ast),
     "first argument to lua transform must be a parsed lush spec")
 
@@ -32,7 +34,7 @@ return function(ast)
       definition = string.format("%s = {%s}", group, table.concat(parts, ", ")),
       -- sort each group alphabetically but put link groups directly
       -- after parents.
-      sort_key = attrs.link and attrs.link .. "1" .. group or group
+      sort_key = group_sort_value(group, attrs)
     })
   end
 
