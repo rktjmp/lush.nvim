@@ -2,7 +2,7 @@ describe "run.vimscript", ->
   setup ->
     parse = require('lush.parser')
     ast = parse -> {
-      A { gui: "italic", blend: 40 }
+      A { gui: "italic bold", underline: true, blend: 40 }
     }
     package.loaded["theme"] = ast
     _G.vim = {
@@ -19,7 +19,7 @@ describe "run.vimscript", ->
     vimscript = require("shipwright.transform.lush.to_vimscript")
     value = vimscript(require("theme"))
     assert.is.table(value)
-    assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE gui=italic blend=40", value[1])
+    assert.matches("highlight A guifg=NONE guibg=NONE guisp=NONE blend=40 gui=bold,italic,underline", value[1])
 
   it "orders the vimscript", ->
     vimscript = require("shipwright.transform.lush.to_vimscript")

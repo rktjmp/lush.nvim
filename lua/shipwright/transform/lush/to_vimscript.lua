@@ -23,14 +23,22 @@ local function make_group(group_name, group_spec)
   -- This allows for Group {} to actually clear highlighting, which was
   -- personally preferable to me who uses very few highlights.
 
+  local translator = {
+    fg = "guifg",
+    bg = "guibg",
+    sp = "guisp",
+    gui = "gui",
+    blend = "blend"
+  }
   -- pair lush keys to vim keys
   local rule_parts = {}
   for _, key in ipairs({"fg", "bg", "sp", "blend"}) do
-    table.insert(rule_parts, key .. "=" .. value_or_NONE(group_spec[key]))
+    table.insert(rule_parts, translator[key] .. "=" .. value_or_NONE(group_spec[key]))
   end
 
-  -- gui must be build separately, we will actually ignore the gui key and
-  -- just use the individual format keys
+  -- gui must be built separately, we will actually ignore the gui key and
+  -- just use the individual format keys which should have extracted gui's
+  -- components.
   local gui = {}
   local formatters = {
     "bold", "italic", "underline", "underunderline",
@@ -43,7 +51,7 @@ local function make_group(group_name, group_spec)
     end
   end
   if #gui > 0 then
-    table.insert(rule_parts, string.format("gui=%q", table.concat(gui, ",")))
+    table.insert(rule_parts, string.format("gui=%s", table.concat(gui, ",")))
   end
 
   if #rule_parts == 0 then
