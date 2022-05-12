@@ -43,6 +43,14 @@ M.apply = function(parsed_spec, options)
 
   -- apply group
   local compiled = M.compile(parsed_spec, options)
+  -- It's possible to pass "fg" or  "bg" as color values, which implicity uses
+  -- Normal.fg or Normal.bg. If the Normal group has not been defined yet,
+  -- nvim_set_hl will return an error because internally Normal.fg|bg is not
+  -- yet set and the stand-in value of -1 is an invalid color. To avoid this,
+  -- we always set Normal first.
+  if compiled.Normal then
+    vim.api.nvim_set_hl(0, "Normal", compiled.Normal)
+  end
   for group, attrs in pairs(compiled) do
     vim.api.nvim_set_hl(0, group, attrs)
   end
