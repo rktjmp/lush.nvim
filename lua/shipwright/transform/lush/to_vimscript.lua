@@ -1,21 +1,5 @@
 --- Head exporter, accepts an AST, returns a table of strings, each
 --- corresponding to a highlight rule.
-local is_spec = require("shipwright.transform.lush.helpers").is_lush_spec
-
--- We sort our rules by the group name, but we want to make sure linked
--- groups are proximal to their parent, so linked groups are sorted by 
--- parent-name + group-name.
-local sort_value = function(rule)
-  local link_from, link_to = string.match(rule, "link%s+([%w_]+)%s+([%w_]+)")
-  local group_name = string.match(rule, "highlight%s+([%w_]+)")
-  if group_name then
-    -- groups just sort by name
-    return group_name
-  else
-    -- links sort primarily by their target, then by their own name
-    return link_to .. "1" .. link_from
-  end
-end
 
 -- sanitise value if empty or blank
 local function value_or_NONE(value)
@@ -39,26 +23,34 @@ local function make_group(group_name, group_spec)
   -- This allows for Group {} to actually clear highlighting, which was
   -- personally preferable to me who uses very few highlights.
 
-  -- map between lush keys and vim keys
-  local translator = {
-    fg = "guifg",
-    bg = "guibg",
-    sp = "guisp",
-    gui = "gui",
-    blend = "blend"
-  }
-
   -- pair lush keys to vim keys
-  local builder = {}
-  for _, key in ipairs({"fg", "bg", "sp", "gui", "blend"}) do
-    table.insert(builder, translator[key] .. "=" .. value_or_NONE(group_spec[key]))
+  local rule_parts = {}
+  for _, key in ipairs({"fg", "bg", "sp", "blend"}) do
+    table.insert(rule_parts, key .. "=" .. value_or_NONE(group_spec[key]))
   end
 
-  if #builder == 0 then
+  -- gui must be build separately, we will actually ignore the gui key and
+  -- just use the individual format keys
+  local gui = {}
+  local formatters = {
+    "bold", "italic", "underline", "underunderline",
+    "undercurl", "underdot", "underdash", "strikethrough",
+    "reverse", "standout", "nocombine"
+  }
+  for _, key in ipairs(formatters) do
+    if group_spec[key] then
+      table.insert(gui, key)
+    end
+  end
+  if #gui > 0 then
+    table.insert(rule_parts, string.format("gui=%q", table.concat(gui, ",")))
+  end
+
+  if #rule_parts == 0 then
     return ""
   else
-    table.insert(builder, 1, "highlight " .. group_name)
-    return table.concat(builder, ' ')
+    table.insert(rule_parts, 1, "highlight " .. group_name)
+    return table.concat(rule_parts, ' ')
   end
 end
 
@@ -73,16 +65,26 @@ local function make_link(group_name, target_group_name)
 end
 
 return function(ast, config)
+  local is_spec = require("shipwright.transform.lush.helpers").is_lush_spec
+  local group_sort_value  = require("shipwright.transform.lush.helpers").group_sort_value
   assert(is_spec(ast),
     "first argument to vimscript transform must be a parsed lush spec")
 
-  local commands = {}
+  -- compiled table is more normalised, so we'll use that to build our rules
+  local compiled = require("lush.compiler")(ast)
 
-  for group_name, group_def in pairs(ast) do
+  local group_strings = {}
+  for group_name, group_def in pairs(compiled) do
     if group_def.link then
-      table.insert(commands, make_link(group_name, group_def.link))
+      table.insert(group_strings, {
+        cmd = make_link(group_name, group_def.link),
+        sort_key = group_sort_value(group_name, group_def)
+      })
     else
-      table.insert(commands, make_group(group_name, group_def))
+      table.insert(group_strings, {
+        cmd = make_group(group_name, group_def),
+        sort_key = group_sort_value(group_name, group_def)
+      })
     end
   end
 
@@ -90,9 +92,14 @@ return function(ast, config)
   -- We will sort primarily by group name, but sort links to be just
   -- after their target
   -- https://github.com/savq/melange/pull/32#issuecomment-960247099
-  table.sort(commands, function(a, b)
-    return sort_value(a) < sort_value(b)
+  table.sort(group_strings, function(a, b)
+    return a.sort_key < b.sort_key
   end)
 
+  -- we only want the actual commands
+  local commands = {}
+  for _, group in ipairs(group_strings) do
+    table.insert(commands, group.cmd)
+  end
   return commands
 end
