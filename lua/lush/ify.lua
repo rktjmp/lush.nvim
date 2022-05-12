@@ -222,7 +222,7 @@ local function eval_buffer(buf)
     -- error here, if the actual spec is invalid once executed
     -- (right now we just know it's vaguely valid lua)
     local apply_success, apply_value = pcall(function()
-      return lush.apply(lush.compile(eval_value, {force_clean = true}))
+      return lush.apply(lush.compile(eval_value), {force_clean = true})
     end)
     if not apply_success then
       print_error(apply_value)
