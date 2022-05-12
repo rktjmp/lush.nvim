@@ -52,7 +52,11 @@ M.apply = function(parsed_spec, options)
     vim.api.nvim_set_hl(0, "Normal", compiled.Normal)
   end
   for group, attrs in pairs(compiled) do
-    vim.api.nvim_set_hl(0, group, attrs)
+    local v, e = pcall(function() vim.api.nvim_set_hl(0, group, attrs) end)
+    if e then
+      local msg = string.format("%s could not be applied, nvim returned an error: %q, (attributes given: %s)", group, e, vim.inspect(attrs))
+      print(msg)
+    end
   end
 end
 
