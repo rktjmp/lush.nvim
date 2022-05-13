@@ -30,7 +30,7 @@ local function allowed_option_keys()
     "gui", -- should be a string
     "blend", -- integer
     -- booleans
-    "bold", "italic", "underline", "underunderline",
+    "bold", "italic", "underline", "underlineline",
     "undercurl", "underdot", "underdash", "strikethrough",
     "reverse", "standout", "nocombine",
     -- lush special namespace

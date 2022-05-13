@@ -41,7 +41,7 @@ local function make_group(group_name, group_spec)
   -- components.
   local gui = {}
   local formatters = {
-    "bold", "italic", "underline", "underunderline",
+    "bold", "italic", "underline", "underlineline",
     "undercurl", "underdot", "underdash", "strikethrough",
     "reverse", "standout", "nocombine"
   }
