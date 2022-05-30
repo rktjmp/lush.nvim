@@ -210,19 +210,6 @@ HSL colors can be coerced into a hex string, either by concatenation
 with another string, passing to a function which will invoke tostring()
 or accessing the `.hex` accessor.
 
-Example                                                     *lush-color-example*
->
-  local hsl = require('lush').hsl                 -- include the module
-  local red = hsl(0, 100, 50)                     -- define a color
-  local light_red = red.lighten(20)               -- modify
-  local orange = red.hue(20)                      -- set
-  local sum_hues = red.h + light_red.h + orange.h -- access
-  local chained_compliment = red.ro(180)          -- chain via aliases
-                                .da(30)
-                                .sa(10)
-  print(red)                                      -- as string "#FF0000"
-<
-
 .rgb()                                                          *lush-color-rgb*
 
 HSL colors can be converted to RGB values, this should only be done
