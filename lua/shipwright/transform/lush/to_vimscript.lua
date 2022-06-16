@@ -36,9 +36,10 @@ local function make_group(group_name, group_spec)
     table.insert(rule_parts, translator[key] .. "=" .. value_or_NONE(group_spec[key]))
   end
 
-  -- gui must be built separately, we will actually ignore the gui key and
-  -- just use the individual format keys which should have extracted gui's
-  -- components.
+  -- The gui key is a composition of boolean fields, which may have been set
+  -- directly, or extracted from the `gui` key into separate components during
+  -- compilation. We will individually iterate each possible key and generate
+  -- the gui string, or set it to NONE if all keys were false/nil.
   local gui = {}
   local formatters = {
     "bold", "italic", "underline", "underlineline",
@@ -50,9 +51,8 @@ local function make_group(group_name, group_spec)
       table.insert(gui, key)
     end
   end
-  if #gui > 0 then
-    table.insert(rule_parts, string.format("gui=%s", table.concat(gui, ",")))
-  end
+  local gui_value = value_or_NONE(table.concat(gui, ","))
+  table.insert(rule_parts, string.format("gui=%s", gui_value))
 
   if #rule_parts == 0 then
     return ""
