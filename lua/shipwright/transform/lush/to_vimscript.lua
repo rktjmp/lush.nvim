@@ -28,12 +28,18 @@ local function make_group(group_name, group_spec)
     bg = "guibg",
     sp = "guisp",
     gui = "gui",
-    blend = "blend"
+    blend = "blend",
   }
   -- pair lush keys to vim keys
   local rule_parts = {}
   for _, key in ipairs({"fg", "bg", "sp", "blend"}) do
     table.insert(rule_parts, translator[key] .. "=" .. value_or_NONE(group_spec[key]))
+  end
+
+  for _, key in ipairs({ "ctermbg", "ctermfg" }) do
+    if group_spec[key] then
+      table.insert(rule_parts, key .. "=" .. group_spec[key])
+    end
   end
 
   -- The gui key is a composition of boolean fields, which may have been set
