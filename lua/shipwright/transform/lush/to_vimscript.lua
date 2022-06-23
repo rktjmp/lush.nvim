@@ -28,7 +28,7 @@ local function make_group(group_name, group_spec)
     bg = "guibg",
     sp = "guisp",
     gui = "gui",
-    blend = "blend",
+    blend = "blend"
   }
   -- pair lush keys to vim keys
   local rule_parts = {}
