@@ -708,9 +708,9 @@ the buffer will fix these issues as the highlighter re-syncs with the buffer
 state.
 
 You may find some elements don't update in real time (LSP sign column for
-example). This is a side effect of colours are applied to those elements,
-only as they are created (I believe). The group name in your lush-spec should
-update to let you see how it will look when your colorscheme is loaded.
+example). This is a side effect of how colours are applied to those elements,
+they are only as they are created (afaik). The group name in your lush-spec
+should update to let you see how it will look when your colorscheme is loaded.
 
 Lush.ify'd `hsl()` and group name highlight may sometimes be obscured by
 CursorLine highlighting. If this is a problem, you can set CursorLine to an
