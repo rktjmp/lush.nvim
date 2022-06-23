@@ -28,7 +28,8 @@ local function allowed_option_keys()
     -- could be any value
     "fg", "bg", "sp",
     "gui", -- should be a string
-    "blend", -- integer
+	-- integers
+    "blend", "ctermfg", "ctermbg",
     -- booleans
     "bold", "italic", "underline", "underlineline",
     "undercurl", "underdot", "underdash", "strikethrough",
