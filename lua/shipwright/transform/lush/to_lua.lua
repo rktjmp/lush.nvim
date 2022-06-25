@@ -13,14 +13,14 @@ local function sorted_attr_names(attrs)
     gui = "4",
     blend = "5"
   }
-  local ordered_attrs_keys = {}
+  local sorted_names = {}
   for attr in pairs(attrs) do
-    table.insert(ordered_attrs_keys, attr)
+    table.insert(sorted_names, attr)
   end
-  table.sort(ordered_attrs_keys, function(a, b)
+  table.sort(sorted_names, function(a, b)
     return (hardcoded[a] or a) < (hardcoded[b] or b)
   end)
-  return ordered_attrs_keys
+  return sorted_names
 end
 
 return function(ast)
@@ -40,7 +40,7 @@ return function(ast)
     local parts = {}
     local attr_names = sorted_attr_names(attrs)
 
-    for _, name in pairs(attr_names) do
+    for _, name in ipairs(attr_names) do
       local val = attrs[name]
       if type(val) == "string" then
         table.insert(parts, string.format("%s = %q", name, val))
