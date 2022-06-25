@@ -2,6 +2,26 @@
 --
 -- Exports the given theme as a list of rules
 
+local function sorted_attr_names(attrs)
+  -- we want some specific ordering for our keys when converting them into
+  -- strings, both for testing and for DX.
+  -- these keys have a fixed best-position, others will be sorted by alpha
+  local hardcoded = {
+    fg = "1",
+    bg = "2",
+    sp = "3",
+    gui = "4",
+    blend = "5"
+  }
+  local ordered_attrs_keys = {}
+  for attr in pairs(attrs) do
+    table.insert(ordered_attrs_keys, attr)
+  end
+  table.sort(ordered_attrs_keys, function(a, b)
+    return (hardcoded[a] or a) < (hardcoded[b] or b)
+  end)
+  return ordered_attrs_keys
+end
 
 return function(ast)
   -- smoke test
@@ -18,15 +38,18 @@ return function(ast)
   for group, attrs in pairs(compiled) do
     -- convert each attr into a "key = val" string
     local parts = {}
-    for attr, val in pairs(attrs) do
+    local attr_names = sorted_attr_names(attrs)
+
+    for _, name in pairs(attr_names) do
+      local val = attrs[name]
       if type(val) == "string" then
-        table.insert(parts, string.format("%s = %q", attr, val))
+        table.insert(parts, string.format("%s = %q", name, val))
       elseif type(val) == "number" then
-        table.insert(parts, string.format("%s = %s", attr, val))
+        table.insert(parts, string.format("%s = %s", name, tostring(val)))
       elseif type(val) == "boolean" then
-        table.insert(parts, string.format("%s = %s", attr, val))
+        table.insert(parts, string.format("%s = %s", name, tostring(val)))
       else
-        error(string.format("Unconvertable value type %s for %s.%s", type(val), group, attr))
+        error(string.format("Unconvertable value type %s for %s.%s", type(val), group, name))
       end
     end
     table.insert(group_strings, {
