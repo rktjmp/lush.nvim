@@ -9,14 +9,22 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  run-unit-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version:
+          - "luajit-2.1.0-beta3"
+          - "5.1"
+          - "5.2"
+          - "5.3"
+          - "5.4"
     steps:
       - uses: actions/checkout@v2
       - name: Install Lua/LuaJIT
         uses: leafo/gh-actions-lua@v8
         with:
-          luaVersion: "luajit-2.1.0-beta3"
+          luaVersion: ${{ matrix.version }}
       - name: Install LuaRocks
         uses: leafo/gh-actions-luarocks@v4.0.0
         with:
