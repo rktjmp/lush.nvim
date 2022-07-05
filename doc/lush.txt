@@ -317,9 +317,12 @@ Supports the following keys:
   italic:        boolean, enables or disables italics.
   underline:     boolean, enables or disables underline.
   underlineline: boolean, enables or disables double underline.
+  underdouble:   boolean, underlineline in nvim 0.8
   undercurl:     boolean, enables or disables undercurl.
   underdot:      boolean, enables or disables underdot.
+  underdotted:   boolean, underdot in nvim 0.8
   underdash:     boolean, enables or disables underdash.
+  underdashed:   boolean, underdash in nvim 0.8
   strikethrough: boolean, enables or disables strikethrough.
   reverse:       boolean, enables or disables flipping fg and bg values.
   standout:      boolean, enables or disables standout.

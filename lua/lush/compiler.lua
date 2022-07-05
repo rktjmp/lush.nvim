@@ -61,19 +61,17 @@ local function normal_group_to_attrs(group_def)
       local pat = string.format("[^%%w]%s[^%%w]", modifier)
       return string.match(gui, pat) and true or nil
     end
-    attrs.bold = maybe_set("bold")
-    attrs.italic = maybe_set("italic")
-    attrs.underline = maybe_set("underline")
-    attrs.underlineline = maybe_set("underlineline")
-    attrs.undercurl = maybe_set("undercurl")
-    attrs.underdot = maybe_set("underdot")
-    attrs.underdash = maybe_set("underdash")
-    attrs.strikethrough = maybe_set("strikethrough")
-    attrs.reverse = maybe_set("reverse")
-    -- not supported in highlight.c
-    -- attrs.inverse = maybe_set("inverse")
-    attrs.standout = maybe_set("standout")
-    attrs.nocombine = maybe_set("nocombine")
+    local formatters = {
+      "bold", "italic", "underline", "underlineline",
+      "undercurl", "underdot", "underdash", "strikethrough",
+      -- https://github.com/rktjmp/lush.nvim/issues/96
+      -- 0.8 key renames
+      "underdouble", "underdotted", "underdashed",
+      "reverse", "standout", "nocombine"
+    }
+    for i, formatter in ipairs(formatters) do
+      attrs[formatter] = maybe_set(formatter)
+    end
   end
 
   -- now re-merge any extra attrs which may override gui settings

@@ -33,6 +33,9 @@ local function allowed_option_keys()
     "bold", "italic", "underline", "underlineline",
     "undercurl", "underdot", "underdash", "strikethrough",
     "reverse", "standout", "nocombine",
+    -- https://github.com/rktjmp/lush.nvim/issues/96
+    -- 0.8 key renames
+    "underdouble", "underdotted", "underdashed",
     -- lush special namespace
     "lush"
   }
