@@ -569,6 +569,13 @@ or run it directly via Lua,
 Now changes you make to a colorscheme are reflected in real time. See the two
 starter files for more information and a demonstration.
 
+Lushify expects your file to return a parsed lush-spec, but if you are
+returning a more complex module, you can provide a `get_spec` function to the lua
+interface. The function receives the module as its first argument and should
+return a parsed spec.
+>
+  :lua require('lush').ify({get_spec = function (mod) return mod.get_spec() end})
+<
 Performance of lush.ify is somewhat dependent on your hardware and probably
 more specifically, your terminal. Some re-render faster than others.
 

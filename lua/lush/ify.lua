@@ -184,7 +184,7 @@ end
 -- may print error if one occurs
 -- (number) -> nil
 
-local function eval_buffer(buf)
+local function eval_buffer(buf, get_spec)
   buf = buf or 0
   local did_apply = false
 
@@ -209,7 +209,7 @@ local function eval_buffer(buf)
     -- print(b - a / 1000000)
     -- bubble error up
     if load_error then error(load_error, 2) end
-    return fn()
+    return get_spec(fn())
   end)
 
   if not eval_success then
@@ -293,6 +293,7 @@ M.setup_realtime_eval = function(buf, options)
   local natural_timeout = options.natural_timeout or 25
   -- but if we've seen enough errors, debounce by this much
   local error_timeout = options.error_timeout or 300
+  local get_spec = options.get_spec or function(mod) return mod end
 
   if type(natural_timeout) ~= "number" or
      type(error_timeout) ~= "number" or
@@ -324,7 +325,7 @@ M.setup_realtime_eval = function(buf, options)
   }
 
   -- bang the buffer on first call
-  eval_buffer(buf)
+  eval_buffer(buf, get_spec)
   -- then setup a re-eval on any changes
   api.nvim_buf_attach(buf, true, {
     on_lines = function()
@@ -334,7 +335,7 @@ M.setup_realtime_eval = function(buf, options)
           defer_timer = nil
         end
         vim.schedule(function()
-          local success = eval_buffer(buf)
+          local success = eval_buffer(buf, get_spec)
           history.push(success)
         end)
       end
