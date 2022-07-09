@@ -21,8 +21,8 @@ Lua module: `require("apprentice").setup()`
 Usage: `require('apprentice').setup()`
 
 A pretty colorscheme for neovim written in `Lua` based on the [Apprentice](https://github.com/romainl/Apprentice) color palette with support for `nvim-treesitter` and `neovim built-in lsp` which can be enabled using `setup()` function (please refer to [#Usage](https://github.com/adisen99/apprentice.nvim/tree/main#usage))
-![dark theme](./adisen99_apprentice_nvim_1.png)
-![light theme](./adisen99_apprentice_nvim_2.png)
+![dark theme](../../assets/adisen99_apprentice_nvim_1.png)
+![light theme](../../assets/adisen99_apprentice_nvim_2.png)
 
 ---
 
