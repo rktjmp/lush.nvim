@@ -70,6 +70,20 @@ My colorscheme that I made when I got tired of all other colorschemes :P (Neovim
 
 ---
 
+### doubletrouble
+
+[muchzill4/doubletrouble](https://github.com/muchzill4/doubletrouble)
+
+Lua module: `require('doubletrouble.lush_theme')`
+
+Usage: `colorscheme doubletrouble`
+
+Yet another dark vim colorscheme.
+
+![](https://github.com/muchzill4/doubletrouble/raw/assets/nvim.png)
+
+---
+
 ### gruvbox.nvim
 
 [npxbr/gruvbox.nvim](https://github.com/npxbr/gruvbox.nvim)
@@ -133,34 +147,6 @@ My personal One Dark port for Neovim with Treesitter and LSP support, dark/light
 
 ---
 
-### Zenbones
-
-[mcchrish/zenbones.nvim](https://github.com/mcchrish/zenbones.nvim)
-
-Lua module: `require('zenbones')`
-
-Usage: `colorscheme zenbones`
-
-A simple contrast-focused vim/nvim colorscheme.
-
-![](https://user-images.githubusercontent.com/7200153/131045472-05c76909-0071-4c24-bd30-f15da3ae4e82.jpg)
-
----
-
-### doubletrouble
-
-[muchzill4/doubletrouble](https://github.com/muchzill4/doubletrouble)
-
-Lua module: `require('doubletrouble.lush_theme')`
-
-Usage: `colorscheme doubletrouble`
-
-Yet another dark vim colorscheme.
-
-![](https://github.com/muchzill4/doubletrouble/raw/assets/nvim.png)
-
----
-
 ### walh
 
 [casonadams/walh](https://github.com/casonadams/walh)
@@ -185,13 +171,27 @@ Usage: `colorscheme walh-default`
 
 <img width="766" alt="walh-ocean-warm" src="https://user-images.githubusercontent.com/17597548/136674741-55ab890e-70f2-4568-b0be-0e251c51d8ee.png">
 
+---
+
+### Zenbones
+
+[mcchrish/zenbones.nvim](https://github.com/mcchrish/zenbones.nvim)
+
+Lua module: `require('zenbones')`
+
+Usage: `colorscheme zenbones`
+
+A simple contrast-focused vim/nvim colorscheme.
+
+![](https://user-images.githubusercontent.com/7200153/131045472-05c76909-0071-4c24-bd30-f15da3ae4e82.jpg)
+
 Adding your theme to the list
 -----------------------------
 
 Submit a pull request with:
 
 - [x] The theme details template filled out (see below)
-- [x] At most 2 images (optional but recommended):
+- [x] Images (optional but recommended):
   - PNG format
   - Reasonable size (i.e. not a 4k res 30mb file)
   - Filenames follow the format:
