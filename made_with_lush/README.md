@@ -26,6 +26,21 @@ A pretty colorscheme for neovim written in `Lua` based on the [Apprentice](https
 
 ---
 
+### arctic.nvim
+
+[rockyzhang24/arctic.nvim](https://github.com/rockyzhang24/arctic.nvim)
+
+Lua module: `require('lush_theme.arctic')`
+
+Usage: `colorscheme arctic`
+
+A Neovim colorscheme ported from VSCode Dark+ theme with the strict and precise color picking for both the editor and UI.
+
+![pic1](../../assets/rockyzhang24_arctic_nvim_1.png)
+![pic2](../../assets/rockyzhang24_arctic_nvim_2.png)
+
+---
+
 ### codeschool.nvim
 
 [adisen99/codeschool.nvim](https://github.com/adisen99/codeschool.nvim)
