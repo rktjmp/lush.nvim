@@ -58,6 +58,12 @@ M.apply = function(parsed_spec, options)
       print(msg)
     end
   end
+  -- See https://github.com/rktjmp/lush.nvim/issues/94
+  -- Some kind of bug with `hi clear` and `nvim_set_hl` that wont set
+  -- highlights correctly on the intro screen. Loading any kind of
+  -- file repairs the colorscheme but for now we can probably set
+  -- this before working out how to fix it upstream.
+  vim.api.nvim_command("hi nvim_set_hl_x_hi_clear_bugfix guifg=red")
 end
 
 M.import = function()
