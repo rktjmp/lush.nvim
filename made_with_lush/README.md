@@ -113,6 +113,20 @@ A port of the jellybeans theme.
 
 ---
 
+### Meliora
+
+[meliora-theme/neovim](https://github.com/meliora-theme/neovim)
+
+Lua module: `require('meliora')`
+
+Usage: `colorscheme meliora`
+
+Warm and cozy colorscheme for neovim.
+
+![preview](./meliora-theme_neovim.png)
+
+---
+
 ### nord.nvim
 
 [kunzaatko/nord.nvim](https://github.com/kunzaatko/nord.nvim)
