@@ -161,6 +161,20 @@ My personal One Dark port for Neovim with Treesitter and LSP support, dark/light
 
 ---
 
+### pink-panic
+
+[scysta/pink-panic.nvim](https://github.com/scysta/pink-panic.nvim)
+
+Lua module: `require('lush_theme.pink-panic")`
+
+Usage: `colorscheme pink-panic`
+
+A simple pretty pink theme with LSP and Treesitter support for Neovim.
+
+![](scysta_pink-panic_nvim.png)
+
+---
+
 ### walh
 
 [casonadams/walh](https://github.com/casonadams/walh)
@@ -198,6 +212,8 @@ Usage: `colorscheme zenbones`
 A simple contrast-focused vim/nvim colorscheme.
 
 ![](https://user-images.githubusercontent.com/7200153/131045472-05c76909-0071-4c24-bd30-f15da3ae4e82.jpg)
+
+---
 
 Adding your theme to the list
 -----------------------------
