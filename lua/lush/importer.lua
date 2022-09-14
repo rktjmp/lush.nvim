@@ -34,7 +34,9 @@ local function direct_to_string(group_name, attrs, rules, pad_to)
   local str = ""
   str = str .. name .. " { "
   for key, val in pairs(attrs) do
-    str = str .. key .. "=\"" .. string.lower(val) .. "\", "
+    -- blend should not have quotes around it
+    local wrapped = key == "blend" and val or "\"" .. val .. "\""
+    str = str .. key .. "=" .. string.lower(wrapped) .. ", "
   end
   str = str .. "}, -- " .. rules
   return str
