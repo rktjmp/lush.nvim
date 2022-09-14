@@ -131,7 +131,7 @@ local function capture_current()
 
   -- print(vim.inspect(collect))
   vim.fn.setreg("z", table.concat(collect, "\n"))
-  print("Saved current theme to 'z' register, use \"zp to paste into new file and run :Lushify")
+  print("Saved current theme to 'z' register, use \"zp to paste into new file and run :Lushify (you might also want to run `:set ft=lua nowrap`)")
 end
 
 return capture_current
