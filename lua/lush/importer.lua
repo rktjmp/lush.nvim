@@ -55,7 +55,11 @@ local function capture_current()
 
   local lines = {}
   for line in string.gmatch(vim.fn.execute("highlight"), "[^\n]+") do
-    table.insert(lines, line)
+    -- https://github.com/rktjmp/lush.nvim/issues/106
+    -- https://github.com/rktjmp/lush.nvim/issues/94
+    if not string.match(line, "nvim_set_hl_x_hi_clear_bugfix") then
+      table.insert(lines, line)
+    end
   end
 
   for i, s in ipairs(lines) do
