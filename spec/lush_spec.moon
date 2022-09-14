@@ -14,6 +14,7 @@ describe "lush", ->
         nvim_win_get_width: -> 30
         nvim_open_win: ->
         nvim_set_hl: ->
+        nvim_command: ->
       },
       g: {
         colors_name: "a_theme"
