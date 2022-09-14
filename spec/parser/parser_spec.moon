@@ -241,14 +241,14 @@ describe "parser", ->
 
   it "is a closure", ->
     math = math
-    spec =-> {
-      A { bg: math.random(0, 10) },
+    spec = -> {
+      A { bg: math.huge },
     }
     parsed = parse(spec)
     assert.not_nil(parsed)
     assert.not_nil(parsed.A.bg)
     assert.is_number(parsed.A.bg)
-    assert.is_true(parsed.A.bg > 0 and parsed.A.bg < 10)
+    assert.is_true(parsed.A.bg == math.huge)
 
   describe "inheritance", ->
     it "can inherit", ->
