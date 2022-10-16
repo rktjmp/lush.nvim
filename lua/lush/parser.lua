@@ -19,6 +19,19 @@ local setfenv = setfenv or function (fn, env)
     return fn
   end
 
+local getfenv = getfenv or function(fn)
+  local i = 1
+  while true do
+    local name, val = debug.getupvalue(fn, i)
+    if name == "_ENV" then
+      return val
+    elseif not name then
+      break
+    end
+    i = i + 1
+  end
+end
+
 local parser_error = require('lush.errors').parser.generate_for_code
 
 local function allowed_option_keys()
