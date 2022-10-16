@@ -69,7 +69,7 @@ local is_lush_type = function(value)
 end
 
 local enforce_generic_group_name = function(name, opts)
-  if not string.match(name, "^[a-zA-Z]") or
+  if not string.match(name, "^[%.@a-zA-Z]") or
      string.match(name, "^ALL$") or
      string.match(name, "^NONE$") or
      string.match(name, "^ALLBUT$") or
@@ -364,6 +364,78 @@ local infer_group_type = function(group_def)
   return nil, "failure_to_infer_group_type"
 end
 
+local define_group = function(
+  lush_spec_env,
+  group_lookup,
+  group_name,
+  group_placeholder,
+  group_def)
+
+  -- smoke test the basic given properties, if these fail then
+  -- nothing beyond here is worth attempting.
+  local enforcements = {
+    enforce_generic_group_name,
+    enforce_generic_definition_type,
+    -- kind of awkward to put this validation here, since
+    -- it's more specific to inherit and link, but we also
+    -- need to fail before attempting to detect the group type.
+    -- for now it happens here.
+    enforce_generic_one_parent,
+  }
+  local group = group_placeholder
+  local err = enforce(enforcements, group_name, group_def)
+  if err then return resolves_as_error(err) end
+
+  local group_type = infer_group_type(group_def)
+  -- not implemented, validations done in wrap_<type>
+  -- local _, err = enforce_group_type(type, group_def)
+
+  -- If a value is in the lush_spec_env, it's a group def,
+  -- we need to flag this early here, so we can check for
+  -- placeholders that haven't been properly resolved, but we
+  -- can't rely on just accessing the val.type because
+  -- external values may respond with an error.
+  -- (AKA hsl.__type is an error of "unsupported modifier")
+  local protected = {}
+  for _, key in ipairs(allowed_option_keys()) do
+    local val = group_def[key]
+    if val then
+      local is_a_group = group_lookup[val]
+      local tuple = {val, is_a_group and val.__lush.type or type(val)}
+      protected[key] = tuple
+    end
+  end
+
+  -- inherit and link both should have a [1] key, but we keep out out of
+  -- the allowed options check for ease of use elsewhere.
+  if group_def[1] and (group_type == "inherit" or group_type == "link") then
+    local val = group_def[1]
+    local is_a_group = group_lookup[val]
+    local tuple = {val, is_a_group and val.__lush.type or type(val)}
+    protected[1] = tuple
+  end
+
+  -- wrap group in group or link handler
+  group, err = create_group(group_type, group_name, protected)
+  if err then
+    -- TODO: this could be nicer, technically we should fail before
+    --       its possible to get fail group_type inference but ...
+    -- This is hard error for now, dont wait to resolve
+    error(parser_error.could_not_infer_group_type({on = group_name}))
+  end
+
+  -- insert group into spec env, this allows us to
+  -- reference this group by name in other groups
+  -- replace the previously undefined place holder
+  lush_spec_env[group_name] = group
+
+  group_lookup[group] = group
+  group_lookup[group_name] = group
+
+  -- this ends up in the spec's return table
+  return group
+end
+
 local parse = function(lush_spec_fn, parser_options)
   if type(lush_spec_fn) ~= "function" then
     error(parser_error.malformed_lush_spec({on = "spec"}))
@@ -398,85 +470,25 @@ local parse = function(lush_spec_fn, parser_options)
   setfenv(lush_spec_fn, setmetatable({}, {
     -- Lua only calls __index if the key doesn't already exist.
     __index = function(lush_spec_env, group_name)
-
       -- attempted to access an unknown group name
       -- We will provide an table which can be queried for it's type
       -- (undefined_group), and name (group_name), and may be
       -- called (with group_def) to create an group table.
-
-      local define_group = function(group_placeholder, group_def)
-
-        -- smoke test the basic given properties, if these fail then
-        -- nothing beyond here is worth attempting.
-        local enforcements = {
-          enforce_generic_group_name,
-          enforce_generic_definition_type,
-          -- kind of awkward to put this validation here, since
-          -- it's more specific to inherit and link, but we also
-          -- need to fail before attempting to detect the group type.
-          -- for now it happens here.
-          enforce_generic_one_parent,
-        }
-        local group = group_placeholder
-        local err = enforce(enforcements, group_name, group_def)
-        if err then return resolves_as_error(err) end
-
-        local group_type = infer_group_type(group_def)
-        -- not implemented, validations done in wrap_<type>
-        -- local _, err = enforce_group_type(type, group_def)
-
-        -- If a value is in the lush_spec_env, it's a group def,
-        -- we need to flag this early here, so we can check for
-        -- placeholders that haven't been properly resolved, but we
-        -- can't rely on just accessing the val.type because
-        -- external values may respond with an error.
-        -- (AKA hsl.__type is an error of "unsupported modifier")
-        local protected = {}
-        for _, key in ipairs(allowed_option_keys()) do
-          local val = group_def[key]
-          if val then
-            local is_a_group = group_lookup[val]
-            local tuple = {val, is_a_group and val.__lush.type or type(val)}
-            protected[key] = tuple
-          end
-        end
-
-        -- inherit and link both should have a [1] key, but we keep out out of
-        -- the allowed options check for ease of use elsewhere.
-        if group_def[1] and (group_type == "inherit" or group_type == "link") then
-          local val = group_def[1]
-          local is_a_group = group_lookup[val]
-          local tuple = {val, is_a_group and val.__lush.type or type(val)}
-          protected[1] = tuple
-        end
-
-        -- wrap group in group or link handler
-        group, err = create_group(group_type, group_name, protected)
-        if err then
-          -- TODO: this could be nicer, technically we should fail before
-          --       its possible to get fail group_type inference but ...
-          -- This is hard error for now, dont wait to resolve
-          error(parser_error.could_not_infer_group_type({on = group_name}))
-        end
-
-        -- insert group into spec env, this allows us to
-        -- reference this group by name in other groups
-        -- replace the previously undefined place holder
-        lush_spec_env[group_name] = group
-
-        group_lookup[group] = group
-        group_lookup[group_name] = group
-
-        -- this ends up in the spec's return table
-        return group
-      end
 
       -- This placeholder will sit in the env until we call it, which will
       -- replace the placeholder with the true group.
       -- Mostly this is useful for error detection, because in correct practice,
       -- you will immediately call the placeholder after creation.
       local group_placeholder = setmetatable({}, {
-        __call = define_group,
+        __call = function(group_placeholder, group_def)
+          return define_group(
+            lush_spec_env,
+            group_lookup,
+            group_name,
+            group_placeholder,
+            group_def
+          )
+        end,
         __index = function(_, key)
           if key == "__lush" then
             return {
@@ -501,8 +513,15 @@ local parse = function(lush_spec_fn, parser_options)
     end
   }))
 
+  local injects = {
+    -- allow creating groups with an "invalid" symbol
+    sym = function(name)
+      local env = getfenv(lush_spec_fn)
+      return env[name]
+    end
+  }
   -- generate spec
-  local spec = lush_spec_fn()
+  local spec = lush_spec_fn(injects)
   if not spec or type(spec) ~= "table" then
     error(parser_error.malformed_lush_spec({on = "spec"}))
   end
