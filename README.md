@@ -20,6 +20,12 @@ See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lu
 - [Guides](#guides)
 - [See Also](#see-also)
 
+Experimental Treesitter Interface
+---
+
+[See issue for new syntax](https://github.com/rktjmp/lush.nvim/issues/109).
+Syntax is subject to change.
+
 Annoucements
 ------------
 
