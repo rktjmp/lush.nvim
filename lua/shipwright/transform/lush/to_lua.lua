@@ -26,7 +26,7 @@ end
 local function safe_group_name(name)
   -- any group that has a non-alpha/digit should be wrapped in quotes
   if string.match(name, "[^%a%d]") then
-    return string.format("%q", name)
+    return string.format("[%q]", name)
   else
     return name
   end
