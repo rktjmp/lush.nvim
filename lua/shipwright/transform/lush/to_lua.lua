@@ -23,6 +23,15 @@ local function sorted_attr_names(attrs)
   return sorted_names
 end
 
+local function safe_group_name(name)
+  -- any group that has a non-alpha/digit should be wrapped in quotes
+  if string.match(name, "[^%a%d]") then
+    return string.format("%q", name)
+  else
+    return name
+  end
+end
+
 return function(ast)
   -- smoke test
   local is_spec = require("shipwright.transform.lush.helpers").is_lush_spec
@@ -54,7 +63,11 @@ return function(ast)
     end
     table.insert(group_strings, {
       -- concat group name and string'd attrs into "Normal = {fg = ...}"
-      definition = string.format("%s = {%s}", group, table.concat(parts, ", ")),
+      definition = string.format(
+        "%s = {%s}",
+        safe_group_name(group),
+        table.concat(parts, ", ")
+      ),
       -- sort each group alphabetically but put link groups directly
       -- after parents.
       sort_key = group_sort_value(group, attrs)
