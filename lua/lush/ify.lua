@@ -255,6 +255,7 @@ local function eval_buffer(buf)
       -- hang around.
       print(" ") -- clear error
       did_apply = true
+      vim.api.nvim_exec_autocmds("ColorScheme", {})
     end
   end
 
