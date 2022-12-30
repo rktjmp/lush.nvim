@@ -1,9 +1,18 @@
+local group_pattern = "[@.%w_]+"
+
+local function format_group_name(group_name)
+  if (string.match(group_name, "[@.]")) then
+    return 'sym"' .. group_name .. '"'
+  end
+  return group_name
+end
+
 local function extract_link_group(line)
   -- StatusLineFileInfo xxx links to StatusLine
-  local from, to = string.match(line, "([%w_]+)%s+xxx%s+links to%s+([%w_]+)")
+  local from, to = string.match(line, "(" .. group_pattern .. ")%s+xxx%s+links to%s+(" .. group_pattern .. ")")
   return {
-    from = from,
-    to = to,
+    from = format_group_name(from),
+    to = format_group_name(to),
     comment = line
   }
 end
@@ -11,7 +20,7 @@ end
 local function extract_direct_group(line)
   -- LspDiagnosticsSignError xxx guifg=#CC4B52 guibg=#212520
   -- LspDiagnosticsSignWarning xxx cleared
-  local group_name, rules = string.match(line, "([%w_]+)%s+xxx%s+(%w.+)")
+  local group_name, rules = string.match(line, "(" .. group_pattern .. ")%s+xxx%s+(%w.+)")
   -- we explicitly support the following rules:
   -- guifg -> fg
   -- guibg -> bg
@@ -26,7 +35,7 @@ local function extract_direct_group(line)
     gui = string.match(rules, "gui=([%w,]+)"),
     blend = string.match(rules, "blend=([%d]+)"),
   }
-  return {group_name, attrs, line}
+  return {format_group_name(group_name), attrs, line}
 end
 
 local function direct_to_string(group_name, attrs, rules, pad_to)
@@ -67,7 +76,7 @@ local function capture_current()
     -- DiagnosticSignError xxx links to LspDiagnosticsSignError
     -- DiagnosticUnderlineError xxx cterm=underline guisp=Red
     --                    links to LspDiagnosticsUnderlineError
-    if string.match(s, "%w+%s+links to") then
+    if string.match(s, group_pattern .. "%s+links to") then
       table.insert(link_groups, extract_link_group(s))
     elseif string.match(s, "%s+links to") then
       -- lua will still match the link regex, from will just be nil
@@ -79,7 +88,7 @@ local function capture_current()
       table.insert(link_groups, linkish)
     elseif string.match(s, "%scleared") then
       -- should be ok to skip "cleared" groups as hl clear will cover them
-    elseif string.match(s, "%w+%s+xxx%s+.+") then
+    elseif string.match(s, group_pattern .. "%s+xxx%s+.+") then
       table.insert(direct_groups, extract_direct_group(s))
     else
       print("no match:" .. s)
@@ -118,7 +127,8 @@ local function capture_current()
 
   -- insert some wrapping context
   table.insert(collect, 1, "  return {")
-  table.insert(collect, 1, "local theme = lush(function()")
+  table.insert(collect, 1, "  local sym = injected_functions.sym")
+  table.insert(collect, 1, "local theme = lush(function(injected_functions)")
   table.insert(collect, 1, "local hsluv = lush.hsluv")
   table.insert(collect, 1, "local hsl = lush.hsl")
   table.insert(collect, 1, "local lush = require(\"lush\")")
