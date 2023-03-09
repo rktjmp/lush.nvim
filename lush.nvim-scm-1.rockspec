@@ -30,6 +30,9 @@ end
 
 build = {
 	type = "builtin",
+    copy_directories = {
+        "doc"
+    }
 }
 test_dependencies = {
 	"moonscript",
