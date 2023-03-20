@@ -111,7 +111,7 @@ local theme = lush(function()
     -- linked group options (See h: hi-link). (`setlocal cursorcolumn`)
     -- CursorColumn { CursorLine },
 
-    -- We can make white space characters slighly visible
+    -- We can make white space characters slightly visible
     -- Whitespace { fg = Normal.bg.desaturate(25).lighten(25) },
 
     -- We can inherit properties if we want to tweak a group slightly
