@@ -213,6 +213,21 @@ A simple contrast-focused vim/nvim colorscheme.
 
 ![](https://user-images.githubusercontent.com/7200153/131045472-05c76909-0071-4c24-bd30-f15da3ae4e82.jpg)
 
+### Habamax.nvim
+
+[ntk148v/habamax.nvim](https://github.com/ntk148v/habamax.nvim)
+
+Lua module: `require('habamax.nvim')`
+
+Usage: `colorscheme habamax.nvim`
+
+A Neovim colorscheme ported from [Vim Habamax](https://github.com/vim/colorschemes/blob/master/colors/habamax.vim) colorscheme.
+
+|                                                                                                                              |                                                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/ntk148v/habamax.nvim/raw/master/screenshots/screen1.png" alt="dark" style="border-radius:10%"/> | <img src="https://github.com/ntk148v/habamax.nvim/raw/master/screenshots/screen2.png" alt="dark" style="border-radius:10%"/> |
+| <img src="https://github.com/ntk148v/habamax.nvim/raw/master/screenshots/screen3.png" alt="dark" style="border-radius:10%"/> | <img src="https://github.com/ntk148v/habamax.nvim/raw/master/screenshots/screen4.png" alt="dark" style="border-radius:10%"/> |
+
 ---
 
 Adding your theme to the list
