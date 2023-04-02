@@ -230,6 +230,24 @@ A Neovim colorscheme ported from [Vim Habamax](https://github.com/vim/colorschem
 
 ---
 
+### Bluloco
+
+[uloco/bluloco.nvim](https://github.com/uloco/bluloco.nvim)
+
+Lua module: `require('bluloco')`
+
+Usage: `colorscheme bluloco`
+
+A fancy and sophisticated designer neovim theme. It features a much more comprehensive usage of syntax scopes and color consistency, with due regards to aesthetics, contrast and readability.
+
+#### dark
+![](https://github.com/uloco/bluloco.nvim/blob/main/screenshots/dark.png)
+
+#### light
+![](https://github.com/uloco/bluloco.nvim/blob/main/screenshots/light.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
