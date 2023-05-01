@@ -1,15 +1,17 @@
 local group_pattern = "[@.%w_]+"
 
 local function format_group_name(group_name)
-  if (string.match(group_name, "[@.]")) then
+  if group_name and (string.match(group_name, "[@.]")) then
     return 'sym"' .. group_name .. '"'
+  else
+    return group_name
   end
-  return group_name
 end
 
 local function extract_link_group(line)
   -- StatusLineFileInfo xxx links to StatusLine
   local from, to = string.match(line, "(" .. group_pattern .. ")%s+xxx%s+links to%s+(" .. group_pattern .. ")")
+  -- `from` may be nill here if the "links to" line has been collated with a parent definition.
   return {
     from = format_group_name(from),
     to = format_group_name(to),
