@@ -7,8 +7,8 @@ description = {
 	summary = "Define Neovim themes as a DSL in lua, with real-time feedback.",
 	labels = { "neovim" },
 	detailed = [[
-    Lush is a colorscheme creation aid, written in Lua, for Neovim.
-   ]],
+		Lush is a colorscheme creation aid, written in Lua, for Neovim.
+	]],
 	homepage = "https://github.com/rktjmp/lush.nvim",
 	license = "MIT/X11",
 }
@@ -30,10 +30,14 @@ end
 
 build = {
 	type = "builtin",
-    copy_directories = {
-        "doc"
-    }
+	copy_directories = {
+		"doc",
+		"examples",
+		"plugin",
+		"spec",
+	}
 }
+
 test_dependencies = {
 	"moonscript",
 }
