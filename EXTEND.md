@@ -62,7 +62,7 @@ vim.g.colors_name = 'my-harbour'
 
 -- First we will need lush, and the colorscheme we wish to modify
 local lush = require('lush')
-local harbour = require('lush_colorscheme.harbour')
+local harbour = require('lush_theme.harbour')
 
 -- we can apply modifications ontop of the existing colorscheme
 local spec = lush.extends({harbour}).with(function()
@@ -98,7 +98,7 @@ vim.g.colors_name = 'my-harbour'
 
 -- First we will need lush, and the colorscheme we wish to modify
 local lush = require('lush')
-local harbour = require('lush_colorscheme.harbour')
+local harbour = require('lush_theme.harbour')
 
 -- Now we will extend the colorscheme
 local spec = lush.extends({harbour}).with(function()
@@ -179,7 +179,7 @@ package.path = package.path
                 .. ";/home/user/.local/share/nvim/site/plugged/lush.nvim/lua/?/?.lua"
                 .. ";/home/user/.local/share/nvim/site/plugged/lush-olive-tree/lua/?/?.lua"
 -- require lush colorscheme
-local olive_tree = require("lush_colorscheme.olive_tree")
+local olive_tree = require("lush_theme.olive_tree")
 
 -- use lush colorscheme in awesomewm sheme
 colorscheme.bg_normal     = olive_tree.SignColumn.bg.hex
