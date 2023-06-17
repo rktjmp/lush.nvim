@@ -247,7 +247,7 @@ Sample Lush-Spec                                              *lush-spec-sample*
 
 Here's a very simple lush-spec:
 >
-  -- cool_name/lua/lush_colorscheme/cool_name.lua
+  -- cool_name/lua/lush_theme/cool_name.lua
   -- require lush
   local lush = require('lush')
   -- lush(), when given a spec, will parse it and return a table
@@ -276,7 +276,7 @@ And the corresponding colorscheme loading file for nvim:
   let g:colors_name="cool_name"
   " you could detect background == dark || light here and require
   " different files
-  lua require('lush')(require('lush_colorscheme.cool_name'))
+  lua require('lush')(require('lush_theme.cool_name'))
 <
 
 --------------------------------------------------------------------------------
@@ -447,7 +447,7 @@ Example - adding plugin support:
   local hsl = lush.hsl
 
   -- some colorscheme from the internet
-  local harbour = require('lush_colorscheme.harbour')
+  local harbour = require('lush_theme.harbour')
 
   local spec = lush.extends({harbour}).with(function()
     return {
@@ -469,11 +469,11 @@ Example - complex combination:
   -- You may have installed this colorscheme via your package manager or similar
   -- (good lush colorschemes should be portable), or you might be writing a variant
   -- for your main colorscheme.
-  local some_colorscheme = require('lush_colorscheme.some_colorscheme')
+  local some_colorscheme = require('lush_theme.some_colorscheme')
 
   -- Maybe you also want to include a community extension that patches
   -- some missing styles in the original colorscheme.
-  local some_colorscheme_lsp = require('lush_colorscheme.some_colorscheme_lsp')
+  local some_colorscheme_lsp = require('lush_theme.some_colorscheme_lsp')
 
   local spec = lush.extends({some_colorscheme, some_colorscheme_lsp}).with(function()
     -- It is also valid to return an empty spec. This is functionally
@@ -521,10 +521,10 @@ Example:
 >
   -- See also extends.with, most concepts are applicable.
 
-  local some_colorscheme = require('lush_colorscheme.some_colorscheme')
+  local some_colorscheme = require('lush_theme.some_colorscheme')
 
   -- Maybe LSP highlights are complex and you define them in a different file
-  local some_colorscheme_lsp = require('lush_colorscheme.some_colorscheme_lsp')
+  local some_colorscheme_lsp = require('lush_theme.some_colorscheme_lsp')
 
   local specs = {
     some_colorscheme,
@@ -533,7 +533,7 @@ Example:
 
   -- Only include xyz groups if the user wants them
   if user_config.enable_xyz then
-    table.insert(specs, require('lush_colorscheme.some_colorscheme.xyz')
+    table.insert(specs, require('lush_theme.some_colorscheme.xyz')
   end
 
   -- You might also include variants this way
@@ -660,7 +660,7 @@ Dependency Injection:
 >
   -- all these local variables can be accessed in the spec closure
   local weather = require('local_weather')
-  local harbour = require('lush_colorscheme.harbour')
+  local harbour = require('lush_theme.harbour')
   local math = math
   lush(function()
     return {
