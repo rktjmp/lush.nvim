@@ -29,6 +29,10 @@ Next we have to update some of the boilerplate files to match your new colorsche
 name. You can copy and paste the script below into a zsh/bash prompt or perform
 the steps manually.
 
+> macOS users you might have to perform the `sed` lines manually. They're just
+> updating some place holders in `colors/<name.lua>` and LICENSE. [See
+> also.](https://github.com/rktjmp/lush.nvim/issues/119#issuecomment-1373138526)
+
 ```sh
 sh << "EOF"
   LUSH_NAME=$(basename $(pwd))
