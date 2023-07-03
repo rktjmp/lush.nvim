@@ -50,18 +50,12 @@ Install via any package management system, for example, paq:
 require paq { 'rktjmp/lush.nvim' }
 ```
 
-Interactive Tutorials
+Interactive Tutorial
 ---------------------
 
 ![Lush Demo](../assets/images/demo.gif)
 
-There are two interactive tutorials provided,
-
-- `:LushRunQuickstart` which will give you a few-minute overview of Lush's
-  creation features. (Or open `lush_quick_start.lua` in the examples folder.)
-
-- `:LushRunTutorial`, a more in-depth guide through various ways to apply Lush.
-  (Or open `lush_tutorial.lua` in the examples folder).
+Run `:LushRunTutorial` for an Interactive guided tour of using Lush.
 
 Guides
 ------

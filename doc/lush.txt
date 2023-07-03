@@ -56,13 +56,7 @@ Bugs or Limitations                                                  |lush-bugs|
 --------------------------------------------------------------------------------
 Lush Tutorials                                                  *lush-tutorials*
 
-There are two interactive tutorials provided,
-
-:LushRunQuickstart, which will give you a few-minute overview of Lush's
-features. (Or view lush_quick_start.lua in the examples folder.)
-
-:LushRunTutorial, a more in-depth guide through various ways to apply Lush.
-(Or view lush_tutorial.lua in the examples folder).
+An interactive tutorial is provided via the :LushRunTutorial command.
 
 --------------------------------------------------------------------------------
 HSL & HSLuv Colors                          *lush-hsl-colors* *lush-hsluv-colors*
