@@ -40,7 +40,7 @@
 --
 --  Also make sure to enable termguicolors with `:set termguicolors`.
 --
--- (If it worked, your colorscheme should have pretty dramatically!)
+-- (If it worked, your colorscheme should have changed pretty dramatically!)
 
 
 
