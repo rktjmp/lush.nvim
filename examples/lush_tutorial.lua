@@ -15,9 +15,9 @@
 --
 -- For more information, see:
 --
+-- * :h lush
 -- * CREATE.md
 -- * EXTEND.md
--- * :h lush
 -- * README.md
 --
 -- Look out! We're currently working in a temporary buffer. If you want to
