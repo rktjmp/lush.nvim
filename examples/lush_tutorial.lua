@@ -74,7 +74,7 @@ local hsl = lush.hsl -- We'll use hsl a lot so its nice to bind it separately
 -- ### Our first colors
 -- ###
 --
--- let's define some colors (the hsl() calls should already be highlighted for you):
+-- Let's define some colors (the hsl() calls should already be highlighted for you):
 --
 -- Note: Some CursorLine highlighting will obscure any other highlighing on the
 --       current line until you move your cursor away. You can disable the cursor
@@ -91,8 +91,10 @@ local sea_deep  = hsl(208, 90, 10)  -- you can just type them normally.
 
 -- RGB values can be used as a substitute for HSL as it will convert to
 -- its according hue, saturation, and lightness values. 
--- Note: This might have inaccuracies in convertions and you might need to do manual tweaks.
 local sea_gull  = hsl("#c6c6c6")
+-- Note: Converting between colorspaces can introduce minor color differences
+--       due to floating point maths. You may prefer to manually adjust your
+--       colors "by eye" afterwards.
 
 
 
