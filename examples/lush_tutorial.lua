@@ -89,8 +89,8 @@ local sea_deep  = hsl(208, 90, 10)  -- you can just type them normally.
 --
 -- Try editing these values to see the colors update in real time.
 
--- RGB values can be used as a substitute for HSL as it will convert to
--- its according hue, saturation, and lightness values. 
+-- RGB colors can be given as "#rrggbb". hsl() will convert them to
+-- the corresponding hue, saturation, and lightness values. 
 local sea_gull  = hsl("#c6c6c6")
 -- Note: Converting between colorspaces can introduce minor color differences
 --       due to floating point maths. You may prefer to manually adjust your
