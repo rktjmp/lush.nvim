@@ -1,4 +1,3 @@
---
 --        ,gggg,
 --       d8" "8I                         ,dPYb,
 --       88  ,dP                         IP'`Yb
@@ -24,10 +23,8 @@
 -- Look out! We're currently working in a temporary buffer. If you want to
 -- keep anything you do here, make sure you use `:saveas <your filename>`!
 -- Just using `:w` wont work! It's probably best to quickly run through this
--- file, then discard it and see CREATE.md for more unstructions about setting
+-- file, then discard it and see CREATE.md for more instructions about setting
 -- up your own theme.
-
-
 
 -- ###
 -- ### Lushify
@@ -41,8 +38,6 @@
 --  Also make sure to enable termguicolors with `:set termguicolors`.
 --
 -- (If it worked, your colorscheme should have changed pretty dramatically!)
-
-
 
 -- ###
 -- ### Preparations
@@ -69,13 +64,11 @@ local lush = require('lush')
 local hsl = lush.hsl -- We'll use hsl a lot so its nice to bind it separately
 -- local hsluv = lush.hsluv -- or for hsluv
 
-
-
 -- ###
 -- ### Our first colors
 -- ###
 --
--- Lets define some colors (the hsl() calls should already be highlighted for you):
+-- let's define some colors (the hsl() calls should already be highlighted for you):
 --
 -- Note: Some CursorLine highlighting will obscure any other highlighing on the
 --       current line until you move your cursor away. You can disable the cursor
@@ -91,11 +84,9 @@ local sea_deep  = hsl(208, 90, 10)  -- you can just type them normally.
 -- Try editing these values to see the colors update in real time.
 
 -- You can also give RGB colors to hsl() and it will convert them into the HSL
--- colorspace. Note this can be slightly lossy due to transatling between the
--- two colorspaces.
+-- colorspace. Note that this can be slightly lossy due to the translation between 
+-- the two colorspaces.
 local sea_gull  = hsl("#c6c6c6")
-
-
 
 -- ###
 -- ### HSL operations
@@ -121,8 +112,6 @@ local sea_foam_triadic = sea_foam.rotate(120)
 local sea_foam_complement = sea_foam.rotate(180).darken(10).saturate(10)
 --
 -- Thats all you need to know about HSL and we can define our theme!
-
-
 
 -- ###
 -- ### Lush specifications
@@ -150,7 +139,7 @@ local theme = lush(function()
     -- Any vim highlight group name is valid, and any unrecognized key is
     -- removed.
 
-    -- Every theme needs a "Normal" group, so lets define that first. You can
+    -- Every theme needs a "Normal" group, so let's define that first. You can
     -- see we already have a definition prepared, so just remove uncomment the
     -- line directly after this one.
     -- Normal { bg = sea_deep, fg = sea_foam }, -- Goodbye gray, hello blue!
@@ -162,7 +151,7 @@ local theme = lush(function()
     -- But we can do more. Lush can use previous groups to define new ones, as
     -- well as access properties of those groups.
     --
-    -- For example, lets set our CursorLine to be slightly lighter than our
+    -- For example, let's set our CursorLine to be slightly lighter than our
     -- normal background. (If disabled: `setlocal cursorline`).
     -- We can do this by setting the background property (bg) to the Normal
     -- groups background, lightened by a few points.
@@ -171,7 +160,7 @@ local theme = lush(function()
     -- "CursorLine" is highlighted to match the definition, so you can always
     -- see how parts of your theme will look.
 
-    -- We can swap colors around too, lets make our visual selection ("v mode")
+    -- We can swap colors around too, let's make our visual selection ("v mode")
     -- the inverse of Normal.
     -- Visual { fg = Normal.bg, bg = Normal.fg }, -- Try pressing v and selecting some text
 
@@ -188,7 +177,7 @@ local theme = lush(function()
     -- are copied to the child, and then any changed properties override the
     -- parent.
 
-    -- For example, lets "link" CursorColumn to CursorLine.
+    -- For example, let's "link" CursorColumn to CursorLine.
     -- (If disabled: `setlocal cursorcolumn`)
     -- CursorColumn { CursorLine }, -- CursorColumn is linked to CursorLine
 
@@ -197,7 +186,7 @@ local theme = lush(function()
 
     -- LineNr { Comment, gui = "italic" },
     -- Try writing your own above and below line number groups, and
-    -- experimenting with the different operations listed at the start of this
+    -- experiment with the different operations listed at the start of this
     -- file.
     -- LineNrBelow { LineNr },
     -- LineNrAbove { LineNr },
@@ -215,11 +204,9 @@ local theme = lush(function()
   }
 end)
 
--- return our parsed theme for extension or use else where.
+-- return our parsed theme as a plugin or use elsewhere.
 -- And that's the basics of using Lush!
 return theme
-
-
 
 -- ###
 -- ### Other tools
@@ -252,7 +239,7 @@ return theme
 -- of their linked group via the 'link' key (may require chaining)
 --
 --   theme.CursorLine.fg() -- This is bad!
---   theme.CursorLine.link   -- = "Normal"
+--   theme.CursorLine.link -- = "Normal"
 --
 -- Also Note:
 --
