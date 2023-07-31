@@ -26,6 +26,8 @@
 -- file, then discard it and see CREATE.md for more instructions about setting
 -- up your own theme.
 
+
+
 -- ###
 -- ### Lushify
 -- ###
@@ -38,6 +40,8 @@
 --  Also make sure to enable termguicolors with `:set termguicolors`.
 --
 -- (If it worked, your colorscheme should have changed pretty dramatically!)
+
+
 
 -- ###
 -- ### Preparations
@@ -64,6 +68,8 @@ local lush = require('lush')
 local hsl = lush.hsl -- We'll use hsl a lot so its nice to bind it separately
 -- local hsluv = lush.hsluv -- or for hsluv
 
+
+
 -- ###
 -- ### Our first colors
 -- ###
@@ -83,10 +89,12 @@ local sea_deep  = hsl(208, 90, 10)  -- you can just type them normally.
 --
 -- Try editing these values to see the colors update in real time.
 
--- You can also give RGB colors to hsl() and it will convert them into the HSL
--- colorspace. Note that this can be slightly lossy due to the translation between 
--- the two colorspaces.
+-- RGB values can be used as a substitute for HSL as it will convert to
+-- its according hue, saturation, and lightness values. 
+-- Note: This might have inaccuracies in convertions and you might need to do manual tweaks.
 local sea_gull  = hsl("#c6c6c6")
+
+
 
 -- ###
 -- ### HSL operations
@@ -112,6 +120,8 @@ local sea_foam_triadic = sea_foam.rotate(120)
 local sea_foam_complement = sea_foam.rotate(180).darken(10).saturate(10)
 --
 -- Thats all you need to know about HSL and we can define our theme!
+
+
 
 -- ###
 -- ### Lush specifications
@@ -204,9 +214,12 @@ local theme = lush(function()
   }
 end)
 
--- return our parsed theme as a plugin or use elsewhere.
--- And that's the basics of using Lush!
+-- Return our parsed theme for use and that's the basics of using Lush!
+-- The parsed theme can be used as a neovim theme, or extended further via Lush,
+-- or used elsewhere such as in other lua runtimes.
 return theme
+
+
 
 -- ###
 -- ### Other tools
