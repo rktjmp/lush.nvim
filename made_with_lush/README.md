@@ -248,6 +248,20 @@ A fancy and sophisticated designer neovim theme. It features a much more compreh
 
 ---
 
+### miasma
+
+[xero/miasma.nvim](https://github.com/xero/miasma.nvim)
+
+Lua module: `require("xero/miasma.nvim")`
+
+Usage: `colorscheme miasma`
+
+a pastel color scheme for `{neo,}vim` inspired by the woods. supports treesitter, gitsigns, lazy, which-key, telescope, lsp diagnostics, and more. the theme has been ported to a few different apps (xresources, iterm2, etc), and are included in the `extras` directory. checkout the [dev](https://github.com/xero/miasma.nvim/tree/dev) branch for customization and build optimization scripts.
+
+![miasma theme preview](https://raw.githubusercontent.com/xero/miasma.nvim/main/preview.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
