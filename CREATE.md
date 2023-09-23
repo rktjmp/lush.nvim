@@ -89,7 +89,7 @@ comprehesive list of groups.
 
 -- require lush
 local lush = require('lush')
-locah hsl = lush.hsl
+local hsl = lush.hsl
 
 -- lush() will parse the spec and
 -- return a table containing all color information.
