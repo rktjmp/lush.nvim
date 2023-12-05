@@ -271,7 +271,9 @@ A Vaporwave inspired colorscheme.
 |                                                                           |                                                                           |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | <img src="https://github.com/adamkali/vaporlush/blob/main/imgs/adamkali_vaporlush_1.png" alt="dark" style="border-radius:10%"/> | <img src="https://github.com/adamkali/vaporlush/blob/main/imgs/adamkali_vaporlush_2.png" alt="dark" style="border-radius:10%"/> |
-| <img src="https://github.com/adamkali/vaporlush/blob/main/imgs/adamkali_vaporlush_3.png" alt="dark" style="border-radius:10%"/> | <img src=""https://github.com/adamkali/vaporlush/blob/main/imgs/adamkali_vaporlush_4.png alt="dark" style="border-radius:10%"/> |
+| <img src="https://github.com/adamkali/vaporlush/blob/main/imgs/adamkali_vaporlush_3.png" alt="dark" style="border-radius:10%"/> | <img src="https://github.com/adamkali/vaporlush/blob/main/imgs/adamkali_vaporlush_4.png" alt="dark" style="border-radius:10%"/> |
+
+---
 
 Adding your theme to the list
 -----------------------------
