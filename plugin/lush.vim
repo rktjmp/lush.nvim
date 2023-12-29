@@ -5,6 +5,7 @@ command! LushImport :lua require('lush').import()
 
 function! s:run_temp(lush_root, filename)
 lua << EOF
+  local uv = vim.uv or vim.loop
   local lush_root = vim.fn.eval("a:lush_root")
   local filename = vim.fn.eval("a:filename")
   -- generate a temp file name
@@ -14,7 +15,7 @@ lua << EOF
   local file = lush_root .. "/examples/" .. filename
 
   -- open temp
-  local success = vim.loop.fs_copyfile(file, temp)
+  local success = uv.fs_copyfile(file, temp)
   if success then
     vim.cmd("edit " .. temp)
     vim.cmd("set ft=lua")

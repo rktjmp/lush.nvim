@@ -1,5 +1,5 @@
 local api = vim.api
-local uv = vim.loop
+local uv = vim.uv or vim.loop
 local hsl = require('lush.vivid.hsl.type')
 local hsluv = require('lush.vivid.hsluv.type')
 local lush = require('lush')
