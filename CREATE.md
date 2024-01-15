@@ -137,7 +137,13 @@ Assuming your colorscheme is in `~/projects/cool_name`:
 use '~/projects/cool_name'
 ```
 
-Afterwards we can apply the colorscheme like any other:
+```lua
+-- example when using lazy.nvim
+require("lazy").setup({
+    { dir = '/home/your_username_here/projects/cool_name', lazy = true },
+}
+```
+Note that it may not show up in the menu if you enter, for example, `:colorscheme <tab>`. However, the following should work:
 
 ```vimscript
 colorscheme cool_name
