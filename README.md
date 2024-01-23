@@ -16,7 +16,7 @@ See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lu
 - [Annoucements](#annoucements)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Interactive Tutorials](#interactive-tutorials)
+- [Interactive Tutorial](#interactive-tutorial)
 - [Guides](#guides)
 - [See Also](#see-also)
 
