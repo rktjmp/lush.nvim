@@ -36,6 +36,12 @@ local function make_group(group_name, group_spec)
     table.insert(rule_parts, translator[key] .. "=" .. value_or_NONE(group_spec[key]))
   end
 
+  for _, key in ipairs({ "ctermbg", "ctermfg" }) do
+    if group_spec[key] then
+      table.insert(rule_parts, key .. "=" .. group_spec[key])
+    end
+  end
+
   -- The gui key is a composition of boolean fields, which may have been set
   -- directly, or extracted from the `gui` key into separate components during
   -- compilation. We will individually iterate each possible key and generate
