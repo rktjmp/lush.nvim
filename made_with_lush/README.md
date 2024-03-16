@@ -141,6 +141,21 @@ Port of the popular [nord-vim](https://github.com/arcticicestudio/nord-vim) them
 
 ---
 
+### okai
+
+[okaihe/okai](https://github.com/okaihe/okai)
+
+Lua module: `require('okai')`
+
+Usage: `colorscheme okai`
+
+Orange, blue and green based colorscheme for neovim :)
+
+![img1](https://github.com/okaihe/okai/blob/main/doc/screenshot1.png)
+![img1](https://github.com/okaihe/okai/blob/main/doc/screenshot2.png)
+
+---
+
 ### onedark.nvim
 
 [olimorris/onedark.nvim](https://github.com/olimorris/onedark.nvim)
