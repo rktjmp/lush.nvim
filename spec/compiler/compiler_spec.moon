@@ -27,6 +27,20 @@ describe "compiler", ->
     assert.is_equal(true, compiled.B.bold)
     assert.is_equal(true, compiled.B.italic)
 
+  it "will extract both gui='' and direct properties", ->
+    ast = parse -> {
+      A { bg: "a_bg", fg: "a_fg", bold: true, gui: "bold,altfont,italic"},
+    }
+    compiled = compile(ast)
+    assert.is_not_nil(compiled.A)
+    assert.is_equal(compiled.A.bg, "a_bg")
+    assert.is_equal(compiled.A.fg, "a_fg")
+    -- compiled output should not have the gui field
+    assert.is_equal(compiled.A.gui, nil)
+    assert.is_equal(compiled.A.bold, true)
+    assert.is_equal(compiled.A.altfont, true)
+    assert.is_equal(compiled.A.italic, true)
+
   it "defines a link group", ->
     ast = parse -> {
       A { bg: "a_bg", fg: "a_fg" }

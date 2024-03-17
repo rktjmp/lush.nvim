@@ -318,6 +318,7 @@ Supports the following keys:
   underdash:     boolean, enables or disables underdash.
   underdashed:   boolean, underdash in nvim 0.8
   strikethrough: boolean, enables or disables strikethrough.
+  altfont:       boolean, enables or disables alternate font in nvim 0.9
   reverse:       boolean, enables or disables flipping fg and bg values.
   standout:      boolean, enables or disables standout.
   nocombine:     boolean, enables or disables nocombine.

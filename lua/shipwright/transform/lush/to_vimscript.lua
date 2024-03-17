@@ -44,10 +44,9 @@ local function make_group(group_name, group_spec)
   local formatters = {
     "bold", "italic", "underline", "underlineline",
     "undercurl", "underdot", "underdash", "strikethrough",
-    -- https://github.com/rktjmp/lush.nvim/issues/96
-    -- 0.8 key renames
     "underdouble", "underdotted", "underdashed",
-    "reverse", "standout", "nocombine"
+    "reverse", "standout", "nocombine",
+    "altfont"
   }
   for _, key in ipairs(formatters) do
     if group_spec[key] then

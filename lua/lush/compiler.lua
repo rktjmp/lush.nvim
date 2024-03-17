@@ -64,16 +64,15 @@ local function normal_group_to_attrs(group_def)
     local formatters = {
       "bold", "italic", "underline", "underlineline",
       "undercurl", "underdot", "underdash", "strikethrough",
-      -- https://github.com/rktjmp/lush.nvim/issues/96
-      -- 0.8 key renames
       "underdouble", "underdotted", "underdashed",
-      "reverse", "standout", "nocombine"
+      "reverse", "standout", "nocombine", "altfont"
     }
     for i, formatter in ipairs(formatters) do
       attrs[formatter] = maybe_set(formatter)
     end
   end
 
+  -- TODO: there is ambiguity here, where a user may give { gui="italic" italic=false }
   -- now re-merge any extra attrs which may override gui settings
   for key, value in pairs(extra_attrs) do
     attrs[key] = value

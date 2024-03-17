@@ -108,6 +108,20 @@ describe "parser", ->
     assert.is_equal(s.A.bg, "a_bg")
     assert.is_equal(s.A.fg, "a_fg")
 
+  it "will parse both gui='' and direct properties", ->
+    s = parse -> {
+      A { bg: "a_bg", fg: "a_fg", bold: true, gui: "bold,altfont"},
+    }
+    assert.is_not_nil(s.A)
+    assert.is_equal(s.A.bg, "a_bg")
+    assert.is_equal(s.A.fg, "a_fg")
+    assert.is_equal(s.A.gui, "bold,altfont")
+    assert.is_equal(s.A.bold, true)
+    -- altfont is NOT given as a prop, so its nil until the compiler extracts
+    -- from the gui field. We do not extract in the parser stage as other
+    -- groups may expect the field to be indexable.
+    assert.is_equal(s.A.altfont, nil)
+
   it "should only keep keys on allowed keys list", ->
     s = parse -> {
       A { bg: "a_bg", fg: "a_fg", lush: "abc", not_lush: "xyz", sp: "a_sp", blend: "20"},
