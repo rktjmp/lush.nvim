@@ -41,6 +41,20 @@ A Neovim colorscheme ported from VSCode Dark+ theme with the strict and precise 
 
 ---
 
+### chalktone.nvim
+
+[daneofmanythings/chalktone.nvim](https://github.com/daneofmanythings/chalktone.nvim)
+
+Lua Module: `require('chalktone').setup()`
+
+Usage: `vim.g.colorscheme('chalktone')` (see repo for more options)
+
+A low-contrast, pastel colorscheme inspired by [melange.nvim](https://github.com/savq/melange-nvim)
+
+![theme_default](https://github.com/daneofmanythings/chalktone.nvim/blob/main/assets/made_by_lush/daneofmanythings_chalktone_nvim_1.png)
+
+---
+
 ### codeschool.nvim
 
 [adisen99/codeschool.nvim](https://github.com/adisen99/codeschool.nvim)
