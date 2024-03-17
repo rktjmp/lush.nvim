@@ -51,7 +51,7 @@ Usage: `vim.g.colorscheme('chalktone')` (see repo for more details)
 
 A low-contrast, pastel colorscheme inspired by [melange.nvim](https://github.com/savq/melange-nvim)
 
-![theme_default](https://github.com/daneofmanythings/chalktone-nvim/assets/made_with_lush/daneofmanythings_chalktone_nvim_1.png)
+![theme_default](https://github.com/daneofmanythings/chalktone.nvim/assets/made_with_lush/daneofmanythings_chalktone_nvim_1.png)
 
 ---
 
