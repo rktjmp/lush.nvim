@@ -13,7 +13,7 @@ imported into other Lua systems to access your color data.
 
 See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lush).
 
-- [Annoucements](#annoucements)
+- [Announcements](#Announcements)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Interactive Tutorial](#interactive-tutorial)
@@ -26,7 +26,7 @@ Experimental Treesitter Interface
 [See issue for new syntax](https://github.com/rktjmp/lush.nvim/issues/109).
 Syntax is subject to change.
 
-Annoucements
+Announcements
 ------------
 
 - 2022-05-12: Neovim 0.7 is now a requirement, the 1.0.1 tagged version
