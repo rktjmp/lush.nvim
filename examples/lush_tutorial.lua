@@ -52,7 +52,7 @@
 local lush = require('lush')
 
 -- Lush uses the HSL colorspace to define colors because it allows for
--- more natural operations on colors and the relationalships between colors is
+-- more natural operations on colors and the relationships between colors is
 -- simpler to understand.
 --
 -- Instead of RGB where you specify red, green and blue components, HSL uses:
