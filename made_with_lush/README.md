@@ -304,6 +304,21 @@ A Vaporwave inspired colorscheme.
 
 ---
 
+### darkearth
+
+[ptdewey/darkearth-nvim](https://github.com/ptdewey/darkearth-nvim)
+
+Lua module: `require("lush_theme.darkearth")`
+
+Usage: `colorscheme darkearth`
+
+A dark and earthy colorscheme for Neovim.
+Inspired by [miasma.nvim](https://github.com/xero/miasma.nvim), reimagined with earthier tones and more colorful syntax highlighting.
+
+![darkearth theme screenshot](https://github.com/ptdewey/darkearth-nvim/blob/main/assets/screenshot-0.png)
+
+---
+
 Adding your theme to the list
 -----------------------------
 
