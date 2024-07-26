@@ -142,16 +142,24 @@ use '~/projects/cool_name'
 require("lazy").setup({
     { dir = '/home/your_username_here/projects/cool_name', lazy = true },
 }
+```
 
--- alternatively, if you organize your plugins by having a seperate file for each
--- one in the dedicated plugins directory, you should instead call setup in 
--- init.lua as you would nornally:
+Alternatively, if you organize your plugins by having a separate file for each
+one in a dedicated plugins directory (e.g. ~/.config/nvim/lua/plugins),
+you should instead call setup in init.lua as you would normally:
+
+```lua
+-- ~/.config/nvim/init.lua
 require("lazy").setup("plugins")
+```
 
--- and treat Lush and your colorscheme directory as you would any other plugin,
--- for example in lush.lua:
+And treat Lush and your colorscheme directory as you would any other plugin,
+for example in lush.lua:
+
+```lua
+-- ~/.config/nvim/lua/plugins/lush.lua
 return {
-	"rktjmp/lush.nvim",
+    "rktjmp/lush.nvim",
     { dir = '/home/your_username_here/projects/cool_name', lazy = true },
 }
    
