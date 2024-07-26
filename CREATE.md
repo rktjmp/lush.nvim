@@ -162,7 +162,6 @@ return {
     "rktjmp/lush.nvim",
     { dir = '/home/your_username_here/projects/cool_name', lazy = true },
 }
-   
 ```
 Note that it may not show up in the menu if you enter, for example, `:colorscheme <tab>`. However, the following should work:
 
