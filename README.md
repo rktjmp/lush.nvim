@@ -50,6 +50,16 @@ Install via any package management system, for example, paq:
 require paq { 'rktjmp/lush.nvim' }
 ```
 
+Via Lazy:
+
+```lua
+return {
+    "rktjmp/lush.nvim",
+    -- if you wish to use your own colorscheme:
+    -- { dir = '/absolute/path/to/colorscheme', lazy = true },
+}
+```
+
 Interactive Tutorial
 ---------------------
 

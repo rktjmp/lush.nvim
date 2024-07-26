@@ -143,6 +143,26 @@ require("lazy").setup({
     { dir = '/home/your_username_here/projects/cool_name', lazy = true },
 }
 ```
+
+Alternatively, if you organize your plugins by having a separate file for each
+one in a dedicated plugins directory (e.g. ~/.config/nvim/lua/plugins),
+you should instead call setup in init.lua as you would normally:
+
+```lua
+-- ~/.config/nvim/init.lua
+require("lazy").setup("plugins")
+```
+
+And treat Lush and your colorscheme directory as you would any other plugin,
+for example in lush.lua:
+
+```lua
+-- ~/.config/nvim/lua/plugins/lush.lua
+return {
+    "rktjmp/lush.nvim",
+    { dir = '/home/your_username_here/projects/cool_name', lazy = true },
+}
+```
 Note that it may not show up in the menu if you enter, for example, `:colorscheme <tab>`. However, the following should work:
 
 ```vimscript
