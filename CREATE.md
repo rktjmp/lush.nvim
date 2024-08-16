@@ -21,7 +21,7 @@ First, clone down a copy of the template from
 picking a name for your colorscheme; don't worry, it's easy to change this later.
 
 ```sh
-git clone git@github.com:rktjmp/lush-template.git <your_colorscheme_name>
+git clone https://github.com/rktjmp/lush-template.git <your_colorscheme_name>
 cd <your_colorscheme_name>
 ```
 
