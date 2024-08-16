@@ -100,7 +100,7 @@ return lush(function()
     -- You can provide values with hsl/hsluv or anything that responds to `tostring`
     -- but be aware if you don't "wrap" your color in a hsl/hsluv call you
     -- wont have chainable access to the color "operators" (darken, etc).
-    Normal { bg = hsl(208, 90, 30), fg = hsl("#A3CFF5" ) },
+    Normal { bg = hsl(208, 90, 30), fg = hsl("#A3CFF5") },
 
     -- Make whitespace slightly darker than normal.
     -- you must define Normal before deriving from it.
