@@ -20,6 +20,24 @@ See some colorschemes [**Made with Lush**](made_with_lush/README.md#made-with-lu
 - [Guides](#guides)
 - [See Also](#see-also)
 
+Lush and modern Neovim
+---
+
+Lush was originally written for Neovim 0.4 (!!!). I had just swapped from Vim
+to Neovim, wanted to learn Lua as well as make my own colorscheme. I read an
+article by Leaf about [creating DSLs in
+lua](https://leafo.net/guides/dsl-in-lua.html) and rolled all that into Lush.
+
+At the time, there was no native support for writing colorschemes in Lua and
+being able to export my Neovim colorscheme to use with AwesomeWM was a neat
+trick. Neovim's APIs have matured and writing colorschemes in Lua is now quite
+simple. You can approximate a custom implementation of Lush with some
+metatables and glue.
+
+**Lush will still be maintained** but the value proposition of Lush is
+different to what it was at the time of release and creators may want to take
+that under consideration.
+
 Experimental Treesitter Interface
 ---
 
