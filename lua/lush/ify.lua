@@ -183,12 +183,12 @@ local print_error = function(err)
   if type(err) == "table" then
     local msg = "Parser Error (" .. err.code .. "): " .. err.on ..
                 " -> " .. err.msg
-    print(msg)
+    vim.notify(msg, vim.log.levels.ERROR)
   else
     -- else it's likely another library or plain lua error
     err = string.gsub(err, "^%[string .+%]:", 'line ') -- strip our loadstring name, leave line number
     local msg = "Lush.ify: Could not parse buffer due to Lua error: " .. err
-    print(msg)
+    vim.notify(msg, vim.log.levels.WARN)
   end
 end
 
