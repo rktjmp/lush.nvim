@@ -33,6 +33,9 @@ the steps manually.
 > updating some place holders in `colors/<name.lua>` and LICENSE. [See
 > also.](https://github.com/rktjmp/lush.nvim/issues/119#issuecomment-1373138526)
 
+<details>
+<summary>Linux (GNU sed)</summary>
+
 ```sh
 sh << "EOF"
   LUSH_NAME=$(basename $(pwd))
@@ -46,10 +49,35 @@ sh << "EOF"
     sed -i "s/COPYRIGHT_YEAR/$YEAR/g" LICENSE
     git add .
   else
-    echo "Could not find sed, please manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.vim, and update the LICENCE file."
+    echo "Could not find sed, please manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.lua, and update the LICENSE file."
   fi
 EOF
+
 ```
+</details>
+
+<details>
+<summary>macOS (BSD sed)</summary>
+
+```sh
+sh << "EOF"
+  LUSH_NAME=$(basename $(pwd))
+  GIT_NAME=$(git config user.name)
+  YEAR=$(date +"%Y")
+  mv colors/lush_template.lua colors/$LUSH_NAME.lua
+  mv lua/lush_theme/lush_template.lua lua/lush_theme/$LUSH_NAME.lua
+  if command -v sed &> /dev/null; then
+    sed -i "" -e "s/lush_template/$LUSH_NAME/g" colors/$LUSH_NAME.lua
+    sed -i "" -e "s/COPYRIGHT_NAME/$GIT_NAME/g" LICENSE
+    sed -i "" -e "s/COPYRIGHT_YEAR/$YEAR/g" LICENSE
+    git add .
+  else
+    echo "Could not find sed, please manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.lua, and update the LICENSE file."
+  fi
+EOF
+
+```
+</details>
 
 Lets examine the provided structure:
 
