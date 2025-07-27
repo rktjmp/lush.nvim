@@ -29,10 +29,6 @@ Next we have to update some of the boilerplate files to match your new colorsche
 name. You can copy and paste the script below into a zsh/bash prompt or perform
 the steps manually.
 
-> macOS users you might have to perform the `sed` lines manually. They're just
-> updating some place holders in `colors/<name.lua>` and LICENSE. [See
-> also.](https://github.com/rktjmp/lush.nvim/issues/119#issuecomment-1373138526)
-
 <details>
 <summary>Linux (GNU sed)</summary>
 
@@ -75,8 +71,10 @@ sh << "EOF"
     echo "Could not find sed, please manually replace 'lush_template' with '$LUSH_NAME' in colors/$LUSH_NAME.lua, and update the LICENSE file."
   fi
 EOF
-
 ```
+
+> [See also.](https://github.com/rktjmp/lush.nvim/issues/119#issuecomment-1373138526)
+
 </details>
 
 Lets examine the provided structure:
