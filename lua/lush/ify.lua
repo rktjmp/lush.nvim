@@ -10,6 +10,14 @@ local hl_vivid_call_ns = api.nvim_create_namespace("lushify_vivid")
 
 local named_hex_highlight_groups_cache ={}
 
+local function apply_highlight(buf, ns, hl, line, cstart, cend)
+  if vim.fn.has("nvim-0.11") == 1 then
+    vim.hl.range(buf, ns, hl, {line, cstart}, {line, cend}, {})
+  else
+    api.nvim_buf_add_highlight(buf, ns, hl, line, cstart, cend)
+  end
+end
+
 -- Given a line, find any highlight group definitions and color them
 -- looks for "   Normal {..."
 -- Note: This *does* match commented out lines, which is a good thing since
@@ -28,7 +36,7 @@ local function set_highlight_groups_on_line(buf, line, line_num)
     -- the argument.
     local group_name = string.match(group, [[sym%(?["']([%a%d%.@]+)["']%)?]]) or group
     local hs, he = string.find(line, group, 1, true)
-    api.nvim_buf_add_highlight(buf, hl_group_ns, group_name, line_num, hs - 1, he)
+    apply_highlight(buf, hl_group_ns, group_name, line_num, hs - 1, he)
   end
 end
 
@@ -159,9 +167,7 @@ local function set_highlight_vivid_calls_on_line(buf, line, line_num)
       local group_name = create_highlght_group_name_for_color(color)
       local hi_s, hi_e = match.from, match.to
 
-      api.nvim_buf_add_highlight(buf, hl_vivid_call_ns,
-                                 group_name, line_num,
-                                 hi_s - 1, hi_e -1) -- -1 for api-indexing
+      apply_highlight(buf, hl_vivid_call_ns, group_name, line_num, hi_s - 1, hi_e - 1)
     end
   end
 end
