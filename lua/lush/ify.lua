@@ -30,7 +30,7 @@ local function set_highlight_groups_on_line(buf, line, line_num)
       string.match(line, [[%s-(sym%(?["'][%a%d%.@]+["']%)?)%s-{]])
 
   if group then
-    -- technically, find matches the first occurance in line, but this should
+    -- technically, find matches the first occurrence in line, but this should
     -- always be our group name, so it's ok
     -- we want to highlight the sym() call if it's there, but the group name is actually
     -- the argument.
@@ -40,7 +40,7 @@ local function set_highlight_groups_on_line(buf, line, line_num)
   end
 end
 
--- build vaild hex chars x 6
+-- build valid hex chars x 6
 local re_hex_chars = string.rep("[0-9abcdefABCDEF]", 6)
 local re_hex_pat = "#"..re_hex_chars
 -- matches "#NNNNNN"
@@ -84,8 +84,8 @@ local function create_highlght_group_name_for_color(color)
   return "lushify_" .. string.sub(tostring(color), 2)
 end
 
--- given a color, greates a vim highlight group that has that color
--- as the background, and an appropriately readable forground
+-- given a color, creates a vim highlight group that has that color
+-- as the background, and an appropriately readable foreground
 -- color -> nil
 local function create_highlight_group_for_color(color, cache)
   local group_name = create_highlght_group_name_for_color(color)
@@ -133,7 +133,7 @@ local function set_highlight_vivid_calls_on_line(buf, line, line_num)
   end
 
   -- attempt to turn call strings into real colors by checking if it's
-  -- a vaild call, and calling the desired function if so
+  -- a valid call, and calling the desired function if so
   local call_pat_to_call_fn = {
     {re_hsl_h_s_l_call_pat, hsl_h_s_l_call_to_color},
     {re_hsl_hex_call_pat, hsl_hex_call_to_color},
@@ -175,7 +175,7 @@ end
 -- Errors can occur in two "spaces", lua-space and lush-space
 -- lush-space errors are things that are spec dependent, bad definitions,
 -- invalid groups, etc.
--- lua-space errors can be anything, mis-spelt variables, nil indexing, *vim errors*.
+-- lua-space errors can be anything, misspelled variables, nil indexing, *vim errors*.
 -- Since they can happen in intermingled contexts, we have a unified handler that
 -- can be called from both stages (loadstring and apply).
 local print_error = function(err)
@@ -290,17 +290,17 @@ M.setup_realtime_eval = function(buf, options)
   -- is holding down a letter (or can type *really fast*, or maybe using a
   -- macro or pasting into term or ...), we don't try to re-eval excessively.
   --
-  -- Additionally, if the last two attemps to eval the buffer have failed,
+  -- Additionally, if the last two attempt to eval the buffer have failed,
   -- we will debounce with a larger window, this limits some over-eager
   -- error printing which may degrade performance depending on the term and
   -- machine.
   --
   -- We allow for "last two" to provide minor grace if a user goes from
-  -- `hsl(1` to `hsl(` which would error, but they are likley to repair the
+  -- `hsl(1` to `hsl(` which would error, but they are likely to repair the
   -- error in the next stroke.
   --
-  -- Note: Deboucing could be considered 'cumulative', new events will
-  --       continue to "push the debounce" until events stop occuring.
+  -- Note: Debouncing could be considered 'cumulative', new events will
+  --       continue to "push the debounce" until events stop occurring.
 
   -- normally we debounce by this much
   local natural_timeout = options.natural_timeout or 25
@@ -328,7 +328,7 @@ M.setup_realtime_eval = function(buf, options)
     end,
     infer_timeout = function()
       if not history[1] and not history[2] then
-        -- both recorded runs were false -> error occured
+        -- both recorded runs were false -> error occurred
         return error_timeout
       else
         return natural_timeout
@@ -388,7 +388,7 @@ setmetatable(M, {
     --
     -- Ideally, setup_realtime_eval wouldn't just re-eval the whole file, but
     -- would be spec-aware and have a running "current spec" in memory that it
-    -- patches and applies. Not sure how resilliant this would be though,
+    -- patches and applies. Not sure how resilient this would be though,
     -- through user pastes, etc. If the spec was in it's own file, it would be
     -- more possible since we'd know that any line is a 1:1 match for a spec
     -- line, right now a change would have to be fake-parsed and we'd have to
@@ -401,7 +401,7 @@ setmetatable(M, {
     --              with no changes. Having an in-memory spec is unlikely to
     --              aid anything. the real bottle neck is probably vim itself.
     --
-    -- And all that seems like premature opitmisation anyway, since the
+    -- And all that seems like premature optimisation anyway, since the
     -- performance cost is so low.
     M.setup_realtime_eval(0, options)
   end
