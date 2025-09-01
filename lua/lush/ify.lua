@@ -26,8 +26,8 @@ end
 --       low impact.
 local function set_highlight_groups_on_line(buf, line, line_num)
   local group =
-      string.match(line, [=[%s-(sym%(?["'][%a%d%.@]+["']%)?)%s-[{%(]]=]) or
-      string.match(line, "%s-(%a[%a%d_]-)%s-[{%(]")
+    string.match(line, [=[%s-(sym%(?["'][%a%d%.@]+["']%)?)%s-[{%(]]=])
+      or string.match(line, "%s-(%a[%a%d_]-)%s-[{%(]")
 
   if group then
     -- technically, find matches the first occurrence in line, but this should
